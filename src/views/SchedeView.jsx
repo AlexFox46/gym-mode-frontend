@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import { Card, Button } from '../components/UI';
 
 export const SchedeView = () => {
-  // 1. STATO DELLE SCHEDE (Meso-cicli strutturati su più giornate)
+  // 1. ARCHIVIO DELLE SCHEDE (Meso-cicli strutturati su più giornate)
   const [schede, setSchede] = useState([
     { 
       id: '1', 
@@ -45,9 +45,9 @@ export const SchedeView = () => {
     }
   ]);
 
-  // 2. STATI DI EDITING E CREAZIONE
+  // 2. STATI DI EDITING ED INTERFACCIA CREAZIONE
   const [isEditing, setIsEditing] = useState(false);
-  const [currentSchedaId, setCurrentSchedaId] = useState(null); // null = nuova scheda, string = modifica esistente
+  const [currentSchedaId, setCurrentSchedaId] = useState(null); // null = nuova scheda, string = modifica
   const [schedaName, setSchedaName] = useState('');
   const [giornate, setGiornate] = useState([{ nome: 'Giorno 1', esercizi: [] }]);
   const [activeGiornataIndex, setActiveGiornataIndex] = useState(0);
@@ -86,7 +86,7 @@ export const SchedeView = () => {
     if (isEditing) fetchDizionario();
   }, [isEditing]);
 
-  // INIZIALIZZA MODALITÀ NUOVA SCHEDA
+  // INIZIALIZZA MODALITÀ NUOVA SCHEDA EMPTY
   const handleNuovaScheda = () => {
     setCurrentSchedaId(null);
     setSchedaName('');
@@ -95,12 +95,19 @@ export const SchedeView = () => {
     setIsEditing(true);
   };
 
-  // 4. FIX: ABILITA LA MODIFICA DI UNA SCHEDA ESISTENTE
+  // APRE L'EDITOR PRE-COMPILATO CON CLONAZIONE PROFONDA EVITANDO DECORATORS
   const handleModificaScheda = (scheda) => {
     setCurrentSchedaId(scheda.id);
     setSchedaName(scheda.name);
-    // Carica le giornate e gli esercizi reali salvati in memoria
-    setGiornate(scheda.giornate ? JSON.parse(JSON.stringify(scheda.giornate)) : [{ nome: 'Giorno 1', esercizi: [] }]);
+    if (scheda.giornate && scheda.giornate.length > 0) {
+      const cloneGiornate = scheda.giornate.map(g => ({
+        nome: g.nome,
+        esercizi: g.esercizi.map(ex => ({ ...ex }))
+      }));
+      setGiornate(cloneGiornate);
+    } else {
+      setGiornate([{ nome: 'Giorno 1', esercizi: [] }]);
+    }
     setActiveGiornataIndex(0);
     setIsEditing(true);
   };
@@ -115,11 +122,22 @@ export const SchedeView = () => {
     }
   };
 
-  // GESTIONE MULTI-GIORNATA
+  // AGGIUNTA ATOMICA DELLE GIORNATE (FORZA RE-RENDER DELLE TAB)
   const aggiungiGiornata = () => {
-    const nuovoIndice = giornate.length + 1;
-    setGiornate([...giornate, { nome: `Giorno ${nuovoIndice}`, esercizi: [] }]);
-    setActiveGiornataIndex(giornate.length);
+    const nuoveGiornate = giornate.map(g => ({
+      nome: g.nome,
+      esercizi: [...g.esercizi]
+    }));
+    const prossimoNumero = nuoveGiornate.length + 1;
+    nuoveGiornate.push({
+      nome: `Giorno ${prossimoNumero} - Nuovo Split`,
+      esercizi: []
+    });
+    setGiornate(nuoveGiornate);
+    setActiveGiornataIndex(nuoveGiornate.length - 1);
+    setSearchTerm('');
+    setSelectedCategory('Tutti');
+    setSelectedEquipment('Tutti');
   };
 
   const rimuoviGiornata = (indexIndex) => {
@@ -130,38 +148,35 @@ export const SchedeView = () => {
   };
 
   const aggiungiEsercizioAGiornata = (ex) => {
-    const copiaGiornate = [...giornate];
+    const copiaGiornate = giornate.map(g => ({ nome: g.nome, esercizi: [...g.esercizi] }));
     copiaGiornate[activeGiornataIndex].esercizi.push({
       ...ex,
       chosen_sets: 4,
       chosen_reps: 8,
       chosen_rest: 90,
-      chosen_progression: 'NORMAL' // Iniezione pattern predittivo di base
+      chosen_progression: 'NORMAL'
     });
     setGiornate(copiaGiornate);
   };
 
   const updateExerciseParam = (exIdx, field, value) => {
-    const copiaGiornate = [...giornate];
+    const copiaGiornate = giornate.map(g => ({ nome: g.nome, esercizi: [...g.esercizi] }));
     copiaGiornate[activeGiornataIndex].esercizi[exIdx][field] = value;
     setGiornate(copiaGiornate);
   };
 
   const rimuoviEsercizioDaGiornata = (exIdx) => {
-    const copiaGiornate = [...giornate];
+    const copiaGiornate = giornate.map(g => ({ nome: g.nome, esercizi: [...g.esercizi] }));
     copiaGiornate[activeGiornataIndex].esercizi = copiaGiornate[activeGiornataIndex].esercizi.filter((_, i) => i !== exIdx);
     setGiornate(copiaGiornate);
   };
 
-  // SALVATAGGIO COMBINATO (UPDATE O INSERT)
   const salvaScheda = () => {
     if (!schedaName.trim()) return alert("Inserisci un nome per la scheda.");
-    
     const haEsercizi = giornate.some(g => g.esercizi.length > 0);
     if (!haEsercizi) return alert("Aggiungi almeno un esercizio in una giornata.");
 
     if (currentSchedaId) {
-      // Logica di Modifica (Aggiornamento record esistente)
       setSchede(schede.map(s => s.id === currentSchedaId ? {
         ...s,
         name: schedaName,
@@ -169,7 +184,6 @@ export const SchedeView = () => {
       } : s));
       alert("Scheda modificata con successo!");
     } else {
-      // Logica di Inserimento Nuova
       setSchede([...schede, {
         id: crypto.randomUUID(),
         name: schedaName,
@@ -177,7 +191,7 @@ export const SchedeView = () => {
         desc: 'Creato adesso · Ultimo: Mai',
         giornate: giornate
       }]);
-      alert("Nuova scheda multi-giorno creata!");
+      alert("Nuova scheda creata!");
     }
     setIsEditing(false);
   };
@@ -189,7 +203,7 @@ export const SchedeView = () => {
     return matchSearch && matchCategory && matchEquipment;
   });
 
-  // --- INTERFACCIA EDITOR MULTI-GIORNO (CREAZIONE / MODIFICA) ---
+  // --- RENDERING MODALITÀ EDITOR MULTI-GIORNO ---
   if (isEditing) {
     return (
       <div className="p-4 space-y-4 font-sans animate-fade-in pb-28">
@@ -200,25 +214,25 @@ export const SchedeView = () => {
           <Button size="small" variant="secondary" onClick={() => setIsEditing(false)}>Annulla</Button>
         </div>
 
-        {/* Input Nome Scheda */}
+        {/* Input Titolo */}
         <div className="flex flex-col gap-1">
           <label className="text-xs font-bold text-neutral-500 uppercase">Nome Macro-Scheda</label>
           <input 
             type="text" 
-            placeholder="Es. Split 3 Giorni, Meso-Ciclo Forza..." 
+            placeholder="Es. Split 3 Giorni, Meso-Ciclo..." 
             value={schedaName}
             onChange={(e) => setSchedaName(e.target.value)}
             className="h-11 px-3 border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 rounded-md focus:outline-none text-sm dark:text-white"
           />
         </div>
 
-        {/* CONTROLLO DELLE GIORNATE (TAB INTERNE DENTRO L'EDITOR) */}
+        {/* CONTROLLO TAB DELLE GIORNATE (RIVISTO CON EXTRA RE-RENDER TRIGGERS) */}
         <div className="space-y-2">
           <label className="text-xs font-bold text-neutral-500 uppercase block">Suddivisione Giornate (Split)</label>
           <div className="flex flex-wrap gap-1.5 items-center">
             {giornate.map((giornata, idx) => (
               <button
-                key={idx}
+                key={`${idx}-${giornate.length}`}
                 type="button"
                 onClick={() => setActiveGiornataIndex(idx)}
                 className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
@@ -233,38 +247,32 @@ export const SchedeView = () => {
             <button 
               type="button" 
               onClick={aggiungiGiornata}
-              className="px-2.5 py-1.5 border border-dashed border-neutral-400 text-neutral-500 rounded-md text-xs font-bold"
+              className="px-2.5 py-1.5 border border-dashed border-neutral-400 text-neutral-500 rounded-md text-xs font-bold active:scale-95 transition-transform"
             >
               + Aggiungi Giorno
             </button>
           </div>
         </div>
 
-        {/* DETTAGLIO GIORNATA SELEZIONATA */}
+        {/* PANEL DETTAGLIO GIORNATA CORRENTE */}
         <Card className="bg-neutral-50/50 dark:bg-neutral-900/30">
           <div className="flex justify-between items-center mb-3">
             <input 
               type="text"
               value={giornate[activeGiornataIndex]?.nome || ''}
               onChange={(e) => {
-                const copia = [...giornate];
+                const copia = giornate.map(g => ({ ...g }));
                 copia[activeGiornataIndex].nome = e.target.value;
                 setGiornate(copia);
               }}
               className="bg-transparent border-b border-neutral-300 font-bold text-sm dark:text-white focus:outline-none focus:border-focus py-0.5 w-3/4"
             />
             {giornate.length > 1 && (
-              <button 
-                type="button" 
-                onClick={() => rimuoviGiornata(activeGiornataIndex)}
-                className="text-xs text-error font-semibold"
-              >
-                Elimina Giorno
-              </button>
+              <button type="button" onClick={() => rimuoviGiornata(activeGiornataIndex)} className="text-xs text-error font-semibold">Elimina Giorno</button>
             )}
           </div>
 
-          {/* FILTRA DIZIONARIO PER INSERIMENTO NELLA GIORNATA ATTIVA */}
+          {/* COMPONENTE INTERNO FILTRI DIZIONARIO A CAPO AUTOMATICO */}
           <div className="bg-white dark:bg-neutral-900 p-3 rounded-lg border border-neutral-200 dark:border-neutral-800 space-y-3 mt-4">
             <span className="text-xs font-bold text-neutral-500 uppercase block">Aggiungi Esercizio in questa giornata</span>
             <input 
@@ -275,7 +283,6 @@ export const SchedeView = () => {
               className="w-full h-9 px-3 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-950 rounded text-xs dark:text-white"
             />
             
-            {/* Filtri a capo automatico */}
             <div className="flex flex-wrap gap-1">
               {categorie.map(cat => (
                 <button key={cat} type="button" onClick={() => setSelectedCategory(cat)} className={`px-2.5 py-1 rounded-full text-[11px] font-medium ${selectedCategory === cat ? 'bg-success text-white' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600'}`}>{cat}</button>
@@ -287,7 +294,6 @@ export const SchedeView = () => {
               ))}
             </div>
 
-            {/* Lista verticale degli esercizi filtrati */}
             <div className="max-h-36 overflow-y-auto border border-neutral-100 dark:border-neutral-800 rounded divide-y divide-neutral-100 dark:divide-neutral-800 px-2">
               {eserciziFiltrati.map((ex) => (
                 <div key={ex.id} className="flex justify-between items-center py-2 text-xs">
@@ -298,9 +304,9 @@ export const SchedeView = () => {
             </div>
           </div>
 
-          {/* LISTA ESERCIZI PIANIFICATI PER IL GIORNO CORRENTE */}
+          {/* LISTA DEGLI ESERCIZI AGGIUNTI PER LA GIORNATA ATTIVA */}
           <div className="space-y-3 mt-4">
-            <span className="text-xs font-bold text-neutral-400 uppercase block">Esercizi pianificati per oggi ({giornate[activeGiornataIndex]?.esercizi.length || 0})</span>
+            <span className="text-xs font-bold text-neutral-400 uppercase block">Esercizi in questo giorno ({giornate[activeGiornataIndex]?.esercizi.length || 0})</span>
             {giornate[activeGiornataIndex]?.esercizi.length === 0 ? (
               <p className="text-xs italic text-neutral-400 text-center py-4">Nessun movimento inserito in questo giorno.</p>
             ) : (
@@ -330,7 +336,6 @@ export const SchedeView = () => {
           </div>
         </Card>
 
-        {/* CTA DI SALVATAGGIO GENERALE */}
         <div className="pt-2">
           <Button size="large" variant="primary" fullWidth onClick={salvaScheda}>
             {currentSchedaId ? 'SALVA MODIFICHE SCHEDA' : 'SALVA NUOVA SCHEDA IN ARCHIVIO'}
@@ -340,7 +345,7 @@ export const SchedeView = () => {
     );
   }
 
-  // --- RENDERING VISTA ARCHIVIO PRINCIPALE ---
+  // --- RENDERING VISTA ARCHIVIO LISTA PRINCIPALE ---
   return (
     <div className="p-4 space-y-4 animate-fade-in">
       <div className="flex justify-between items-center">
@@ -368,7 +373,6 @@ export const SchedeView = () => {
                 <h3 className="text-lg font-bold text-neutral-900 dark:text-white mt-0.5">"{scheda.name}"</h3>
                 <p className="text-xs text-neutral-500 mt-1">{scheda.desc}</p>
                 
-                {/* Visualizzazione rapida delle giornate pianificate incluse in questa scheda */}
                 <div className="mt-2 flex flex-col gap-0.5 text-[11px] text-neutral-400 font-medium">
                   {scheda.giornate?.map((g, i) => (
                     <span key={i}>• {g.nome} ({g.esercizi.length} esercizi)</span>
@@ -376,7 +380,6 @@ export const SchedeView = () => {
                 </div>
                 
                 <div className="mt-3 flex gap-2">
-                  {/* FIX: Il bottone Modifica ora apre i dati reali per cambiarli retroattivamente */}
                   <Button size="small" variant="secondary" onClick={() => handleModificaScheda(scheda)}>
                     Modifica
                   </Button>
