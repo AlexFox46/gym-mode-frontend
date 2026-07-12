@@ -1,13 +1,19 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    margin: 0;
+    @apply bg-neutral-50 text-neutral-950 font-sans antialiased;
+  }
+  
+  html.dark body {
+    @apply bg-neutral-950 text-neutral-50;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Forziamo un contenitore rigido per simulare lo smartphone sul desktop */
+.app-container {
+  @apply min-h-screen max-w-[420px] mx-auto bg-neutral-50 dark:bg-neutral-950 flex flex-col relative border-x border-neutral-200 dark:border-neutral-800 shadow-xl;
 }
