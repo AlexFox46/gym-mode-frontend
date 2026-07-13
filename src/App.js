@@ -1,5 +1,5 @@
 const handleSaveOnboarding = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     if (!user) return;
     setOnboardSaving(true);
 
@@ -23,7 +23,7 @@ const handleSaveOnboarding = async (e) => {
 
       if (error) throw error;
 
-      // Aggiorna lo stato globale ed esce dall'onboarding
+      // Aggiorna lo stato locale
       setSettings(prev => ({
         ...prev,
         id: user.id,
@@ -33,7 +33,7 @@ const handleSaveOnboarding = async (e) => {
       setNeedsOnboarding(false);
     } catch (err) {
       console.error("Errore salvataggio onboarding:", err);
-      // MOSTRAMO L'ERRORE REALE DETTAGLIATO
+      // Questo alert ci dirà esattamente perché il database rifiuta i dati
       alert(
         "Errore dettagliato:\n" + 
         (err.message || JSON.stringify(err)) + 
