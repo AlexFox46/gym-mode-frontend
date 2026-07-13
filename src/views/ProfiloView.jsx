@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Button, Toggle } from '../components/UI';
 
-export const ProfiloView = ({ settings, onSettingsChange }) => {
+export const ProfiloView = ({ settings, onSettingsChange, onLogout }) => {
   const updateSetting = (key, value) => {
     onSettingsChange({ ...settings, [key]: value });
   };
@@ -86,8 +86,9 @@ export const ProfiloView = ({ settings, onSettingsChange }) => {
         </Card>
       </div>
 
-      {/* Sezione Esportazione Dati */}
+      {/* Sezione Esportazione Dati e Sicurezza Account */}
       <div className="pt-2">
+        <span className="text-xs font-bold tracking-wider text-neutral-400 uppercase block mb-1.5">Azioni Account</span>
         <Card className="space-y-3 bg-neutral-50 dark:bg-neutral-900 border-dashed">
           <Button variant="secondary" fullWidth onClick={() => alert("Esportazione CSV avviata.")}>
             📥 Esporta Storico Logs (CSV)
@@ -95,8 +96,17 @@ export const ProfiloView = ({ settings, onSettingsChange }) => {
           <Button variant="destructive" fullWidth onClick={() => alert("Storico eliminato localmente.")}>
             🗑 Cancella Storico Locale
           </Button>
+          
+          {/* Zona Rossa - Autenticazione Supabase */}
+          <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+            <Button variant="destructive" fullWidth onClick={onLogout}>
+              🚪 Disconnetti Account
+            </Button>
+          </div>
         </Card>
       </div>
     </div>
   );
 };
+
+  

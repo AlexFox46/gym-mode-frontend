@@ -24,30 +24,69 @@ export const Button = ({ children, variant = 'primary', size = 'medium', fullWid
   );
 };
 
-export const Stepper = ({ label, value, onChange, step = 1, unit = '' }) => {
-  const timerRef = useRef(null);
-  const increment = () => onChange(Number((value + step).toFixed(2)));
-  const decrement = () => onChange(Number(Math.max(0, value - step).toFixed(2)));
 
-  const handleLongPress = (action) => {
-    action();
-    timerRef.current = setTimeout(() => {
-      timerRef.current = setInterval(action, 100);
-    }, 500); // Attivazione rapid increment dopo 500ms
+export const Stepper = ({ label, value, onChange, step = 1, unit = '' }) => {
+  
+  // Gestore sicuro per l'incremento/decremento
+  const handleAction = (e, type) => {
+    // Evita che l'evento si propaghi ad altri elementi padre
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Converte e pulisce i valori per evitare strani comportamenti con i decimali (floating point)
+    const currentVal = parseFloat(value) || 0;
+    const stepVal = parseFloat(step) || 1;
+
+    if (type === 'increment') {
+      // Arrotondiamo per evitare problemi Javascript come 0.1 + 0.2 = 0.30000000000000004
+      const newVal = parseFloat((currentVal + stepVal).toFixed(2));
+      onChange(newVal);
+    } else if (type === 'decrement') {
+      const newVal = parseFloat((currentVal - stepVal).toFixed(2));
+      // Impediamo di andare sotto lo zero per carichi e ripetizioni
+      onChange(Math.max(0, newVal));
+    }
   };
 
-  const clearTimers = () => { if (timerRef.current) clearInterval(timerRef.current); };
-  useEffect(() => { return () => clearTimers(); }, []);
-
   return (
-    <div className="flex items-center justify-between py-3.5 border-b border-neutral-100 dark:border-neutral-800">
-      <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{label}</span>
-      <div className="flex items-center gap-2 select-none">
-        <button type="button" onMouseDown={() => handleLongPress(decrement)} onMouseUp={clearTimers} onMouseLeave={clearTimers} onTouchStart={() => handleLongPress(decrement)} onTouchEnd={clearTimers} className="w-11 h-11 flex items-center justify-center border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-md text-lg font-bold">-</button>
-        <div className="w-[100px] h-11 bg-neutral-100 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-md flex items-center justify-center font-mono text-base font-semibold text-neutral-950 dark:text-white">
-          {value} <span className="text-xs ml-1 text-neutral-500 font-normal">{unit}</span>
-        </div>
-        <button type="button" onMouseDown={() => handleLongPress(increment)} onMouseUp={clearTimers} onMouseLeave={clearTimers} onTouchStart={() => handleLongPress(increment)} onTouchEnd={clearTimers} className="w-11 h-11 flex items-center justify-center border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-md text-lg font-bold">+</button>
+    <div className="flex justify-between items-center py-2.5 border-b border-neutral-100 dark:border-neutral-800 last:border-0 select-none">
+      <span className="text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+        {label}
+      </span>
+      
+      <div className="flex items-center gap-3">
+        {/* Pulsante MENO */}
+        <button
+          type="button"
+          // Usiamo sia onTouchStart che onClick bloccando la propagazione per evitare il doppio trigger su mobile
+          onTouchStart={(e) => handleAction(e, 'decrement')}
+          onClick={(e) => {
+            // Se l'evento touch è già stato gestito, evitiamo di far scattare il click classico
+            if (e.defaultPrevented) return;
+            handleAction(e, 'decrement');
+          }}
+          className="w-9 h-9 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center font-bold text-lg text-neutral-700 dark:text-neutral-300 active:scale-90 transition-transform focus:outline-none"
+        >
+          –
+        </button>
+
+        {/* Display del Valore */}
+        <span className="w-16 text-center font-mono font-bold text-sm text-neutral-900 dark:text-white">
+          {value} <span className="text-[10px] text-neutral-400 font-sans ml-0.5">{unit}</span>
+        </span>
+
+        {/* Pulsante PIÙ */}
+        <button
+          type="button"
+          onTouchStart={(e) => handleAction(e, 'increment')}
+          onClick={(e) => {
+            if (e.defaultPrevented) return;
+            handleAction(e, 'increment');
+          }}
+          className="w-9 h-9 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center font-bold text-lg text-neutral-700 dark:text-neutral-300 active:scale-90 transition-transform focus:outline-none"
+        >
+          +
+        </button>
       </div>
     </div>
   );
