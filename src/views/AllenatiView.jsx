@@ -26,12 +26,12 @@ const EXERCISE_CATALOG = [
 export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
   const [activeDay, setActiveDay] = useState('G1');
   const schemaDays = schedaAttiva ? Array.from({ length: schedaAttiva.daysCount }, (_, i) => `G${i + 1}`) : [];
-
+  
   const [localRoutine, setLocalRoutine] = useState([]);
   const [exerciseIndex, setExerciseIndex] = useState(0);
 
   useEffect(() => {
-    if (schedaAttiva && schedaAttiva.routine && schedaAttiva.routine[activeDay]) {
+    if (schedaAttiva?.routine?.[activeDay]) {
       setLocalRoutine(JSON.parse(JSON.stringify(schedaAttiva.routine[activeDay])));
     } else {
       setLocalRoutine([]);
@@ -40,11 +40,9 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
   }, [schedaAttiva, activeDay]);
 
   const currentExercise = localRoutine[exerciseIndex];
-
   const [currentWeight, setCurrentWeight] = useState(0);
   const [currentReps, setCurrentReps] = useState(0);
   const [currentSet, setCurrentSet] = useState(1);
-
   const exerciseRest = currentExercise?.rest ? Number(currentExercise.rest) : 90;
 
   useEffect(() => {
@@ -52,7 +50,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
       setCurrentWeight(Number(currentExercise.weight) || 0);
       setCurrentReps(Number(currentExercise.reps) || 0);
       setCurrentSet(1);
-      setRestTime(exerciseRest); 
+      setRestTime(exerciseRest);
     }
   }, [currentExercise, exerciseRest]);
 
@@ -60,7 +58,6 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
   const [timerStatus, setTimerStatus] = useState('idle');
   const [restTime, setRestTime] = useState(90);
   const [isRestActive, setIsRestActive] = useState(false);
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   useEffect(() => {
     let interval = null;
@@ -124,11 +121,17 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
     setIsBottomSheetOpen(false);
   };
 
+// LOGICA REGISTRAZIONE SET E GESTIONE RECUPERO FORZATO
   const handleRegisterSet = () => {
+    // Se ero in recupero, lo interrompo forzatamente
+    if (isRestActive) {
+      setIsRestActive(false);
+      setRestTime(exerciseRest);
+    }
+
     const targetSets = Number(currentExercise.sets) || 1;
     
-    // Aggiorniamo la copia locale per calcolare il tonnellaggio reale svolto
-    const newRoutine = [...localRoutine];
+   const newRoutine = [...localRoutine];
     newRoutine[exerciseIndex] = {
       ...newRoutine[exerciseIndex],
       completedSets: currentSet,
@@ -139,34 +142,16 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
 
     if (currentSet < targetSets) {
       setCurrentSet((prev) => prev + 1);
-      setRestTime(exerciseRest); 
+      setRestTime(exerciseRest);
       setIsRestActive(true);
     } else {
       if (exerciseIndex < localRoutine.length - 1) {
         setExerciseIndex(prev => prev + 1);
         setIsRestActive(false);
+        setRestTime(exerciseRest);
       } else {
-        // --- LOGICA DI COMPLETAMENTO ---
-        // Calcola il tonnellaggio totale della sessione (Peso x Reps x Set per ogni esercizio)
-        const totalTonnage = newRoutine.reduce((acc, ex) => {
-          const w = Number(ex.actualWeight || ex.weight || 0);
-          const r = Number(ex.actualReps || ex.reps || 0);
-          const s = Number(ex.completedSets || ex.sets || 0);
-          return acc + (w * r * s);
-        }, 0);
-
-        const logEntry = {
-          id: Date.now(),
-          date: new Date().toISOString(),
-          schedaName: schedaAttiva.name,
-          dayName: activeDay,
-          tonnage: parseFloat((totalTonnage / 1000).toFixed(2)) // Convertito in tonnellate
-        };
-
-        alert(`Sessione completata!\nTonnellaggio: ${logEntry.tonnage} ton`);
-        setIsRestActive(false);
-        setTimerStatus('idle');
-        onWorkoutComplete(logEntry); // Invia ad App.js
+        const totalTonnage = newRoutine.reduce((acc, ex) => acc + (ex.weight * ex.reps * ex.sets), 0);
+        onWorkoutComplete({ id: Date.now(), date: new Date().toISOString(), schedaName: schedaAttiva.name, dayName: activeDay, tonnage: (totalTonnage / 1000).toFixed(2) });
       }
     }
   };
