@@ -1,357 +1,214 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { supabase } from '../supabaseClient';
-import { Card, Button, Stepper } from '../components/UI';
+import React, { useState, useEffect } from 'react';
+import { Card } from '../components/UI';
 
-export const AllenatiView = ({ settings, onWorkoutComplete, activeSessionDuration }) => {
-  // 1. STATI STRUTTURALI (MAPPING SCHEDA ATTIVA)
-  const [schedaAttiva, setSchedaAttiva] = useState(null);
-  const [activeGiornoIdx, setActiveGiornoIdx] = useState(0); // Chip G1, G2, G3...
-  const [activeExIdx, setActiveExIdx] = useState(0);       // Indice esercizio corrente
-  const [currentSet, setCurrentSet] = useState(0);         // Set completati per l'ex corrente
+export const AllenatiView = ({ settings, activeSessionDuration }) => {
+  // --- STATI PRINCIPALI ---
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [globalTimer, setGlobalTimer] = useState(0);
 
-  // Stati per i parametri dell'esercizio corrente
-  const [weight, setWeight] = useState(80);
-  const [reps, setReps] = useState(8);
+  // Stato del recupero (Rest)
+  const [restTime, setRestTime] = useState(0);
+  const [isRestActive, setIsRestActive] = useState(false);
 
-  // Stati Timer
-  const [isTimerActive, setIsTimerActive] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [isPrepTime, setIsPrepTime] = useState(false);
+  // Dati dell'esercizio attivo (Mock per la struttura UI)
+  const [currentWeight, setCurrentWeight] = useState(16);
+  const [currentReps, setCurrentReps] = useState(10);
+  const [currentSet, setCurrentSet] = useState(1);
 
-  // 2. STATI DRAGGABLE BOTTOM SHEET (ALTERNATIVE)
-  const [showSwapModal, setShowSwapModal] = useState(false);
-  const [dragY, setDragY] = useState(0);
-  const touchStartY = useRef(0);
-  const isDragging = useRef(false);
-
-  // 3. RECUPERO SCHEDA ATTIVA DA SUPABASE (O FALLBACK STRUTTURATO)
+  // --- 1. LOGICA TIMER GLOBALE (Fix Blocco) ---
   useEffect(() => {
-    async function fetchScheda() {
-      const { data, error } = await supabase.from('active_workout').select('*').single();
-      if (data && !error) {
-        setSchedaAttiva(data);
-      } else {
-        // Fallback speculare con split reali su più giornate
-        setSchedaAttiva({
-          id: 'scheda-1',
-          name: 'Split A',
-          giornate: [
-            {
-              nome: 'Spinta (Petto/Spalle/Tricipiti)',
-              esercizi: [
-                { id: 'ex-1', name: 'Panca Piana', category: 'Petto', equipment: 'Bilanciere', target_sets: 4, target_reps: 8, rest_time: 120 },
-                { id: 'ex-3', name: 'Chest Press Macchina', category: 'Petto', equipment: 'Macchina', target_sets: 3, target_reps: 10, rest_time: 90 },
-                { id: 'ex-17', name: 'Alzate Laterali', category: 'Spalle', equipment: 'Manubri', target_sets: 4, target_reps: 12, rest_time: 60 }
-              ]
-            },
-            {
-              nome: 'Trazione (Dorso/Bicipiti)',
-              esercizi: [
-                { id: 'ex-8', name: 'Lat Machine', category: 'Dorso', equipment: 'Macchina', target_sets: 4, target_reps: 8, rest_time: 90 },
-                { id: 'ex-7', name: 'Rematore Manubrio', category: 'Dorso', equipment: 'Manubri', target_sets: 3, target_reps: 10, rest_time: 90 }
-              ]
-            }
-          ]
-        });
-      }
-    }
-    fetchScheda();
-  }, []);
-
-  // Aggiorna i pesi e le rep quando cambia l'esercizio attivo o la giornata
-  useEffect(() => {
-    if (schedaAttiva?.giornate?.[activeGiornoIdx]?.esercizi?.[activeExIdx]) {
-      const ex = schedaAttiva.giornate[activeGiornoIdx].esercizi[activeExIdx];
-      setWeight(ex.target_weight || 80);
-      setReps(ex.target_reps || 8);
-      setCurrentSet(0); // Resetta i pallini quando cambia l'esercizio
-    }
-  }, [schedaAttiva, activeGiornoIdx, activeExIdx]);
-
-  // Gestione asincrona del Timer
-  useEffect(() => {
-    let interval;
-    if (isTimerActive && timeLeft > 0) {
+    let interval = null;
+    if (isTimerRunning) {
       interval = setInterval(() => {
-        setTimeLeft((prev) => {
-          const nextTime = prev - 1;
-          if (nextTime <= (settings.prep_time || 10) && nextTime > 0) setIsPrepTime(true);
-          if (nextTime <= 0) { setIsTimerActive(false); setIsPrepTime(false); }
-          return nextTime;
-        });
+        setGlobalTimer((prev) => prev + 1);
       }, 1000);
+    } else {
+      clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [isTimerActive, timeLeft, settings]);
+  }, [isTimerRunning]);
 
-  if (!schedaAttiva) return <div className="p-8 text-center text-neutral-500">Caricamento sessione attiva...</div>;
-
-  const giornataCorrente = schedaAttiva.giornate[activeGiornoIdx] || { nome: 'Vuoto', esercizi: [] };
-  const esercizioCorrente = giornataCorrente.esercizi[activeExIdx];
-  const totaleEsercizi = giornataCorrente.esercizi.length;
-
-  // FUNZIONI DI SALVATAGGIO PROGRESSIVO
-  const handleSalvaSerie = () => {
-    if (!esercizioCorrente) return;
-    
-    const nuovoSet = currentSet + 1;
-    if (nuovoSet < esercizioCorrente.target_sets) {
-      // Avanza il pallino e avvia il recupero
-      setCurrentSet(nuovoSet);
-      setTimeLeft(esercizioCorrente.rest_time || 90);
-      setIsTimerActive(true);
-    } else {
-      // Esercizio completato! Passa al successivo, resetta i pallini e riempie la lineetta
-      setCurrentSet(esercizioCorrente.target_sets);
-      setTimeout(() => {
-        if (activeExIdx + 1 < totaleEsercizi) {
-          setActiveExIdx(activeExIdx + 1);
-          setIsTimerActive(false);
-        } else {
-          alert("Allenamento della giornata completato con successo!");
-          onWorkoutComplete();
-        }
-      }, 300);
+  // --- 2. LOGICA TIMER DI RECUPERO ---
+  useEffect(() => {
+    let restInterval = null;
+    if (isRestActive && restTime > 0) {
+      restInterval = setInterval(() => {
+        setRestTime((prev) => prev - 1);
+      }, 1000);
+    } else if (restTime === 0 && isRestActive) {
+      setIsRestActive(false);
+      if (settings.prep_sound && window.navigator.vibrate) {
+        window.navigator.vibrate([200, 100, 200]);
+      }
     }
+    return () => clearInterval(restInterval);
+  }, [isRestActive, restTime, settings.prep_sound]);
+
+  // FORMATTER TEMPO (mm:ss)
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleSaltaEsercizio = () => {
-    if (activeExIdx + 1 < totaleEsercizi) {
-      setActiveExIdx(activeExIdx + 1);
-      setIsTimerActive(false);
-    } else {
-      onWorkoutComplete();
-    }
+  // --- 3. FIX DOPPIO INPUT (Prevent Mobile Ghost Clicks) ---
+  const handleAction = (e, callback) => {
+    e.preventDefault();
+    e.stopPropagation(); // Blocca la propagazione e l'effetto ghost-click del touch mobile
+    callback();
   };
 
-  // 4. GESTIONE EVENTI SWIPE-TO-DISMISS (TOUCH) PER IL BOTTOM SHEET
-  const handleTouchStart = (e) => {
-    touchStartY.current = e.touches[0].clientY;
-    isDragging.current = true;
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isDragging.current) return;
-    const currentY = e.touches[0].clientY;
-    const diffY = currentY - touchStartY.current;
-    if (diffY > 0) {
-      setDragY(diffY); // Consenti solo il trascinamento verso il basso
-    }
-  };
-
-  const handleTouchEnd = () => {
-    isDragging.current = false;
-    if (dragY > 100) {
-      // Raggiunta la soglia di sblocco: chiudi
-      setShowSwapModal(false);
-    }
-    setDragY(0); // Resetta la posizione
-  };
+  const step = settings.step_increment || 1;
 
   return (
-    <div className="flex flex-col h-full p-4 box-border">
-      {/* Top Session Bar */}
-      <div className="flex justify-between items-center p-3 bg-neutral-900 text-white rounded-lg mb-3 shadow-md">
-        <Button size="small" variant="secondary" className="text-white bg-white/10 border-transparent">Riprendi</Button>
-        <span className="font-mono text-sm">⏱️ Sessione: {Math.floor(activeSessionDuration / 60).toString().padStart(2, '0')}:{(activeSessionDuration % 60).toString().padStart(2, '0')}</span>
-      </div>
-
-      {/* CARD ESERCIZIO MAGGIORATA (COMPACT CONTROLS IN ALTO) */}
-      <Card className="flex flex-col gap-3">
-        {/* Chips Giornate Cliccabili */}
-        <div className="flex flex-wrap gap-1 border-b border-neutral-100 dark:border-neutral-800 pb-2.5">
-          {schedaAttiva.giornate.map((g, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => {
-                setActiveGiornoIdx(idx);
-                setActiveExIdx(0);
-              }}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                activeGiornoIdx === idx
-                  ? 'bg-success text-white'
-                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500'
-              }`}
-            >
-              G{idx + 1}
-            </button>
-          ))}
-          <span className="text-[11px] font-bold text-neutral-400 self-center ml-auto truncate max-w-[180px]">
-            {giornataCorrente.nome}
+    <div className="h-[calc(100vh-4rem)] w-full flex flex-col justify-between bg-neutral-100/60 dark:bg-neutral-950 p-3 select-none overflow-hidden font-sans">
+      
+      {/* ================= HEADER: TIMER GLOBALE ================= */}
+      <div className="flex items-center justify-between bg-white dark:bg-neutral-900 rounded-2xl p-3 shadow-sm border border-neutral-200/50 dark:border-neutral-800">
+        <div>
+          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">Sessione Attiva</span>
+          <span className="font-mono text-xl font-black text-neutral-900 dark:text-white tracking-tight">
+            {formatTime(globalTimer)}
           </span>
         </div>
-
-        {esercizioCorrente ? (
-          <div className="space-y-3">
-            {/* Intestazione con pulsante sostituisci */}
-            <div className="flex justify-between items-start">
-              <div className="flex-1 pr-2">
-                <h2 className="text-h2 text-neutral-950 dark:text-white uppercase tracking-tight leading-tight">{esercizioCorrente.name}</h2>
-                <div className="text-xs text-neutral-400 mt-0.5">
-                  {esercizioCorrente.equipment} · Target: {esercizioCorrente.target_sets}s × {esercizioCorrente.target_reps}r
-                </div>
-              </div>
-              <Button size="small" variant="secondary" onClick={() => setShowSwapModal(true)} className="text-xs h-8">
-                Sostituisci ⇄
-              </Button>
-            </div>
-
-            {/* AVANZAMENTO SERIE (PALLINI) */}
-            <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800">
-              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider block mb-1.5">
-                Serie completate ({currentSet} di {esercizioCorrente.target_sets})
-              </span>
-              <div className="flex gap-2">
-                {Array.from({ length: esercizioCorrente.target_sets }).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`w-6 h-6 rounded-full border-2 transition-all duration-200 flex items-center justify-center ${
-                      idx < currentSet
-                        ? 'bg-success border-success text-white text-[10px] font-bold'
-                        : 'border-neutral-300 dark:border-neutral-700'
-                    }`}
-                  >
-                    {idx < currentSet ? '✓' : ''}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* AVANZAMENTO SCHEDA (LINEETTE PROGRESSIVE) */}
-            <div className="pt-2">
-              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider block mb-1.5">
-                Esercizi completati ({activeExIdx} di {totaleEsercizi})
-              </span>
-              <div className="flex gap-1.5">
-                {Array.from({ length: totaleEsercizi }).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`h-2 flex-1 rounded-sm transition-all duration-300 ${
-                      idx < activeExIdx
-                        ? 'bg-success'
-                        : idx === activeExIdx
-                        ? 'bg-neutral-300 dark:bg-neutral-600 animate-pulse'
-                        : 'bg-neutral-100 dark:bg-neutral-800'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-4 text-neutral-400 text-sm italic">Nessun esercizio presente in questo split.</div>
-        )}
-      </Card>
-
-      {/* HERO TIMER (ORA CLICCABILE QUANDO FERMO) */}
-      <div className="my-4 flex-1 flex flex-col justify-center">
-        <div 
-          onClick={() => {
-            if (!isTimerActive && esercizioCorrente) {
-              setTimeLeft(esercizioCorrente.rest_time || 90);
-              setIsTimerActive(true);
-            }
-          }}
-          className={`p-6 rounded-xl text-center shadow-light-elevated transition-all duration-300 ${
-            isTimerActive 
-              ? isPrepTime ? 'bg-gradient-to-r from-info to-blue-600 animate-pulse' : 'bg-gradient-to-r from-success to-success-darker'
-              : 'bg-neutral-100 dark:bg-neutral-900 border border-dashed border-neutral-300 dark:border-neutral-800 py-8 cursor-pointer active:scale-98'
+        
+        <button
+          onTouchStart={(e) => handleAction(e, () => setIsTimerRunning(!isTimerRunning))}
+          onClick={(e) => handleAction(e, () => setIsTimerRunning(!isTimerRunning))}
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition-all active:scale-95 ${
+            isTimerRunning 
+              ? 'bg-red-50 text-red-600 dark:bg-red-950/30 dark:text-red-400' 
+              : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400'
           }`}
         >
-          {isTimerActive ? (
-            <div>
-              <h1 className="text-h1 font-mono text-white select-none">
-                {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
-              </h1>
-              <div className="flex justify-center gap-3 mt-4" onClick={(e) => e.stopPropagation()}>
-                <Button size="small" variant="secondary" className="bg-white/20 border-none text-white hover:bg-white/30" onClick={() => setTimeLeft(t => t + 30)}>+30s</Button>
-                <Button size="small" variant="secondary" className="bg-white/20 border-none text-white hover:bg-white/30" onClick={() => setTimeLeft(0)}>Salta</Button>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <span className="text-h1 font-mono text-neutral-400 dark:text-neutral-600 block">——:——</span>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">Tocca questo blocco per avviare il recupero</p>
-            </div>
-          )}
-        </div>
+          {isTimerRunning ? '⏸ Pausa' : '▶ Avvia'}
+        </button>
       </div>
 
-      {/* PERSISTENT DATA ENTRY (ONE-HAND TARGET ZONE) */}
-      {esercizioCorrente && (
-        <div className="mt-auto bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-800 shadow-sm">
-          <Stepper label="Carico (kg)" value={weight} onChange={setWeight} step={Number(settings.step_increment) || 1} unit="kg" />
-          <Stepper label="Ripetizioni" value={reps} onChange={setReps} step={1} unit="rip" />
+      {/* ================= BENTO CARD: ESERCIZIO ATTIVO ================= */}
+      <div className="flex-1 my-3 bg-white dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800 rounded-3xl p-4 shadow-sm flex flex-col justify-between overflow-hidden">
+        
+        {/* Info Esercizio */}
+        <div className="flex justify-between items-start">
+          <div>
+            <span className="inline-block bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full mb-1">
+              Petto / Spalle
+            </span>
+            <h1 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight leading-tight">
+              Spinte su Piana con Manubri
+            </h1>
+          </div>
+          <div className="text-right">
+            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">Set Corrente</span>
+            <span className="text-2xl font-black text-success tracking-tighter font-mono">#{currentSet}</span>
+          </div>
+        </div>
+
+        {/* Visualizzazione Timer di Recupero (Se Attivo) */}
+        {isRestActive && (
+          <div className="my-2 bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/40 rounded-2xl p-3 flex items-center justify-between animate-pulse">
+            <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">⏱ Tempo di recupero:</span>
+            <span className="font-mono text-xl font-black text-amber-600 dark:text-amber-400">{formatTime(restTime)}</span>
+          </div>
+        )}
+
+        {/* CONTROLLI BI-COLONNA (Carico e Reps) */}
+        <div className="grid grid-cols-2 gap-3 my-auto">
           
-          <div className="mt-4 flex flex-col gap-2.5">
-            <Button size="large" variant="primary" fullWidth onClick={handleSalvaSerie}>
-              {currentSet + 1 >= esercizioCorrente.target_sets ? 'COMPLETA ESERCIZIO' : 'SALVA SERIE'}
-            </Button>
-            <Button size="medium" variant="secondary" fullWidth onClick={handleSaltaEsercizio}>
-              SALTA / PROSSIMO
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* BOTTOM SHEET MODAL DRAGGABLE & SWIPE-TO-DISMISS */}
-      {showSwapModal && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-end justify-center" onClick={() => setShowSwapModal(false)}>
-          <div 
-            className="w-full max-w-[420px] bg-white dark:bg-neutral-900 rounded-t-2xl p-5 pb-8 box-border shadow-2xl transition-transform duration-100"
-            style={{ transform: `translateY(${dragY}px)` }}
-            onClick={e => e.stopPropagation()}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            {/* Drag Handle Touch Zone */}
-            <div className="w-12 h-1.5 bg-neutral-300 dark:bg-neutral-700 rounded-full mx-auto mb-4 cursor-grab active:cursor-grabbing" />
-            
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-h3 font-bold text-neutral-900 dark:text-white">Sostituisci esercizio</h3>
-              <button onClick={() => setShowSwapModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-bold">✕</button>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <button 
-                type="button" 
-                className="w-full p-3.5 text-left border border-neutral-200 dark:border-neutral-800 rounded-lg bg-neutral-50 dark:bg-neutral-950 font-medium text-sm text-neutral-900 dark:text-white active:bg-neutral-100" 
-                onClick={() => { 
-                  if (schedaAttiva) {
-                    const copia = { ...schedaAttiva };
-                    copia.giornate[activeGiornoIdx].esercizi[activeExIdx].name = 'Panca Inclinata Manubri';
-                    copia.giornate[activeGiornoIdx].esercizi[activeExIdx].equipment = 'Manubri';
-                    setSchedaAttiva(copia);
-                    setShowSwapModal(false);
-                  }
-                }}
+          {/* Box Selettore Peso */}
+          <div className="bg-neutral-50 dark:bg-neutral-950/50 border border-neutral-200/40 dark:border-neutral-800/60 rounded-2xl p-2.5 flex flex-col items-center justify-between shadow-sm">
+            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Carico (kg)</span>
+            <span className="text-3xl font-black text-neutral-900 dark:text-white font-mono my-2 tracking-tighter">
+              {currentWeight}
+            </span>
+            <div className="flex gap-2 w-full">
+              <button
+                onTouchStart={(e) => handleAction(e, () => setCurrentWeight(prev => Math.max(0, prev - step)))}
+                onClick={(e) => handleAction(e, () => setCurrentWeight(prev => Math.max(0, prev - step)))}
+                className="flex-1 h-9 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl font-mono text-base font-bold text-neutral-700 dark:text-white active:bg-neutral-100"
               >
-                Panca Inclinata Manubri (Variante Alt. 1)
+                -{step}
               </button>
-              
-              <button 
-                type="button" 
-                className="w-full p-3.5 text-left border border-neutral-200 dark:border-neutral-800 rounded-lg bg-neutral-50 dark:bg-neutral-950 font-medium text-sm text-neutral-900 dark:text-white active:bg-neutral-100" 
-                onClick={() => { 
-                  if (schedaAttiva) {
-                    const copia = { ...schedaAttiva };
-                    copia.giornate[activeGiornoIdx].esercizi[activeExIdx].name = 'Chest Press Macchina';
-                    copia.giornate[activeGiornoIdx].esercizi[activeExIdx].equipment = 'Macchina';
-                    setSchedaAttiva(copia);
-                    setShowSwapModal(false);
-                  }
-                }}
+              <button
+                onTouchStart={(e) => handleAction(e, () => setCurrentWeight(prev => prev + step))}
+                onClick={(e) => handleAction(e, () => setCurrentWeight(prev => prev + step))}
+                className="flex-1 h-9 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl font-mono text-base font-bold text-neutral-700 dark:text-white active:bg-neutral-100"
               >
-                Chest Press Macchina (Variante Alt. 2)
+                +{step}
               </button>
             </div>
-            
-            <p className="text-[11px] text-center text-neutral-400 mt-4">Trascina questa scheda verso il basso per chiuderla</p>
           </div>
+
+          {/* Box Selettore Ripetizioni */}
+          <div className="bg-neutral-50 dark:bg-neutral-950/50 border border-neutral-200/40 dark:border-neutral-800/60 rounded-2xl p-2.5 flex flex-col items-center justify-between shadow-sm">
+            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Ripetizioni</span>
+            <span className="text-3xl font-black text-neutral-900 dark:text-white font-mono my-2 tracking-tighter">
+              {currentReps}
+            </span>
+            <div className="flex gap-2 w-full">
+              <button
+                onTouchStart={(e) => handleAction(e, () => setCurrentReps(prev => Math.max(0, prev - 1)))}
+                onClick={(e) => handleAction(e, () => setCurrentReps(prev => Math.max(0, prev - 1)))}
+                className="flex-1 h-9 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl font-mono text-base font-bold text-neutral-700 dark:text-white active:bg-neutral-100"
+              >
+                -1
+              </button>
+              <button
+                onTouchStart={(e) => handleAction(e, () => setCurrentReps(prev => prev + 1))}
+                onClick={(e) => handleAction(e, () => setCurrentReps(prev => prev + 1))}
+                className="flex-1 h-9 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl font-mono text-base font-bold text-neutral-700 dark:text-white active:bg-neutral-100"
+              >
+                +1
+              </button>
+            </div>
+          </div>
+
         </div>
-      )}
+
+        {/* Mini Storico Log Veloci dell'esercizio */}
+        <div className="text-[11px] text-neutral-400 font-medium font-mono flex gap-3 justify-center border-t border-neutral-100 dark:border-neutral-800/50 pt-2">
+          <span>Ultimo set: <b className="text-neutral-600 dark:text-neutral-300">16kg x 10</b></span>
+          <span>•</span>
+          <span>Target: <b className="text-neutral-600 dark:text-neutral-300">4 set x 10-12 reps</b></span>
+        </div>
+
+      </div>
+
+      {/* ================= CONTROLLI BASSI: AZIONE & RECUPERO ================= */}
+      <div className="space-y-2">
+        
+        {/* TASTO RECUPERO: Ispirato al pulsante Pesca ad alta gerarchia del riferimento */}
+        <button
+          onTouchStart={(e) => handleAction(e, () => {
+            setRestTime(90); // Imposta 1 minuto e mezzo di recupero standard
+            setIsRestActive(true);
+          })}
+          onClick={(e) => handleAction(e, () => {
+            setRestTime(90);
+            setIsRestActive(true);
+          })}
+          className="w-full h-12 bg-[#FFB399] dark:bg-[#E68A6C] text-neutral-950 font-bold rounded-full text-xs uppercase tracking-widest transition-all active:scale-[0.98] shadow-sm flex items-center justify-center gap-2 border border-[#FF9977]"
+        >
+          ⏱️ Avvia Recupero (1:30)
+        </button>
+
+        {/* TASTO CONFERMA SET (LOG) */}
+        <button
+          onTouchStart={(e) => handleAction(e, () => {
+            alert(`Set ${currentSet} salvato: ${currentWeight}kg x ${currentReps}reps`);
+            setCurrentSet(prev => prev + 1);
+          })}
+          onClick={(e) => handleAction(e, () => {
+            alert(`Set ${currentSet} salvato: ${currentWeight}kg x ${currentReps}reps`);
+            setCurrentSet(prev => prev + 1);
+          })}
+          className="w-full h-12 bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 font-black rounded-full text-xs uppercase tracking-widest transition-all active:scale-[0.98] shadow-md"
+        >
+          ✅ REGISTRA SET #{currentSet}
+        </button>
+
+      </div>
+
     </div>
   );
 };
