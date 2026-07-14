@@ -5,14 +5,12 @@ import { AllenatiView } from './views/AllenatiView';
 import { SchedeView } from './views/SchedeView';
 import { ProgressiView } from './views/ProgressiView';
 import { ProfiloView } from './views/ProfiloView';
-import { Dumbbell, BookOpen, TrendingUp, User } from 'lucide-react'; // Nuovo Icon Pack
+import { Dumbbell, BookOpen, TrendingUp, User } from 'lucide-react'; 
 
 function App() {
-  // --- 1. STATI DI AUTENTICAZIONE E SISTEMA ---
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('allenati');
-  const [activeSessionDuration, setActiveSessionDuration] = useState(0);
   
   const [settings, setSettings] = useState({
     theme_preference: 'Light', 
@@ -21,33 +19,23 @@ function App() {
     prep_sound: true
   });
 
-  // --- 2. STATO GLOBALE DELLE SCHEDE (SINGLE SOURCE OF TRUTH) ---
-  // Questi dati ora vivono qui e vengono passati alle viste, garantendo coerenza totale
   const [leMieSchede, setLeMieSchede] = useState([]);
   const [schedaAttiva, setSchedaAttiva] = useState(null);
+  
+  // NUOVO: Stato globale per lo storico degli allenamenti
+  const [storicoAllenamenti, setStoricoAllenamenti] = useState([]);
 
-  // --- EFFETTI DI SISTEMA ---
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setAuthLoading(false);
     });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setAuthLoading(false);
     });
-
     return () => subscription.unsubscribe();
   }, []);
-
-  useEffect(() => {
-    let timer;
-    if (user && activeTab === 'allenati') {
-      timer = setInterval(() => setActiveSessionDuration((prev) => prev + 1), 1000);
-    }
-    return () => clearInterval(timer);
-  }, [user, activeTab]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -55,10 +43,7 @@ function App() {
     else if (settings.theme_preference === 'Light') root.classList.remove('dark');
   }, [settings.theme_preference]);
 
-  // --- HANDLERS ---
-  const handleSettingsChange = (updatedSettings) => {
-    setSettings(updatedSettings);
-  };
+  const handleSettingsChange = (updatedSettings) => setSettings(updatedSettings);
 
   const handleLogout = async () => {
     if (window.confirm("Sei sicuro di voler uscire?")) {
@@ -67,7 +52,12 @@ function App() {
     }
   };
 
-  // --- RENDER BLOCKERS ---
+  // NUOVO: Funzione per registrare la fine dell'allenamento
+  const handleWorkoutComplete = (logEntry) => {
+    setStoricoAllenamenti(prev => [...prev, logEntry]);
+    setActiveTab('progressi'); // Reindirizza l'utente per fargli vedere il risultato
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-950">
@@ -76,9 +66,7 @@ function App() {
     );
   }
 
-  if (!user) {
-    return <LoginView onLoginSuccess={(loggedInUser) => setUser(loggedInUser)} />;
-  }
+  if (!user) return <LoginView onLoginSuccess={(loggedInUser) => setUser(loggedInUser)} />;
 
   return (
     <div className="app-container">
@@ -86,21 +74,21 @@ function App() {
         {activeTab === 'allenati' && (
           <AllenatiView 
             settings={settings} 
-            activeSessionDuration={activeSessionDuration}
-            // Passiamo la scheda attiva per fargli generare dinamicamente i giorni (G1, G2...)
             schedaAttiva={schedaAttiva} 
+            onWorkoutComplete={handleWorkoutComplete} // Passiamo la funzione
           />
         )}
         {activeTab === 'schede' && (
           <SchedeView 
-            // Passiamo lo stato e i modificatori alla vista schede
             schede={leMieSchede}
             setSchede={setLeMieSchede}
             schedaAttiva={schedaAttiva}
             setSchedaAttiva={setSchedaAttiva}
           />
         )}
-        {activeTab === 'progressi' && <ProgressiView />}
+        {activeTab === 'progressi' && (
+          <ProgressiView storico={storicoAllenamenti} /> // Passiamo i dati reali
+        )}
         {activeTab === 'profilo' && (
           <ProfiloView 
             settings={settings} 
@@ -110,29 +98,23 @@ function App() {
         )}
       </main>
 
-      {/* --- NAVIGAZIONE GLOBALE (CON LUCIDE ICONS) --- */}
       <nav className="fixed bottom-0 left-0 right-0 max-w-[420px] mx-auto bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 h-16 flex justify-around items-center z-40 px-2 shadow-lg">
-        
         <button onClick={() => setActiveTab('allenati')} className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${activeTab === 'allenati' ? 'text-success' : 'text-neutral-400'}`}>
           <Dumbbell size={24} strokeWidth={activeTab === 'allenati' ? 2.5 : 2} />
           <span className="font-sans text-[10px] font-bold uppercase mt-1">Allenati</span>
         </button>
-
         <button onClick={() => setActiveTab('schede')} className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${activeTab === 'schede' ? 'text-success' : 'text-neutral-400'}`}>
           <BookOpen size={24} strokeWidth={activeTab === 'schede' ? 2.5 : 2} />
           <span className="font-sans text-[10px] font-bold uppercase mt-1">Schede</span>
         </button>
-
         <button onClick={() => setActiveTab('progressi')} className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${activeTab === 'progressi' ? 'text-success' : 'text-neutral-400'}`}>
           <TrendingUp size={24} strokeWidth={activeTab === 'progressi' ? 2.5 : 2} />
           <span className="font-sans text-[10px] font-bold uppercase mt-1">Progressi</span>
         </button>
-
         <button onClick={() => setActiveTab('profilo')} className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${activeTab === 'profilo' ? 'text-success' : 'text-neutral-400'}`}>
           <User size={24} strokeWidth={activeTab === 'profilo' ? 2.5 : 2} />
           <span className="font-sans text-[10px] font-bold uppercase mt-1">Profilo</span>
         </button>
-
       </nav>
     </div>
   );
