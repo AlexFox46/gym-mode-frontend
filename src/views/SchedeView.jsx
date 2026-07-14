@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Button, Stepper } from '../components/UI';
-import { Plus, Trash2, CheckCircle2, Circle, CalendarDays, Search, Filter, X, Dumbbell, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, CheckCircle2, Circle, CalendarDays, Search, X, Dumbbell, ChevronRight, Edit2 } from 'lucide-react';
 
-// --- DATABASE SIMULATO DEGLI ESERCIZI ---
 const EXERCISE_CATALOG = [
   { id: 'e1', name: 'Chest Press', muscle: 'Petto', equipment: 'Macchina' },
   { id: 'e2', name: 'Panca Piana', muscle: 'Petto', equipment: 'Bilanciere' },
@@ -26,61 +25,78 @@ const MUSCLE_GROUPS = ['Petto', 'Dorso', 'Gambe', 'Spalle', 'Bicipiti', 'Tricipi
 const EQUIPMENT_TYPES = ['Bilanciere', 'Manubri', 'Macchina', 'Cavi', 'Corpo Libero'];
 
 export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva }) => {
-  // --- STATI DI NAVIGAZIONE ---
-  const [viewState, setViewState] = useState('list'); // 'list' | 'setup' | 'builder'
+  const [viewState, setViewState] = useState('list'); 
+  const [editingId, setEditingId] = useState(null); // NUOVO: Traccia se stiamo modificando
   
-  // --- STATI CREAZIONE SCHEDA ---
   const [newSchedaName, setNewSchedaName] = useState('');
   const [newSchedaDays, setNewSchedaDays] = useState(2);
-  const [workoutRoutine, setWorkoutRoutine] = useState({}); // { 'G1': [], 'G2': [] }
+  const [workoutRoutine, setWorkoutRoutine] = useState({}); 
   const [activeBuilderDay, setActiveBuilderDay] = useState('G1');
 
-  // --- STATI CATALOGO & FILTRI ---
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [muscleFilter, setMuscleFilter] = useState('');
   const [equipmentFilter, setEquipmentFilter] = useState('');
   
-  // --- STATI CONFIGURAZIONE ESERCIZIO ---
   const [configuringExercise, setConfiguringExercise] = useState(null);
   const [targetSets, setTargetSets] = useState(4);
   const [targetReps, setTargetReps] = useState(10);
   const [targetWeight, setTargetWeight] = useState(20);
 
-  // --- HANDLERS CREAZIONE E WORKOUT BUILDER ---
   const startCreation = () => {
+    setEditingId(null);
     setNewSchedaName('');
     setNewSchedaDays(2);
     setViewState('setup');
   };
 
+  // NUOVO: Apre la scheda esistente nel Builder
+  const handleEditScheda = (scheda) => {
+    setEditingId(scheda.id);
+    setNewSchedaName(scheda.name);
+    setNewSchedaDays(scheda.daysCount);
+    // Deep copy per non mutare lo stato attivo prima del salvataggio
+    setWorkoutRoutine(JSON.parse(JSON.stringify(scheda.routine)));
+    setActiveBuilderDay('G1');
+    setViewState('builder');
+  };
+
   const proceedToBuilder = () => {
     if (!newSchedaName.trim()) return;
     
-    // Inizializza la struttura dei giorni vuota { 'G1': [], 'G2': [] ... }
-    const initialRoutine = {};
-    for (let i = 1; i <= newSchedaDays; i++) {
-      initialRoutine[`G${i}`] = [];
+    if (!editingId) {
+      const initialRoutine = {};
+      for (let i = 1; i <= newSchedaDays; i++) {
+        initialRoutine[`G${i}`] = [];
+      }
+      setWorkoutRoutine(initialRoutine);
     }
-    setWorkoutRoutine(initialRoutine);
     setActiveBuilderDay('G1');
     setViewState('builder');
   };
 
   const handleSaveFinalScheda = () => {
-    const nuovaScheda = {
-      id: Date.now(),
+    const schedaAggiornata = {
+      id: editingId || Date.now(),
       name: newSchedaName.trim(),
       daysCount: newSchedaDays,
-      routine: workoutRoutine, // ORA SALVIAMO TUTTI GLI ESERCIZI DENTRO LA SCHEDA!
+      routine: workoutRoutine,
       createdAt: new Date().toISOString(),
     };
 
-    const schedeAggiornate = [...schede, nuovaScheda];
-    setSchede(schedeAggiornate);
-    
-    if (!schedaAttiva) setSchedaAttiva(nuovaScheda);
+    if (editingId) {
+      // Aggiorna esistente
+      const schedeAggiornate = schede.map(s => s.id === editingId ? schedaAggiornata : s);
+      setSchede(schedeAggiornate);
+      if (schedaAttiva?.id === editingId) setSchedaAttiva(schedaAggiornata);
+    } else {
+      // Crea nuova
+      const schedeAggiornate = [...schede, schedaAggiornata];
+      setSchede(schedeAggiornate);
+      if (!schedaAttiva) setSchedaAttiva(schedaAggiornata);
+    }
 
+    setEditingId(null);
     setViewState('list');
   };
 
@@ -93,7 +109,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     }
   };
 
-  // --- HANDLERS CATALOGO E CONFIGURAZIONE ---
   const openCatalogForDay = (day) => {
     setActiveBuilderDay(day);
     setIsCatalogOpen(true);
@@ -102,12 +117,11 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     setEquipmentFilter('');
   };
 
-  // LOGICA DEL DOPPIO FILTRO (Ricerca + Gruppo + Attrezzo)
   const filteredExercises = EXERCISE_CATALOG.filter(ex => {
     const matchesSearch = ex.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMuscle = muscleFilter === '' || ex.muscle === muscleFilter;
     const matchesEquipment = equipmentFilter === '' || ex.equipment === equipmentFilter;
-    return matchesSearch && matchesMuscle && matchesEquipment; // Devono essere tutti VERI (AND Logic)
+    return matchesSearch && matchesMuscle && matchesEquipment;
   });
 
   const selectExerciseForConfig = (exercise) => {
@@ -120,7 +134,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
   const confirmAndAddExercise = () => {
     const exerciseToAdd = {
       ...configuringExercise,
-      instanceId: Date.now() + Math.random(), // ID univoco per permettere cloni dello stesso esercizio
+      instanceId: Date.now() + Math.random(), 
       sets: targetSets,
       reps: targetReps,
       weight: targetWeight
@@ -128,7 +142,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
 
     setWorkoutRoutine(prev => ({
       ...prev,
-      [activeBuilderDay]: [...prev[activeBuilderDay], exerciseToAdd]
+      [activeBuilderDay]: [...(prev[activeBuilderDay] || []), exerciseToAdd]
     }));
 
     setConfiguringExercise(null);
@@ -142,9 +156,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     }));
   };
 
-  // ==========================================
-  // RENDER: LISTA DELLE SCHEDE (viewState === 'list')
-  // ==========================================
   if (viewState === 'list') {
     return (
       <div className="min-h-screen w-full bg-[#f0f4f8] dark:bg-neutral-950 p-4 font-sans space-y-5 pb-28">
@@ -185,9 +196,14 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                         </div>
                       </div>
                     </div>
-                    <button onClick={() => handleDeleteScheda(scheda.id)} className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
-                      <Trash2 size={18} />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => handleEditScheda(scheda)} className="p-2 text-neutral-400 hover:text-[#15a34a] hover:bg-emerald-50 rounded-xl transition-colors">
+                        <Edit2 size={18} />
+                      </button>
+                      <button onClick={() => handleDeleteScheda(scheda.id)} className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   </div>
                 </Card>
               );
@@ -198,19 +214,17 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     );
   }
 
-  // ==========================================
-  // RENDER: SETUP NOME E GIORNI (viewState === 'setup')
-  // ==========================================
   if (viewState === 'setup') {
     return (
       <div className="min-h-screen w-full bg-[#f0f4f8] dark:bg-neutral-950 p-4 font-sans flex flex-col pt-10">
-        <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight mb-6">Crea Nuova Scheda</h2>
-        <Card className="p-5 border-none ring-1 ring-neutral-200/50 dark:ring-neutral-800 shadow-sm space-y-5">
+        <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight mb-6">
+          {editingId ? 'Modifica Scheda' : 'Crea Nuova Scheda'}
+        </h2>
+        <Card className="p-5 border-none ring-1 ring-neutral-200/50 shadow-sm space-y-5">
           <div className="space-y-1.5">
             <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block">Nome del Programma</label>
             <input
               type="text"
-              placeholder="Es. Ipertrofia Push/Pull/Legs"
               value={newSchedaName}
               onChange={(e) => setNewSchedaName(e.target.value)}
               className="w-full h-12 px-3 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 rounded-xl text-sm font-bold dark:text-white focus:outline-none focus:ring-2 focus:ring-[#15a34a]"
@@ -233,25 +247,18 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     );
   }
 
-  // ==========================================
-  // RENDER: WORKOUT BUILDER (viewState === 'builder')
-  // ==========================================
   return (
     <div className="min-h-screen w-full bg-[#f0f4f8] dark:bg-neutral-950 p-0 font-sans flex flex-col relative pb-28">
-      
-      {/* Header Builder */}
-      <div className="bg-white dark:bg-neutral-900 px-4 py-4 border-b border-neutral-200/60 dark:border-neutral-800 shadow-sm z-10 sticky top-0">
+      <div className="bg-white dark:bg-neutral-900 px-4 py-4 border-b border-neutral-200/60 shadow-sm z-10 sticky top-0">
         <span className="text-[10px] font-black text-[#15a34a] uppercase tracking-widest block">Workout Builder</span>
         <h2 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight truncate">{newSchedaName}</h2>
-        
-        {/* Tabs Giorni */}
         <div className="flex items-center gap-2 mt-4 overflow-x-auto no-scrollbar">
           {Object.keys(workoutRoutine).map(day => (
             <button
               key={day}
               onClick={() => setActiveBuilderDay(day)}
               className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all min-w-[60px] ${
-                activeBuilderDay === day ? 'bg-[#15a34a] text-white shadow-md' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500'
+                activeBuilderDay === day ? 'bg-[#15a34a] text-white shadow-md' : 'bg-neutral-100 text-neutral-500'
               }`}
             >
               {day}
@@ -260,22 +267,21 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
         </div>
       </div>
 
-      {/* Lista Esercizi del Giorno Attivo */}
       <div className="p-4 flex-1 overflow-y-auto space-y-3">
-        {workoutRoutine[activeBuilderDay]?.length === 0 ? (
-          <div className="text-center py-10 border-2 border-dashed border-neutral-200 dark:border-neutral-800 rounded-3xl bg-white dark:bg-neutral-900/50">
-            <Dumbbell size={32} className="mx-auto text-neutral-300 dark:text-neutral-700 mb-2" />
+        {!workoutRoutine[activeBuilderDay] || workoutRoutine[activeBuilderDay].length === 0 ? (
+          <div className="text-center py-10 border-2 border-dashed border-neutral-200 rounded-3xl bg-white">
+            <Dumbbell size={32} className="mx-auto text-neutral-300 mb-2" />
             <p className="text-xs text-neutral-500 font-semibold">Nessun esercizio per {activeBuilderDay}.</p>
           </div>
         ) : (
           workoutRoutine[activeBuilderDay].map((ex, index) => (
-            <div key={ex.instanceId} className="bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+            <div key={ex.instanceId} className="bg-white border border-neutral-200/60 rounded-2xl p-4 flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-3">
-                <span className="w-6 h-6 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 font-mono text-[10px] font-bold flex items-center justify-center">
+                <span className="w-6 h-6 rounded-full bg-neutral-100 text-neutral-400 font-mono text-[10px] font-bold flex items-center justify-center">
                   {index + 1}
                 </span>
                 <div>
-                  <h4 className="text-sm font-black text-neutral-900 dark:text-white">{ex.name}</h4>
+                  <h4 className="text-sm font-black text-neutral-900">{ex.name}</h4>
                   <p className="text-[10px] font-bold text-neutral-400 mt-0.5">
                     {ex.sets} set × {ex.reps} rip @ {ex.weight}kg
                   </p>
@@ -287,8 +293,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
             </div>
           ))
         )}
-
-        {/* Bottone Aggiungi Esercizio */}
         <button
           onClick={() => openCatalogForDay(activeBuilderDay)}
           className="w-full py-4 border-2 border-dashed border-[#15a34a]/40 bg-[#15a34a]/5 rounded-2xl flex items-center justify-center gap-2 text-[#15a34a] font-black text-xs uppercase tracking-widest active:bg-[#15a34a]/10 transition-colors"
@@ -297,26 +301,19 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
         </button>
       </div>
 
-      {/* Tasto Salvataggio Finale */}
-      <div className="fixed bottom-[72px] left-0 right-0 p-4 bg-gradient-to-t from-[#f0f4f8] dark:from-neutral-950 via-[#f0f4f8]/80 to-transparent">
+      <div className="fixed bottom-[72px] left-0 right-0 p-4 bg-gradient-to-t from-[#f0f4f8] via-[#f0f4f8]/80 to-transparent">
         <Button variant="primary" fullWidth size="large" onClick={handleSaveFinalScheda} className="rounded-2xl bg-[#15a34a] font-black uppercase tracking-wider shadow-lg">
           <CheckCircle2 size={18} className="mr-1.5" /> Salva Intera Scheda
         </Button>
       </div>
 
-      {/* ==========================================
-          MODALE: CATALOGO ESERCIZI E FILTRI
-          ========================================== */}
       {isCatalogOpen && !configuringExercise && (
-        <div className="fixed inset-0 bg-white dark:bg-neutral-950 z-50 flex flex-col animate-fade-in">
-          {/* Header Catalogo */}
-          <div className="flex items-center justify-between p-4 border-b border-neutral-100 dark:border-neutral-800">
-            <h3 className="text-lg font-black text-neutral-900 dark:text-white">Libreria Esercizi</h3>
-            <button onClick={() => setIsCatalogOpen(false)} className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-full active:scale-95"><X size={18}/></button>
+        <div className="fixed inset-0 bg-white z-50 flex flex-col animate-fade-in">
+          <div className="flex items-center justify-between p-4 border-b border-neutral-100">
+            <h3 className="text-lg font-black text-neutral-900">Libreria Esercizi</h3>
+            <button onClick={() => setIsCatalogOpen(false)} className="p-2 bg-neutral-100 rounded-full active:scale-95"><X size={18}/></button>
           </div>
-
-          {/* Ricerca e Filtri in logica AND */}
-          <div className="p-4 space-y-3 bg-neutral-50 dark:bg-neutral-900/30 border-b border-neutral-200/50 dark:border-neutral-800">
+          <div className="p-4 space-y-3 bg-neutral-50 border-b border-neutral-200/50">
             <div className="relative">
               <Search size={16} className="absolute left-3 top-3 text-neutral-400" />
               <input 
@@ -324,31 +321,20 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                 placeholder="Cerca esercizio..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-10 pl-9 pr-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-bold focus:ring-2 focus:ring-[#15a34a] outline-none"
+                className="w-full h-10 pl-9 pr-3 rounded-xl border border-neutral-200 text-sm font-bold focus:ring-2 focus:ring-[#15a34a] outline-none"
               />
             </div>
-            
             <div className="flex gap-2">
-              <select 
-                value={muscleFilter} 
-                onChange={(e) => setMuscleFilter(e.target.value)}
-                className="flex-1 h-9 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg text-xs font-bold text-neutral-700 dark:text-neutral-300 px-2 outline-none"
-              >
+              <select value={muscleFilter} onChange={(e) => setMuscleFilter(e.target.value)} className="flex-1 h-9 bg-white border border-neutral-200 rounded-lg text-xs font-bold px-2 outline-none">
                 <option value="">Tutti i Muscoli</option>
                 {MUSCLE_GROUPS.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
-              <select 
-                value={equipmentFilter} 
-                onChange={(e) => setEquipmentFilter(e.target.value)}
-                className="flex-1 h-9 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg text-xs font-bold text-neutral-700 dark:text-neutral-300 px-2 outline-none"
-              >
+              <select value={equipmentFilter} onChange={(e) => setEquipmentFilter(e.target.value)} className="flex-1 h-9 bg-white border border-neutral-200 rounded-lg text-xs font-bold px-2 outline-none">
                 <option value="">Tutti gli Attrezzi</option>
                 {EQUIPMENT_TYPES.map(e => <option key={e} value={e}>{e}</option>)}
               </select>
             </div>
           </div>
-
-          {/* Risultati Catalogo */}
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
             {filteredExercises.length === 0 ? (
               <p className="text-center text-xs font-bold text-neutral-400 mt-10">Nessun esercizio trovato coi filtri attuali.</p>
@@ -357,10 +343,10 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                 <button 
                   key={ex.id}
                   onClick={() => selectExerciseForConfig(ex)}
-                  className="w-full text-left p-4 bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-2xl shadow-sm flex items-center justify-between active:scale-[0.98]"
+                  className="w-full text-left p-4 bg-white border border-neutral-200/60 rounded-2xl shadow-sm flex items-center justify-between active:scale-[0.98]"
                 >
                   <div>
-                    <h4 className="text-sm font-black text-neutral-900 dark:text-white">{ex.name}</h4>
+                    <h4 className="text-sm font-black text-neutral-900">{ex.name}</h4>
                     <p className="text-[10px] font-bold text-neutral-400 mt-0.5">{ex.muscle} • {ex.equipment}</p>
                   </div>
                   <Plus size={18} className="text-[#15a34a]" />
@@ -371,38 +357,27 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
         </div>
       )}
 
-      {/* ==========================================
-          MODALE: CONFIGURAZIONE TARGET ESERCIZIO
-          ========================================== */}
       {configuringExercise && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end animate-fade-in">
           <div className="absolute inset-0" onClick={() => setConfiguringExercise(null)} />
-          <div className="relative w-full max-w-[420px] mx-auto bg-white dark:bg-neutral-900 rounded-t-[2.5rem] p-6 shadow-2xl">
-            <div className="w-12 h-1.5 bg-neutral-300 dark:bg-neutral-700 rounded-full mx-auto mb-6" />
-            
+          <div className="relative w-full max-w-[420px] mx-auto bg-white rounded-t-[2.5rem] p-6 shadow-2xl">
+            <div className="w-12 h-1.5 bg-neutral-300 rounded-full mx-auto mb-6" />
             <div className="mb-6">
               <span className="text-[10px] font-black text-[#15a34a] uppercase tracking-widest block">Imposta Target</span>
-              <h3 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight">{configuringExercise.name}</h3>
+              <h3 className="text-2xl font-black text-neutral-900 tracking-tight">{configuringExercise.name}</h3>
             </div>
-
-            <Card className="shadow-none border border-neutral-200/50 dark:border-neutral-800 p-2 space-y-1 mb-6">
+            <Card className="shadow-none border border-neutral-200/50 p-2 space-y-1 mb-6">
               <Stepper label="Serie (Set)" value={targetSets} onChange={setTargetSets} step={1} />
               <Stepper label="Ripetizioni" value={targetReps} onChange={setTargetReps} step={1} />
               <Stepper label="Carico base" value={targetWeight} onChange={setTargetWeight} step={2.5} unit="kg" />
             </Card>
-
             <div className="flex gap-2 pb-6">
-              <Button variant="secondary" fullWidth onClick={() => setConfiguringExercise(null)} className="rounded-2xl">
-                Annulla
-              </Button>
-              <Button variant="primary" fullWidth onClick={confirmAndAddExercise} className="rounded-2xl bg-[#15a34a]">
-                Aggiungi a {activeBuilderDay}
-              </Button>
+              <Button variant="secondary" fullWidth onClick={() => setConfiguringExercise(null)} className="rounded-2xl">Annulla</Button>
+              <Button variant="primary" fullWidth onClick={confirmAndAddExercise} className="rounded-2xl bg-[#15a34a]">Aggiungi a {activeBuilderDay}</Button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };
