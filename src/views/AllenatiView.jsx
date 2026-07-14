@@ -1,28 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Toggle } from '../components/UI';
 
-export const AllenatiView = ({ settings, activeSessionDuration }) => {
+// Esercizi biomeccanicamente coerenti per la sostituzione (Chest Press e varianti)
+const ALTERNATIVE_EXERCISES = [
+  { name: 'CHEST PRESS', type: 'Macchina', target: '4 set × 8 rip @ 80 kg', defaultWeight: 80, defaultReps: 8 },
+  { name: 'PANCA PIANA', type: 'Bilanciere', target: '4 set × 8 rip @ 70 kg', defaultWeight: 70, defaultReps: 8 },
+  { name: 'SPINTE MANUBRI', type: 'Manubri', target: '4 set × 10 rip @ 24 kg', defaultWeight: 24, defaultReps: 10 },
+  { name: 'PEC DECK', type: 'Macchina', target: '4 set × 12 rip @ 50 kg', defaultWeight: 50, defaultReps: 12 }
+];
+
+export const AllenatiView = ({ settings }) => {
   // --- STATI PRINCIPALI ---
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [exerciseIndex, setExerciseIndex] = useState(0);
+  const currentExercise = ALTERNATIVE_EXERCISES[exerciseIndex];
+
+  // Stati per Carico e Ripetizioni (inizializzati in base all'esercizio corrente)
+  const [currentWeight, setCurrentWeight] = useState(currentExercise.defaultWeight);
+  const [currentReps, setCurrentReps] = useState(currentExercise.defaultReps);
+
+  // Stato sessione globale (Iniziato / Non Iniziato)
+  const [sessionActive, setSessionActive] = useState(false);
   const [globalTimer, setGlobalTimer] = useState(0);
-  
-  // Recupero (Rest)
-  const [restTime, setRestTime] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+
+  // Stato del recupero (Rest) gestito dal tastone verde centrale
+  const [restTime, setRestTime] = useState(90); // 1 minuto e mezzo standard
   const [isRestActive, setIsRestActive] = useState(false);
 
-  // Esercizio Attivo
-  const [currentWeight, setCurrentWeight] = useState(16);
-  const [currentReps, setCurrentReps] = useState(10);
+  // Set Tracker (i pallini della sessione)
   const [currentSet, setCurrentSet] = useState(1);
-  const totalSets = 4; // Target fisso per la visualizzazione dei pallini
-
-  // Switch di tipo esercizio/serie (Warmup vs Target)
-  const [isWarmup, setIsWarmup] = useState(false);
-
-  // Stato dei singoli set (Switch/Checkbox per ogni pallino)
+  const totalSets = 4;
   const [completedSets, setCompletedSets] = useState([false, false, false, false]);
 
-  // --- TIMER GENERALE ---
+  // Esercizi della sessione (lineette in alto nella card per mostrare i progressi della scheda)
+  // Rappresenta: [Esercizio 1 (Attivo), Esercizio 2, Esercizio 3, Esercizio 4]
+  const [sessionExercises, setSessionExercises] = useState([true, false, false, false]);
+
+  // --- 1. SINCRO PESO/REPS AL CAMBIO ESERCIZIO ---
+  useEffect(() => {
+    setCurrentWeight(currentExercise.defaultWeight);
+    setCurrentReps(currentExercise.defaultReps);
+  }, [exerciseIndex]);
+
+  // --- 2. TIMER DI SESSIONE GLOBALE ---
   useEffect(() => {
     let interval = null;
     if (isTimerRunning) {
@@ -35,7 +54,7 @@ export const AllenatiView = ({ settings, activeSessionDuration }) => {
     return () => clearInterval(interval);
   }, [isTimerRunning]);
 
-  // --- TIMER RECUPERO ---
+  // --- 3. TIMER DI RECUPERO (TASTONE VERDE) ---
   useEffect(() => {
     let restInterval = null;
     if (isRestActive && restTime > 0) {
@@ -44,250 +63,238 @@ export const AllenatiView = ({ settings, activeSessionDuration }) => {
       }, 1000);
     } else if (restTime === 0 && isRestActive) {
       setIsRestActive(false);
-      if (settings.prep_sound && window.navigator.vibrate) {
+      setRestTime(90); // Resetta al tempo standard
+      if (settings?.prep_sound && window.navigator.vibrate) {
         window.navigator.vibrate([300, 100, 300]);
       }
     }
     return () => clearInterval(restInterval);
-  }, [isRestActive, restTime, settings.prep_sound]);
+  }, [isRestActive, restTime, settings?.prep_sound]);
 
+  // FORMATTER TEMPO (mm:ss)
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // --- FIX MOBILE (Previene il doppio scatto) ---
+  // --- 4. FIX TOUCH EVENT (Previene il doppio click mobile) ---
   const handleAction = (e, callback) => {
     e.preventDefault();
     e.stopPropagation();
     callback();
   };
 
-  const step = settings.step_increment || 1;
+  const step = settings?.step_increment || 1;
 
-  // Gestione click sul singolo pallino dei progressi
-  const toggleSetFromDot = (index) => {
-    const updated = [...completedSets];
-    updated[index] = !updated[index];
-    setCompletedSets(updated);
-    
-    // Aggiorna automaticamente il set corrente basandosi sul primo non completato
-    const nextSet = updated.findIndex(val => val === false);
-    setCurrentSet(nextSet === -1 ? totalSets : nextSet + 1);
+  // Azione per sostituire l'esercizio con uno biomeccanicamente coerente
+  const handleSubstitute = () => {
+    setExerciseIndex((prev) => (prev + 1) % ALTERNATIVE_EXERCISES.length);
+  };
+
+  // Gestione dell'avvio/registrazione tramite il tastone inferiore
+  const handleMainActionButton = () => {
+    if (!sessionActive) {
+      // Avvia allenamento globale
+      setSessionActive(true);
+      setIsTimerRunning(true);
+    } else {
+      // Registra Set corrente
+      const updated = [...completedSets];
+      updated[currentSet - 1] = true;
+      setCompletedSets(updated);
+
+      if (currentSet < totalSets) {
+        setCurrentSet((prev) => prev + 1);
+        // Avvia in automatico il recupero dal tastone centrale dopo ogni registrazione
+        setRestTime(90);
+        setIsRestActive(true);
+      } else {
+        // Fine esercizio / reset
+        alert("Esercizio completato! Ottimo lavoro.");
+        setCompletedSets([false, false, false, false]);
+        setCurrentSet(1);
+        setIsRestActive(false);
+        setRestTime(90);
+        // Passa al prossimo indicatore di esercizio (lineetta della sessione)
+        setSessionExercises([false, true, false, false]);
+      }
+    }
   };
 
   return (
-    <div className="min-h-screen w-full bg-neutral-100/60 dark:bg-neutral-950 p-4 pb-28 font-sans space-y-4">
+    <div className="min-h-screen w-full bg-[#f0f4f8] dark:bg-neutral-950 p-0 font-sans flex flex-col select-none">
       
-      {/* 1. HEADER & TIMER SESSIONE */}
-      <div className="flex items-center justify-between bg-white dark:bg-neutral-900 rounded-2xl p-3.5 shadow-sm border border-neutral-200/50 dark:border-neutral-800">
-        <div>
-          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">Sessione Attiva</span>
-          <span className="font-mono text-2xl font-black text-neutral-900 dark:text-white">
-            {formatTime(globalTimer)}
-          </span>
-        </div>
+      {/* ================= HEADER VERDE (IDENTICO AL TUO SCREENSHOT) ================= */}
+      <div className="bg-[#15a34a] text-white px-4 py-3.5 flex items-center justify-between shadow-md">
         <button
           onTouchStart={(e) => handleAction(e, () => setIsTimerRunning(!isTimerRunning))}
           onClick={(e) => handleAction(e, () => setIsTimerRunning(!isTimerRunning))}
-          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl ${
-            isTimerRunning 
-              ? 'bg-red-50 text-red-600 dark:bg-red-950/30 dark:text-red-400' 
-              : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/30 dark:text-emerald-400'
-          }`}
+          className="border border-white/40 bg-white/10 px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-transform"
         >
-          {isTimerRunning ? '⏸ Pausa' : '▶ Avvia'}
+          <span>⏸</span> {isTimerRunning ? 'Pausa' : 'Riprendi'}
         </button>
+        
+        <div className="flex items-center gap-1.5 font-mono text-sm font-bold">
+          <span>⏱</span>
+          <span>{formatTime(globalTimer)}</span>
+        </div>
       </div>
 
-      {/* 2. CARD ESERCIZIO PRINCIPALE */}
-      <div className="bg-white dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800 rounded-3xl p-5 shadow-sm space-y-5">
-        
-        {/* Info & Switch Tipo Serie */}
-        <div className="flex justify-between items-start">
-          <div>
-            <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest block mb-1">
-              Petto / Spalle
-            </span>
-            <h1 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight leading-tight">
-              Spinte su Piana con Manubri
-            </h1>
-          </div>
-          
-          {/* Switch negli esercizi: Selettore Warmup / Target */}
-          <div className="flex flex-col items-end gap-1">
-            <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Warmup</span>
-            <Toggle 
-              checked={isWarmup} 
-              onChange={(val) => setIsWarmup(val)} 
-            />
-          </div>
-        </div>
+      <div className="p-4 flex-1 flex flex-col justify-between space-y-4">
 
-        {/* PROGRESSI CON I PALLINI E LE LINEETTE (Set Tracker) */}
-        <div className="py-2 border-t border-b border-neutral-100 dark:border-neutral-800/50">
-          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-3 text-center">
-            Tracciamento Set ({completedSets.filter(Boolean).length}/{totalSets})
-          </span>
+        {/* ================= CARD ESERCIZIO CON SOSTITUISCI & LINEETTE ================= */}
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-2xl p-4 shadow-sm relative">
           
-          <div className="flex items-center justify-center gap-2">
-            {completedSets.map((isDone, idx) => {
-              const isActive = currentSet === idx + 1;
-              return (
-                <React.Fragment key={idx}>
-                  {/* Pallino */}
-                  <button
-                    onTouchStart={(e) => handleAction(e, () => toggleSetFromDot(idx))}
-                    onClick={(e) => handleAction(e, () => toggleSetFromDot(idx))}
-                    className={`w-9 h-9 rounded-full font-mono text-xs font-bold transition-all flex items-center justify-center border-2 ${
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-xl font-black text-neutral-900 dark:text-white tracking-tight">
+                {currentExercise.name}
+              </h2>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                {currentExercise.type} · Target: {currentExercise.target}
+              </p>
+            </div>
+
+            {/* Tasto Sostituisci Biomeccanico */}
+            <button
+              onTouchStart={(e) => handleAction(e, handleSubstitute)}
+              onClick={(e) => handleAction(e, handleSubstitute)}
+              className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-600 dark:text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 active:scale-95"
+            >
+              🔄 Sostituisci
+            </button>
+          </div>
+
+          {/* Lineette degli esercizi della sessione + Pallini progressi dei set */}
+          <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800/60 flex items-center justify-between">
+            {/* Lineette indicatrici degli esercizi totali della scheda */}
+            <div className="flex items-center gap-1">
+              {sessionExercises.map((isActiveEx, idx) => (
+                <div
+                  key={idx}
+                  className={`h-1 rounded-full transition-all ${
+                    isActiveEx 
+                      ? 'w-7 bg-[#15a34a]' 
+                      : 'w-4 bg-neutral-200 dark:bg-neutral-800'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Indicatore testuale del set con pallini */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black text-[#15a34a] uppercase tracking-wider">
+                Set {currentSet} di {totalSets}
+              </span>
+              
+              {/* Pallini dei set */}
+              <div className="flex items-center gap-1">
+                {completedSets.map((isDone, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-2.5 h-2.5 rounded-full transition-colors ${
                       isDone 
-                        ? 'bg-success border-success text-white' 
-                        : isActive
-                          ? 'bg-white dark:bg-neutral-900 border-neutral-900 dark:border-white text-neutral-900 dark:text-white ring-4 ring-neutral-100 dark:ring-neutral-800'
-                          : 'bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-400'
-                    }`}
-                  >
-                    {isDone ? '✓' : idx + 1}
-                  </button>
-                  
-                  {/* Lineetta di collegamento tra i pallini (esclusa l'ultima) */}
-                  {idx < totalSets - 1 && (
-                    <div className={`h-[3px] w-6 rounded-full transition-colors ${
-                      completedSets[idx] && completedSets[idx + 1]
-                        ? 'bg-success'
-                        : completedSets[idx]
-                          ? 'bg-neutral-400 dark:bg-neutral-600'
+                        ? 'bg-[#15a34a]' 
+                        : currentSet === idx + 1 
+                          ? 'bg-neutral-800 dark:bg-white animate-pulse' 
                           : 'bg-neutral-200 dark:bg-neutral-800'
-                    }`} />
-                  )}
-                </React.Fragment>
-              );
-            })}
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
+
         </div>
 
-        {/* REGOLATORI CARICO & REPS (Lineari, stabili, facili) */}
-        <div className="space-y-4">
-          {/* Peso */}
+        {/* ================= TASTONE VERDE DEL RECUPERO (CENTRAL BLOCK) ================= */}
+        <button
+          onTouchStart={(e) => handleAction(e, () => setIsRestActive(!isRestActive))}
+          onClick={(e) => handleAction(e, () => setIsRestActive(!isRestActive))}
+          className={`w-full flex-1 min-h-[160px] rounded-2xl flex flex-col items-center justify-center p-6 shadow-sm border transition-all duration-300 active:scale-[0.99] ${
+            isRestActive
+              ? 'bg-[#15a34a] border-[#13a851] text-white animate-pulse'
+              : 'bg-[#15a34a] border-[#13a851] text-white/90'
+          }`}
+        >
+          <span className="font-mono text-5xl font-black tracking-widest leading-none">
+            {isRestActive ? formatTime(restTime) : '-- : --'}
+          </span>
+          <p className="text-xs font-bold uppercase tracking-wider mt-4 text-center">
+            {isRestActive ? 'Recupero in corso • Tocca per interrompere' : 'Premi INIZIA RECUPERO per avviare il timer'}
+          </p>
+        </button>
+
+        {/* ================= CONTROLLI CARICO E REPS FIXATI ================= */}
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-2xl p-3 shadow-sm space-y-3">
+          
+          {/* Selettore Carico */}
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-neutral-500 dark:text-neutral-400">Carico</span>
-            <div className="flex items-center gap-3">
+            <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 pl-1">Carico (kg)</span>
+            <div className="flex items-center border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden bg-neutral-50 dark:bg-neutral-800">
               <button
                 onTouchStart={(e) => handleAction(e, () => setCurrentWeight(prev => Math.max(0, prev - step)))}
                 onClick={(e) => handleAction(e, () => setCurrentWeight(prev => Math.max(0, prev - step)))}
-                className="w-11 h-11 bg-neutral-100 dark:bg-neutral-800 rounded-2xl font-mono font-bold text-neutral-800 dark:text-white flex items-center justify-center text-lg active:scale-90"
+                className="w-11 h-10 flex items-center justify-center font-bold text-neutral-600 dark:text-white border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 active:bg-neutral-100"
               >
-                -
+                —
               </button>
-              <span className="font-mono text-2xl font-black text-neutral-900 dark:text-white w-20 text-center">
-                {currentWeight}<span className="text-xs font-normal text-neutral-400 ml-0.5">kg</span>
-              </span>
+              <div className="w-24 text-center font-mono font-black text-[#15a34a]">
+                {currentWeight} kg
+              </div>
               <button
                 onTouchStart={(e) => handleAction(e, () => setCurrentWeight(prev => prev + step))}
                 onClick={(e) => handleAction(e, () => setCurrentWeight(prev => prev + step))}
-                className="w-11 h-11 bg-neutral-100 dark:bg-neutral-800 rounded-2xl font-mono font-bold text-neutral-800 dark:text-white flex items-center justify-center text-lg active:scale-90"
+                className="w-11 h-10 flex items-center justify-center font-bold text-neutral-600 dark:text-white border-l border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 active:bg-neutral-100"
               >
                 +
               </button>
             </div>
           </div>
 
-          {/* Ripetizioni */}
+          {/* Selettore Ripetizioni */}
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-neutral-500 dark:text-neutral-400">Ripetizioni</span>
-            <div className="flex items-center gap-3">
+            <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 pl-1">Ripetizioni</span>
+            <div className="flex items-center border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden bg-neutral-50 dark:bg-neutral-800">
               <button
                 onTouchStart={(e) => handleAction(e, () => setCurrentReps(prev => Math.max(0, prev - 1)))}
                 onClick={(e) => handleAction(e, () => setCurrentReps(prev => Math.max(0, prev - 1)))}
-                className="w-11 h-11 bg-neutral-100 dark:bg-neutral-800 rounded-2xl font-mono font-bold text-neutral-800 dark:text-white flex items-center justify-center text-lg active:scale-90"
+                className="w-11 h-10 flex items-center justify-center font-bold text-neutral-600 dark:text-white border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 active:bg-neutral-100"
               >
-                -
+                —
               </button>
-              <span className="font-mono text-2xl font-black text-neutral-900 dark:text-white w-20 text-center">
-                {currentReps}
-              </span>
+              <div className="w-24 text-center font-mono font-black text-[#15a34a]">
+                {currentReps} rip
+              </div>
               <button
                 onTouchStart={(e) => handleAction(e, () => setCurrentReps(prev => prev + 1))}
                 onClick={(e) => handleAction(e, () => setCurrentReps(prev => prev + 1))}
-                className="w-11 h-11 bg-neutral-100 dark:bg-neutral-800 rounded-2xl font-mono font-bold text-neutral-800 dark:text-white flex items-center justify-center text-lg active:scale-90"
+                className="w-11 h-10 flex items-center justify-center font-bold text-neutral-600 dark:text-white border-l border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 active:bg-neutral-100"
               >
                 +
               </button>
             </div>
           </div>
+
         </div>
 
-      </div>
-
-      {/* 3. CONTROLLI DI RECUPERO E SALVATAGGIO */}
-      <div className="flex flex-col items-center gap-4 pt-2">
-        
-        {/* IL TASTONE GIGANTE DEL RECUPERO (Pulsante circolare tattile) */}
-        <div className="relative flex items-center justify-center w-full py-2">
+        {/* ================= BOTTONE D'AZIONE GLOBALE (INIZIA / REGISTRA) ================= */}
+        <div className="space-y-2">
           <button
-            onTouchStart={(e) => handleAction(e, () => {
-              setRestTime(90);
-              setIsRestActive(!isRestActive);
-            })}
-            onClick={(e) => handleAction(e, () => {
-              setRestTime(90);
-              setIsRestActive(!isRestActive);
-            })}
-            className={`w-32 h-32 rounded-full flex flex-col items-center justify-center shadow-lg transition-all duration-300 active:scale-95 border-4 ${
-              isRestActive
-                ? 'bg-[#FFB399] dark:bg-[#E68A6C] border-[#FF9977] text-neutral-950 animate-pulse'
-                : 'bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white'
-            }`}
+            onTouchStart={(e) => handleAction(e, handleMainActionButton)}
+            onClick={(e) => handleAction(e, handleMainActionButton)}
+            className="w-full h-14 bg-[#15a34a] hover:bg-[#13a851] text-white font-black rounded-xl text-base uppercase tracking-wider shadow-md transition-all active:scale-[0.98] flex items-center justify-center"
           >
-            {isRestActive ? (
-              <>
-                <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-800/70">Recupero</span>
-                <span className="font-mono text-3xl font-black leading-none my-1">{formatTime(restTime)}</span>
-                <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-800/70">Tocca x Stop</span>
-              </>
-            ) : (
-              <>
-                <span className="text-2xl mb-1">⏱️</span>
-                <span className="text-[10px] font-black uppercase tracking-widest text-center leading-tight">
-                  Avvia<br />Recupero
-                </span>
-                <span className="text-[9px] font-mono font-bold text-neutral-400 dark:text-neutral-500 mt-1">1:30</span>
-              </>
-            )}
+            {!sessionActive ? 'INIZIA ALLENAMENTO' : `REGISTRA SET #${currentSet}`}
           </button>
+          
+          <p className="text-center text-[11px] text-neutral-500 font-medium">
+            {!sessionActive 
+              ? 'Premi il bottone verde per iniziare il tuo allenamento' 
+              : 'Registra il set completato per avviare il countdown di recupero'}
+          </p>
         </div>
-
-        {/* TASTO REGISTRA SET (Pill-button scuro primario) */}
-        <button
-          onTouchStart={(e) => handleAction(e, () => {
-            // Segna come completato il set corrente nell'array
-            const updated = [...completedSets];
-            updated[currentSet - 1] = true;
-            setCompletedSets(updated);
-
-            alert(`Set ${currentSet} registrato: ${currentWeight}kg x ${currentReps} reps (${isWarmup ? 'Warmup' : 'Target'})`);
-            
-            // Incrementa il set attivo
-            if (currentSet < totalSets) {
-              setCurrentSet(prev => prev + 1);
-            }
-          })}
-          onClick={(e) => handleAction(e, () => {
-            const updated = [...completedSets];
-            updated[currentSet - 1] = true;
-            setCompletedSets(updated);
-
-            alert(`Set ${currentSet} registrato: ${currentWeight}kg x ${currentReps} reps (${isWarmup ? 'Warmup' : 'Target'})`);
-            
-            if (currentSet < totalSets) {
-              setCurrentSet(prev => prev + 1);
-            }
-          })}
-          className="w-full h-13 bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 font-black rounded-full text-xs uppercase tracking-widest shadow-md active:scale-[0.98]"
-        >
-          ✅ REGISTRA SET #{currentSet}
-        </button>
 
       </div>
 
