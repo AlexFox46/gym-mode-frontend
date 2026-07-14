@@ -1,88 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Stepper, Card } from '../components/UI';
-
-// Database degli esercizi con le alternative strutturate in Tier Biomeccanici
-const EXERCISE_DATABASE = {
-  'CHEST PRESS': {
-    name: 'CHEST PRESS',
-    type: 'Macchina',
-    target: '4 set × 8 rip @ 80 kg',
-    defaultWeight: 80,
-    defaultReps: 8,
-    tiers: {
-      tier1: [
-        { name: 'CHEST PRESS CONVERGENTE', type: 'Macchina', target: '4 set × 8 rip @ 40+40 kg', defaultWeight: 40, defaultReps: 8 },
-        { name: 'SPINTE MACCHINA INCLINATA', type: 'Macchina', target: '4 set × 10 rip @ 60 kg', defaultWeight: 60, defaultReps: 10 }
-      ],
-      tier2: [
-        { name: 'PANCA PIANA BILANCIERE', type: 'Bilanciere', target: '4 set × 8 rip @ 80 kg', defaultWeight: 80, defaultReps: 8 },
-        { name: 'SPINTE SU PIANA CON MANUBRI', type: 'Manubri', target: '4 set × 8 rip @ 32+32 kg', defaultWeight: 32, defaultReps: 8 }
-      ],
-      tier3: [
-        { name: 'PEC DECK / CROCI', type: 'Cavi/Macchina', target: '3 set × 12 rip @ 50 kg', defaultWeight: 50, defaultReps: 12 },
-        { name: 'DIPS AL CORPO LIBERO', type: 'Parallele', target: '4 set × max rip @ BW', defaultWeight: 0, defaultReps: 10 }
-      ]
-    }
-  }
-};
+import { CheckCircle2, Dumbbell } from 'lucide-react';
 
 export const AllenatiView = ({ settings, schedaAttiva }) => {
-  // --- STATI DELLA SCHEDA E GIORNI (ORA DINAMICI IN BASE ALLA SCHEDA ATTIVA) ---
   const [activeDay, setActiveDay] = useState('G1');
   
-  // Se c'è una scheda attiva, genera array dinamico (es. 2 giorni -> ['G1', 'G2'])
   const schemaDays = schedaAttiva 
     ? Array.from({ length: schedaAttiva.daysCount }, (_, i) => `G${i + 1}`) 
     : [];
 
-  // Reset del giorno attivo se si cambia scheda
-  useEffect(() => {
-    setActiveDay('G1');
-  }, [schedaAttiva]);
+  // Il motore dati reale: estrae l'array di esercizi del giorno corrente
+  const routineDelGiorno = schedaAttiva?.routine?.[activeDay] || [];
+  
+  // Traccia quale esercizio stiamo eseguendo nell'array
+  const [exerciseIndex, setExerciseIndex] = useState(0);
+  
+  const currentExercise = routineDelGiorno[exerciseIndex]; // Esercizio reale
+  
+  const [currentWeight, setCurrentWeight] = useState(0);
+  const [currentReps, setCurrentReps] = useState(0);
 
-  // --- STATI ESERCIZIO ATTIVO & SOSTITUZIONI ---
-  const [currentExercise, setCurrentExercise] = useState(EXERCISE_DATABASE['CHEST PRESS']);
-  const [currentWeight, setCurrentWeight] = useState(80);
-  const [currentReps, setCurrentReps] = useState(8);
-
-  // Bottom Sheet (Cassetto della sostituzione dal basso)
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [touchStartClientY, setTouchStartClientY] = useState(null);
-
-  // --- STATI TIMER GLOBALE (TRE STATI: AVVIA, PAUSA, INTERROMPI/RESET) ---
   const [globalTimer, setGlobalTimer] = useState(0);
-  const [timerStatus, setTimerStatus] = useState('idle'); // 'idle' | 'running' | 'paused'
+  const [timerStatus, setTimerStatus] = useState('idle');
 
-  // --- STATI RECUPERO (TASTONE VERDE CON +/- RAPIDI) ---
   const [restTime, setRestTime] = useState(90);
   const [isRestActive, setIsRestActive] = useState(false);
 
-  // --- STATI TRACCIAMENTO SET (PALLINI) ---
   const [currentSet, setCurrentSet] = useState(1);
-  const totalSets = 4;
-  const [completedSets, setCompletedSets] = useState([false, false, false, false]);
+  const [completedSets, setCompletedSets] = useState([]);
 
-  // --- STATI TRACCIAMENTO SESSIONE (LINEETTE ESERCIZI) ---
-  const [completedExercises, setCompletedExercises] = useState([true, false, false, false]);
-
-  // --- 1. SINCRO PESO/REPS AL CAMBIO ESERCIZIO ---
+  // Reset dinamico quando cambi giorno o scheda
   useEffect(() => {
-    setCurrentWeight(currentExercise.defaultWeight);
-    setCurrentReps(currentExercise.defaultReps);
+    setActiveDay('G1');
+    setExerciseIndex(0);
+  }, [schedaAttiva]);
+
+  useEffect(() => {
+    setExerciseIndex(0);
+  }, [activeDay]);
+
+  // Sincronizza i dati UI con l'esercizio corrente della scheda
+  useEffect(() => {
+    if (currentExercise) {
+      setCurrentWeight(currentExercise.weight);
+      setCurrentReps(currentExercise.reps);
+      setCurrentSet(1);
+      setCompletedSets(Array(currentExercise.sets).fill(false));
+    }
   }, [currentExercise]);
 
-  // --- 2. LOGICA TIMER GLOBALE ---
   useEffect(() => {
     let interval = null;
     if (timerStatus === 'running') {
-      interval = setInterval(() => {
-        setGlobalTimer((prev) => prev + 1);
-      }, 1000);
+      interval = setInterval(() => setGlobalTimer((prev) => prev + 1), 1000);
     } else {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
   }, [timerStatus]);
+
+  useEffect(() => {
+    let restInterval = null;
+    if (isRestActive && restTime > 0) {
+      restInterval = setInterval(() => setRestTime((prev) => prev - 1), 1000);
+    } else if (restTime <= 0 && isRestActive) {
+      setIsRestActive(false);
+      setRestTime(90);
+      if (settings?.prep_sound && window.navigator.vibrate) window.navigator.vibrate([300, 100, 300]);
+    }
+    return () => clearInterval(restInterval);
+  }, [isRestActive, restTime, settings?.prep_sound]);
 
   const handleGlobalTimerAction = (e) => {
     e.preventDefault();
@@ -97,23 +84,6 @@ export const AllenatiView = ({ settings, schedaAttiva }) => {
     setGlobalTimer(0);
   };
 
-  // --- 3. LOGICA TIMER DI RECUPERO ---
-  useEffect(() => {
-    let restInterval = null;
-    if (isRestActive && restTime > 0) {
-      restInterval = setInterval(() => {
-        setRestTime((prev) => prev - 1);
-      }, 1000);
-    } else if (restTime <= 0 && isRestActive) {
-      setIsRestActive(false);
-      setRestTime(90);
-      if (settings?.prep_sound && window.navigator.vibrate) {
-        window.navigator.vibrate([300, 100, 300]);
-      }
-    }
-    return () => clearInterval(restInterval);
-  }, [isRestActive, restTime, settings?.prep_sound]);
-
   const modifyRestTime = (e, amount) => {
     e.preventDefault();
     e.stopPropagation();
@@ -126,322 +96,134 @@ export const AllenatiView = ({ settings, schedaAttiva }) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const step = settings?.step_increment || 1;
-
-  // --- 4. GESTIONE SOSTITUZIONE ESERCIZIO (BOTTOM SHEET) ---
-  const selectAlternative = (exercise) => {
-    setCurrentExercise(exercise);
-    setIsBottomSheetOpen(false);
-  };
-
-  const handleTouchStart = (e) => setTouchStartClientY(e.touches[0].clientY);
-  const handleTouchMove = (e) => {
-    if (touchStartClientY !== null) {
-      const currentY = e.touches[0].clientY;
-      if (currentY - touchStartClientY > 100) { 
-        setIsBottomSheetOpen(false);
-        setTouchStartClientY(null);
-      }
-    }
-  };
-
-  // Registrazione dei Set
   const handleRegisterSet = () => {
     const updated = [...completedSets];
     updated[currentSet - 1] = true;
     setCompletedSets(updated);
 
-    if (currentSet < totalSets) {
+    if (currentSet < currentExercise.sets) {
       setCurrentSet((prev) => prev + 1);
       setRestTime(90);
       setIsRestActive(true);
     } else {
-      alert("Esercizio completato!");
-      setCompletedSets([false, false, false, false]);
-      setCurrentSet(1);
-      setIsRestActive(false);
-      setRestTime(90);
-      setCompletedExercises([false, true, false, false]);
+      // Esercizio finito, passa al prossimo nell'array
+      if (exerciseIndex < routineDelGiorno.length - 1) {
+        setExerciseIndex(prev => prev + 1);
+        setIsRestActive(false);
+        setRestTime(90);
+      } else {
+        // Giorno completato!
+        alert("Sessione completata! Tutto registrato.");
+        setIsRestActive(false);
+        setTimerStatus('idle');
+        // Qui in futuro faremo push su App.js storicoAllenamenti
+      }
     }
   };
 
-  // --- FALLBACK UX: SE NON C'È NESSUNA SCHEDA ATTIVA ---
   if (!schedaAttiva) {
     return (
       <div className="min-h-screen w-full bg-[#f0f4f8] dark:bg-neutral-950 flex flex-col items-center justify-center p-6 text-center">
-        <h2 className="text-2xl font-black text-neutral-900 dark:text-white mb-2 tracking-tight">Pronto per iniziare?</h2>
-        <p className="text-sm text-neutral-500 font-semibold max-w-[280px]">Non hai nessuna scheda attiva. Vai nella sezione <b className="text-[#15a34a]">Schede</b> per crearne una nuova.</p>
+        <h2 className="text-2xl font-black text-neutral-900 tracking-tight mb-2">Pronto per iniziare?</h2>
+        <p className="text-sm text-neutral-500 font-semibold max-w-[280px]">Non hai nessuna scheda attiva. Vai nella sezione <b className="text-[#15a34a]">Schede</b> per crearne una.</p>
       </div>
     );
   }
 
-  // --- RENDER PRINCIPALE ---
   return (
-    <div className="min-h-screen w-full bg-[#f0f4f8] dark:bg-neutral-950 p-0 font-sans flex flex-col select-none relative overflow-x-hidden">
+    <div className="min-h-screen w-full bg-[#f0f4f8] dark:bg-neutral-950 p-0 font-sans flex flex-col select-none overflow-x-hidden">
       
-      {/* HEADER VERDE GLOBALE */}
+      {/* HEADER TIMER */}
       <div className="bg-[#15a34a] text-white px-4 py-3.5 flex items-center justify-between shadow-md z-10">
         <div className="flex items-center gap-2">
-          <button
-            onClick={handleGlobalTimerAction}
-            className="border border-white/40 bg-white/10 px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-transform"
-          >
+          <button onClick={handleGlobalTimerAction} className="border border-white/40 bg-white/10 px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-transform">
             {timerStatus === 'running' ? '⏸ Pausa' : timerStatus === 'paused' ? '▶ Riprendi' : '▶ Avvia'}
           </button>
-          
           {timerStatus !== 'idle' && (
-            <button
-              onClick={handleGlobalTimerReset}
-              className="border border-red-300/40 bg-red-600/30 text-red-100 px-3 py-1.5 rounded-lg text-xs font-bold active:scale-95"
-            >
-              ⏹️ Interrompi
+            <button onClick={handleGlobalTimerReset} className="border border-red-300/40 bg-red-600/30 text-red-100 px-3 py-1.5 rounded-lg text-xs font-bold active:scale-95">
+              ⏹️ Stop
             </button>
           )}
         </div>
-        
         <div className="flex items-center gap-1.5 font-mono text-sm font-black tracking-wider">
-          <span>⏱</span>
-          <span>{formatTime(globalTimer)}</span>
+          <span>⏱</span><span>{formatTime(globalTimer)}</span>
         </div>
       </div>
 
-      <div className="p-4 flex-1 flex flex-col justify-between space-y-4 pb-28">
-
-        {/* CARD ESERCIZIO CON CHIPS DINAMICI */}
-        <Card className="p-5 shadow-light-default dark:shadow-dark-default space-y-4 border-none ring-1 ring-neutral-200/50 dark:ring-neutral-800">
-          
-          <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-              {schemaDays.map((day) => (
-                <button
-                  key={day}
-                  onClick={() => setActiveDay(day)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
-                    activeDay === day
-                      ? 'bg-[#15a34a] text-white shadow-sm'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500'
-                  }`}
-                >
-                  {day}
-                </button>
-              ))}
-            </div>
-            {/* Nome della scheda corrente in alto a destra come contesto */}
-            <span className="text-[9px] font-black uppercase tracking-widest text-neutral-300 dark:text-neutral-600 truncate max-w-[100px] ml-2">
-              {schedaAttiva.name}
-            </span>
-          </div>
-
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight">
-                {currentExercise.name}
-              </h2>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 font-semibold">
-                {currentExercise.type} · Target: {currentExercise.target}
-              </p>
-            </div>
-
+      <div className="p-4 flex-1 flex flex-col space-y-4 pb-28">
+        {/* NAVIGATORE GIORNI */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          {schemaDays.map((day) => (
             <button
-              onClick={() => setIsBottomSheetOpen(true)}
-              className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-700 dark:text-white px-3.5 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 active:scale-95 shadow-sm"
+              key={day}
+              onClick={() => setActiveDay(day)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
+                activeDay === day ? 'bg-[#15a34a] text-white shadow-sm' : 'bg-neutral-200/50 text-neutral-500'
+              }`}
             >
-              🔄 Sostituisci
+              {day}
             </button>
-          </div>
+          ))}
+        </div>
 
-          <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              {completedExercises.map((isDoneEx, idx) => (
-                <div
-                  key={idx}
-                  className={`h-1 rounded-full transition-all ${
-                    isDoneEx 
-                      ? 'w-7 bg-[#15a34a]' 
-                      : 'w-4 bg-neutral-200 dark:bg-neutral-800'
-                  }`}
-                />
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-black text-[#15a34a] uppercase tracking-wider">
-                Set {currentSet} di {totalSets}
-              </span>
-              <div className="flex items-center gap-1.5">
-                {completedSets.map((isDone, idx) => (
-                  <div
-                    key={idx}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      isDone 
-                        ? 'bg-[#15a34a]' 
-                        : currentSet === idx + 1 
-                          ? 'bg-neutral-800 dark:bg-white animate-pulse ring-2 ring-neutral-200' 
-                          : 'bg-neutral-200 dark:bg-neutral-800'
-                    }`}
-                  />
-                ))}
+        {/* CONTENUTO DINAMICO */}
+        {!currentExercise ? (
+           <div className="text-center py-12 px-4 border-2 border-dashed border-neutral-200 rounded-3xl bg-white mt-4">
+             <CheckCircle2 size={48} className="mx-auto text-emerald-400 mb-3" />
+             <h3 className="text-lg font-black text-neutral-900">Sessione Libera</h3>
+             <p className="text-xs text-neutral-500 mt-1 font-semibold">Non ci sono (altri) esercizi in programma in {activeDay}.</p>
+           </div>
+        ) : (
+          <>
+            <Card className="p-5 shadow-sm border-none ring-1 ring-neutral-200/50">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-2xl font-black text-neutral-900 tracking-tight">{currentExercise.name}</h2>
+                  <p className="text-xs text-neutral-500 mt-1 font-semibold">Target: {currentExercise.sets} set × {currentExercise.reps} rip @ {currentExercise.weight}kg</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block">Avanzamento</span>
+                  <span className="text-sm font-black text-[#15a34a]">{exerciseIndex + 1} / {routineDelGiorno.length}</span>
+                </div>
               </div>
-            </div>
-          </div>
 
-        </Card>
+              <div className="pt-4 mt-2 border-t border-neutral-100 flex items-center justify-between">
+                <span className="text-xs font-black text-[#15a34a] uppercase tracking-wider">Set {currentSet} di {currentExercise.sets}</span>
+                <div className="flex items-center gap-1.5">
+                  {completedSets.map((isDone, idx) => (
+                    <div key={idx} className={`w-3 h-3 rounded-full transition-colors ${isDone ? 'bg-[#15a34a]' : currentSet === idx + 1 ? 'bg-neutral-800 animate-pulse ring-2 ring-neutral-200' : 'bg-neutral-200'}`} />
+                  ))}
+                </div>
+              </div>
+            </Card>
 
-        {/* TASTONE VERDE DEL RECUPERO CON +/- */}
-        <div className="relative flex flex-col items-center">
-          <button
-            onClick={() => setIsRestActive(!isRestActive)}
-            className={`w-full h-40 rounded-3xl flex flex-col items-center justify-center p-6 shadow-sm border transition-all duration-300 active:scale-[0.99] ${
-              isRestActive
-                ? 'bg-[#15a34a] border-[#13a851] text-white animate-pulse'
-                : 'bg-[#15a34a] border-[#13a851] text-white/95'
-            }`}
-          >
-            <span className="font-mono text-5xl font-black tracking-widest leading-none">
-              {isRestActive ? formatTime(restTime) : '-- : --'}
-            </span>
-            <p className="text-xs font-bold uppercase tracking-wider mt-4 text-center">
-              {isRestActive ? 'Recupero in corso • Tocca per interrompere' : 'Premi qui per avviare il timer di recupero'}
-            </p>
-          </button>
-
-          <div className="flex items-center justify-center gap-2 mt-3 w-full px-2">
-            {[-30, -15, 15, 30].map((sec) => (
-              <button
-                key={sec}
-                onClick={(e) => modifyRestTime(e, sec)}
-                className="flex-1 py-2 border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 rounded-xl text-[11px] font-mono font-bold text-[#15a34a] dark:text-emerald-400 active:scale-95 shadow-sm"
-              >
-                {sec > 0 ? `+${sec}s` : `${sec}s`}
+            <div className="relative flex flex-col items-center">
+              <button onClick={() => setIsRestActive(!isRestActive)} className={`w-full h-40 rounded-3xl flex flex-col items-center justify-center p-6 shadow-sm border transition-all duration-300 active:scale-[0.99] ${isRestActive ? 'bg-[#15a34a] border-[#13a851] text-white animate-pulse' : 'bg-[#15a34a] border-[#13a851] text-white/95'}`}>
+                <span className="font-mono text-5xl font-black tracking-widest leading-none">{isRestActive ? formatTime(restTime) : '-- : --'}</span>
+                <p className="text-xs font-bold uppercase tracking-wider mt-4 text-center">{isRestActive ? 'Recupero in corso' : 'Avvia timer recupero'}</p>
               </button>
-            ))}
-          </div>
-        </div>
-
-        {/* REGOLATORI CARICO & REPS (USANO I COMPONENTI STEPPER REALI DALLA TUA UI.JSX) */}
-        <Card className="shadow-light-default dark:shadow-dark-default p-4 space-y-1 border-none ring-1 ring-neutral-200/50 dark:ring-neutral-800">
-          <Stepper 
-            label="Carico" 
-            value={currentWeight} 
-            onChange={(val) => setCurrentWeight(val)} 
-            step={step} 
-            unit="kg" 
-          />
-          <Stepper 
-            label="Ripetizioni" 
-            value={currentReps} 
-            onChange={(val) => setCurrentReps(val)} 
-            step={1} 
-            unit="rip" 
-          />
-        </Card>
-
-        {/* BOTTONE REGISTRAZIONE SET */}
-        <div className="space-y-2">
-          <Button
-            variant="primary"
-            size="large"
-            fullWidth
-            onClick={handleRegisterSet}
-            className="h-14 font-black tracking-wider text-base rounded-2xl bg-[#15a34a] border-none text-white shadow-md active:bg-green-700"
-          >
-            {timerStatus === 'idle' ? 'INIZIA ALLENAMENTO' : `REGISTRA SET #${currentSet}`}
-          </Button>
-          <p className="text-center text-[10px] text-neutral-400 font-extrabold uppercase tracking-widest">
-            {timerStatus === 'idle' ? 'Premi per iniziare la sessione' : 'Registra il set per avviare il countdown'}
-          </p>
-        </div>
-
-      </div>
-
-      {/* NATIVE-LIKE BOTTOM SHEET (IL CASSETTO DELLA SOSTITUZIONE A TIER) */}
-      {isBottomSheetOpen && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end animate-fade-in">
-          <div className="absolute inset-0" onClick={() => setIsBottomSheetOpen(false)} />
-          
-          <div 
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            className="relative w-full max-w-[420px] mx-auto bg-white dark:bg-neutral-900 rounded-t-[2.5rem] p-6 shadow-2xl z-10 transition-transform duration-300 max-h-[85vh] overflow-y-auto"
-          >
-            <div className="w-12 h-1.5 bg-neutral-300 dark:bg-neutral-700 rounded-full mx-auto mb-6" />
-
-            <div className="space-y-5">
-              <div>
-                <h3 className="text-xl font-black text-neutral-900 dark:text-white">Seleziona Esercizio Alternativo</h3>
-                <p className="text-xs text-neutral-400 uppercase tracking-widest mt-1 font-bold">Varianti biomeccanicamente coerenti</p>
-              </div>
-
-              {/* TIER 1 */}
-              <div className="space-y-2">
-                <span className="text-[10px] font-black tracking-widest text-[#15a34a] uppercase block">Tier 1 • Sostituto Diretto</span>
-                {EXERCISE_DATABASE['CHEST PRESS'].tiers.tier1.map((ex) => (
-                  <button
-                    key={ex.name}
-                    onClick={() => selectAlternative(ex)}
-                    className="w-full text-left p-3.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl border border-neutral-200/50 dark:border-neutral-700 flex justify-between items-center hover:bg-neutral-100"
-                  >
-                    <div>
-                      <span className="text-sm font-bold block text-neutral-900 dark:text-white">{ex.name}</span>
-                      <span className="text-xs text-neutral-400">{ex.type}</span>
-                    </div>
-                    <span className="text-xs text-[#15a34a] font-mono font-bold">{ex.target}</span>
+              <div className="flex items-center justify-center gap-2 mt-3 w-full px-2">
+                {[-30, -15, 15, 30].map((sec) => (
+                  <button key={sec} onClick={(e) => modifyRestTime(e, sec)} className="flex-1 py-2 border border-neutral-200 bg-white rounded-xl text-[11px] font-mono font-bold text-[#15a34a] active:scale-95 shadow-sm">
+                    {sec > 0 ? `+${sec}s` : `${sec}s`}
                   </button>
                 ))}
-              </div>
-
-              {/* TIER 2 */}
-              <div className="space-y-2">
-                <span className="text-[10px] font-black tracking-widest text-amber-600 uppercase block">Tier 2 • Ottima Alternativa</span>
-                {EXERCISE_DATABASE['CHEST PRESS'].tiers.tier2.map((ex) => (
-                  <button
-                    key={ex.name}
-                    onClick={() => selectAlternative(ex)}
-                    className="w-full text-left p-3.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl border border-neutral-200/50 dark:border-neutral-700 flex justify-between items-center hover:bg-neutral-100"
-                  >
-                    <div>
-                      <span className="text-sm font-bold block text-neutral-900 dark:text-white">{ex.name}</span>
-                      <span className="text-xs text-neutral-400">{ex.type}</span>
-                    </div>
-                    <span className="text-xs text-amber-600 font-mono font-bold">{ex.target}</span>
-                  </button>
-                ))}
-              </div>
-
-              {/* TIER 3 */}
-              <div className="space-y-2">
-                <span className="text-[10px] font-black tracking-widest text-red-500 uppercase block">Tier 3 • Sostituto Emergenza</span>
-                {EXERCISE_DATABASE['CHEST PRESS'].tiers.tier3.map((ex) => (
-                  <button
-                    key={ex.name}
-                    onClick={() => selectAlternative(ex)}
-                    className="w-full text-left p-3.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl border border-neutral-200/50 dark:border-neutral-700 flex justify-between items-center hover:bg-neutral-100"
-                  >
-                    <div>
-                      <span className="text-sm font-bold block text-neutral-900 dark:text-white">{ex.name}</span>
-                      <span className="text-xs text-neutral-400">{ex.type}</span>
-                    </div>
-                    <span className="text-xs text-red-500 font-mono font-bold">{ex.target}</span>
-                  </button>
-                ))}
-              </div>
-
-              {/* CHIUDI BUTTON */}
-              <div className="pt-4 flex justify-center">
-                <Button
-                  variant="secondary"
-                  size="small"
-                  onClick={() => setIsBottomSheetOpen(false)}
-                  className="rounded-full px-6 font-bold uppercase tracking-wider"
-                >
-                  Chiudi
-                </Button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
 
+            <Card className="shadow-sm p-4 space-y-1 border-none ring-1 ring-neutral-200/50">
+              <Stepper label="Carico" value={currentWeight} onChange={(val) => setCurrentWeight(val)} step={settings?.step_increment || 1} unit="kg" />
+              <Stepper label="Ripetizioni" value={currentReps} onChange={(val) => setCurrentReps(val)} step={1} unit="rip" />
+            </Card>
+
+            <div className="space-y-2">
+              <Button variant="primary" size="large" fullWidth onClick={handleRegisterSet} className="h-14 font-black tracking-wider text-base rounded-2xl bg-[#15a34a] border-none text-white shadow-md active:bg-green-700">
+                {timerStatus === 'idle' ? 'INIZIA ALLENAMENTO' : `REGISTRA SET #${currentSet}`}
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
