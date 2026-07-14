@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Button, Toggle } from '../components/UI';
 import { supabase } from '../supabaseClient'; 
+import { User, Settings, Moon, Smartphone, Bell, Download, Trash2, LogOut, AlertTriangle } from 'lucide-react';
 
 export const ProfiloView = ({ settings, onSettingsChange, onLogout }) => {
   const updateSetting = (key, value) => {
@@ -28,25 +29,35 @@ export const ProfiloView = ({ settings, onSettingsChange, onLogout }) => {
   };
 
   return (
-    <div className="p-4 space-y-5 pb-12">
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full bg-success flex items-center justify-center text-white text-xl font-bold">AF</div>
+    <div className="p-4 space-y-5 pb-28 bg-[#f0f4f8] dark:bg-neutral-950 min-h-screen font-sans">
+      
+      {/* HEADER */}
+      <div className="flex items-center gap-4">
+        <div className="w-14 h-14 rounded-2xl bg-[#15a34a] flex items-center justify-center text-white shadow-md">
+          <User size={28} />
+        </div>
         <div>
-          <h2 className="text-h2 font-bold text-neutral-950 dark:text-white">Il mio profilo</h2>
-          <p className="text-xs text-neutral-500">Impostazioni e preferenze locali</p>
+          <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight">Il mio Profilo</h2>
+          <p className="text-xs font-semibold text-neutral-500 mt-0.5">Gestione account e preferenze</p>
         </div>
       </div>
 
-      {/* Sezione Preferenze */}
+      {/* PREFERENZE APP */}
       <div>
-        <span className="text-xs font-bold tracking-wider text-neutral-400 uppercase block mb-1.5">Preferenze App</span>
-        <Card className="space-y-4">
+        <span className="flex items-center gap-1.5 text-[10px] font-black tracking-widest text-neutral-400 uppercase mb-2 ml-1">
+          <Settings size={12} /> Preferenze App
+        </span>
+        <Card className="p-4 space-y-5 border-none ring-1 ring-neutral-200/50 dark:ring-neutral-800 shadow-sm">
+          
           <div className="flex justify-between items-center">
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">Tema App</span>
+            <div className="flex items-center gap-2">
+              <Moon size={18} className="text-neutral-500" />
+              <span className="text-sm font-bold text-neutral-700 dark:text-neutral-300">Tema Interfaccia</span>
+            </div>
             <select 
               value={settings.theme_preference}
               onChange={(e) => updateSetting('theme_preference', e.target.value)}
-              className="bg-neutral-50 dark:bg-neutral-800 border rounded p-1 text-sm dark:text-white"
+              className="bg-neutral-100 dark:bg-neutral-800 border-none rounded-lg p-2 text-xs font-bold text-neutral-900 dark:text-white focus:ring-2 focus:ring-[#15a34a]"
             >
               <option value="System">Sistema</option>
               <option value="Light">Light Mode</option>
@@ -54,66 +65,61 @@ export const ProfiloView = ({ settings, onSettingsChange, onLogout }) => {
             </select>
           </div>
 
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">Arrotondamento Carichi</span>
-            <div className="flex items-center gap-1">
-              {[0.5, 1, 2.5].map((step) => (
-                <button
-                  key={step}
-                  type="button"
-                  onClick={() => updateSetting('step_increment', step)}
-                  className={`px-3 py-1.5 font-mono text-xs font-semibold rounded ${
-                    settings.step_increment === step ? 'bg-success text-white' : 'bg-neutral-100 dark:bg-neutral-800 dark:text-white'
-                  }`}
-                >
-                  {step} kg
-                </button>
-              ))}
-            </div>
-          </div>
         </Card>
       </div>
 
-      {/* Sezione Feedback Allenamento */}
+      {/* FEEDBACK ALLENAMENTO */}
       <div>
-        <span className="text-xs font-bold tracking-wider text-neutral-400 uppercase block mb-1.5">Feedback durante l'allenamento</span>
-        <Card className="space-y-4">
+        <span className="flex items-center gap-1.5 text-[10px] font-black tracking-widest text-neutral-400 uppercase mb-2 ml-1">
+          <Smartphone size={12} /> Feedback Allenamento
+        </span>
+        <Card className="p-4 space-y-5 border-none ring-1 ring-neutral-200/50 dark:ring-neutral-800 shadow-sm">
+          
           <div className="flex justify-between items-center">
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">Vibrazione (Haptic)</span>
+            <div className="flex items-center gap-2">
+              <Smartphone size={18} className="text-neutral-500" />
+              <span className="text-sm font-bold text-neutral-700 dark:text-neutral-300">Vibrazione (Haptic)</span>
+            </div>
             <Toggle checked={settings.vibration} onChange={(val) => updateSetting('vibration', val)} />
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">Suono fine countdown</span>
+          
+          <div className="flex justify-between items-center pt-2 border-t border-neutral-100 dark:border-neutral-800">
+            <div className="flex items-center gap-2">
+              <Bell size={18} className="text-neutral-500" />
+              <span className="text-sm font-bold text-neutral-700 dark:text-neutral-300">Suono fine timer</span>
+            </div>
             <Toggle checked={settings.prep_sound} onChange={(val) => updateSetting('prep_sound', val)} />
           </div>
+          
         </Card>
       </div>
 
-      {/* Sezione Esportazione Dati e Sicurezza Account */}
-      <div className="pt-2">
-        <span className="text-xs font-bold tracking-wider text-neutral-400 uppercase block mb-1.5">Azioni Account</span>
-        <Card className="space-y-3 bg-neutral-50 dark:bg-neutral-900 border-dashed">
-          <Button variant="secondary" fullWidth onClick={() => alert("Esportazione CSV avviata.")}>
-            📥 Esporta Storico Logs (CSV)
-          </Button>
-          <Button variant="destructive" fullWidth onClick={() => alert("Storico eliminato localmente.")}>
-            🗑 Cancella Storico Locale
+      {/* AZIONI E SICUREZZA */}
+      <div className="pt-4">
+        <span className="text-[10px] font-black tracking-widest text-neutral-400 uppercase block mb-2 ml-1">Zona Sicurezza</span>
+        <Card className="p-4 space-y-3 bg-white dark:bg-neutral-900 border-dashed border-2 border-neutral-200 dark:border-neutral-800 shadow-none">
+          
+          <Button variant="secondary" fullWidth onClick={() => alert("Esportazione CSV avviata.")} className="gap-2 justify-start rounded-xl text-xs">
+            <Download size={16} /> Esporta Storico Logs (CSV)
           </Button>
           
-          {/* Zona Rossa */}
-          <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800 space-y-2">
-            <Button variant="secondary" className="text-neutral-500 hover:text-neutral-700 w-full" onClick={onLogout}>
-              🚪 Disconnetti Account
+          <Button variant="secondary" fullWidth onClick={() => alert("Storico eliminato localmente.")} className="gap-2 justify-start rounded-xl text-xs text-neutral-600">
+            <Trash2 size={16} /> Cancella Storico Locale
+          </Button>
+          
+          <div className="pt-3 mt-3 border-t border-neutral-100 dark:border-neutral-800 space-y-3">
+            <Button variant="secondary" fullWidth onClick={onLogout} className="gap-2 justify-center rounded-xl text-xs font-black border-none bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200">
+              <LogOut size={16} /> Disconnetti Account
             </Button>
             
-            <Button variant="destructive" fullWidth onClick={handleEliminaAccount}>
-              ⚠️ ELIMINA ACCOUNT DEFINITIVAMENTE
+            <Button variant="destructive" fullWidth onClick={handleEliminaAccount} className="gap-2 justify-center rounded-xl text-xs font-black shadow-md">
+              <AlertTriangle size={16} /> Elimina Account Definitivamente
             </Button>
           </div>
+          
         </Card>
       </div>
+      
     </div>
   );
 };
-
-  
