@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Button, Stepper, Card, Toggle } from '../components/UI';
 
-// Database degli esercizi con le alternative strutturate rigidamente in Tier Biomeccanici
+// Database degli esercizi con le alternative strutturate in Tier Biomeccanici
 const EXERCISE_DATABASE = {
   'CHEST PRESS': {
     name: 'CHEST PRESS',
@@ -62,7 +63,13 @@ export const AllenatiView = ({ settings }) => {
   // --- STATI TRACCIAMENTO SESSIONE (LINEETTE ESERCIZI) ---
   const [completedExercises, setCompletedExercises] = useState([true, false, false, false]);
 
-  // --- 1. LOGICA TIMER GLOBALE (TRE STATI) ---
+  // --- 1. SINCRO PESO/REPS AL CAMBIO ESERCIZIO ---
+  useEffect(() => {
+    setCurrentWeight(currentExercise.defaultWeight);
+    setCurrentReps(currentExercise.defaultReps);
+  }, [currentExercise]);
+
+  // --- 2. LOGICA TIMER GLOBALE (TRE STATI) ---
   useEffect(() => {
     let interval = null;
     if (timerStatus === 'running') {
@@ -92,7 +99,7 @@ export const AllenatiView = ({ settings }) => {
     setGlobalTimer(0);
   };
 
-  // --- 2. LOGICA TIMER DI RECUPERO ---
+  // --- 3. LOGICA TIMER DI RECUPERO ---
   useEffect(() => {
     let restInterval = null;
     if (isRestActive && restTime > 0) {
@@ -122,20 +129,11 @@ export const AllenatiView = ({ settings }) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // --- 3. FIX ERGONOMIA ED EVENTI MOBILE ---
-  const handleAction = (e, callback) => {
-    e.preventDefault();
-    e.stopPropagation();
-    callback();
-  };
-
   const step = settings?.step_increment || 1;
 
   // --- 4. GESTIONE SOSTITUZIONE ESERCIZIO ---
   const selectAlternative = (exercise) => {
     setCurrentExercise(exercise);
-    setCurrentWeight(exercise.defaultWeight);
-    setCurrentReps(exercise.defaultReps);
     setIsBottomSheetOpen(false);
   };
 
@@ -147,7 +145,7 @@ export const AllenatiView = ({ settings }) => {
   const handleTouchMove = (e) => {
     if (touchStartClientY !== null) {
       const currentY = e.touches[0].clientY;
-      if (currentY - touchStartClientY > 100) { // Trascinamento verso il basso > 100px
+      if (currentY - touchStartClientY > 100) { 
         setIsBottomSheetOpen(false);
         setTouchStartClientY(null);
       }
@@ -177,12 +175,11 @@ export const AllenatiView = ({ settings }) => {
   return (
     <div className="min-h-screen w-full bg-[#f0f4f8] dark:bg-neutral-950 p-0 font-sans flex flex-col select-none relative overflow-x-hidden">
       
-      {/* ================= HEADER VERDE (MANTENUTO E PERFEZIONATO) ================= */}
+      {/* ================= HEADER VERDE (SCREENSHOT BRANDING) ================= */}
       <div className="bg-[#15a34a] text-white px-4 py-3.5 flex items-center justify-between shadow-md z-10">
         <div className="flex items-center gap-2">
           {/* Tasto Azione Timer */}
           <button
-            onTouchStart={handleGlobalTimerAction}
             onClick={handleGlobalTimerAction}
             className="border border-white/40 bg-white/10 px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-transform"
           >
@@ -192,7 +189,6 @@ export const AllenatiView = ({ settings }) => {
           {/* Tasto Reset/Interrompi */}
           {timerStatus !== 'idle' && (
             <button
-              onTouchStart={handleGlobalTimerReset}
               onClick={handleGlobalTimerReset}
               className="border border-red-300/40 bg-red-600/30 text-red-100 px-3 py-1.5 rounded-lg text-xs font-bold active:scale-95"
             >
@@ -209,16 +205,15 @@ export const AllenatiView = ({ settings }) => {
 
       <div className="p-4 flex-1 flex flex-col justify-between space-y-4 pb-28">
 
-        {/* ================= CARD ESERCIZIO INGRANDITA CON CHIPS GIORNO ================= */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-3xl p-5 shadow-sm space-y-4">
+        {/* ================= CARD ESERCIZIO CON CHIPS DEI GIORNI ================= */}
+        <Card className="p-5 shadow-light-default dark:shadow-dark-default space-y-4">
           
           {/* Riga Superiore: Chips dei Giorni d'Allenamento */}
-          <div className="flex items-center gap-1.5 border-b border-neutral-100 dark:border-neutral-800/60 pb-3">
+          <div className="flex items-center gap-1.5 border-b border-neutral-100 dark:border-neutral-800 pb-3">
             {schemaDays.map((day) => (
               <button
                 key={day}
-                onTouchStart={(e) => handleAction(e, () => setActiveDay(day))}
-                onClick={(e) => handleAction(e, () => setActiveDay(day))}
+                onClick={() => setActiveDay(day)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
                   activeDay === day
                     ? 'bg-[#15a34a] text-white shadow-sm'
@@ -242,8 +237,7 @@ export const AllenatiView = ({ settings }) => {
 
             {/* Pulsante Sostituisci (Apre il Bottom Sheet) */}
             <button
-              onTouchStart={(e) => handleAction(e, () => setIsBottomSheetOpen(true))}
-              onClick={(e) => handleAction(e, () => setIsBottomSheetOpen(true))}
+              onClick={() => setIsBottomSheetOpen(true)}
               className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-700 dark:text-white px-3.5 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 active:scale-95 shadow-sm"
             >
               🔄 Sostituisci
@@ -251,7 +245,7 @@ export const AllenatiView = ({ settings }) => {
           </div>
 
           {/* Lineette degli esercizi e Pallini per i set */}
-          <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800/60 flex items-center justify-between">
+          <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
             <div className="flex items-center gap-1">
               {completedExercises.map((isDoneEx, idx) => (
                 <div
@@ -286,12 +280,11 @@ export const AllenatiView = ({ settings }) => {
             </div>
           </div>
 
-        </div>
+        </Card>
 
-        {/* ================= TASTONE VERDE CON PULSANTI RAPIDI +/- TEMPO ================= */}
+        {/* ================= TASTONE VERDE DEL RECUPERO CON BOTTONI RAPIDI +/- ================= */}
         <div className="relative flex flex-col items-center">
           
-          {/* Pulsante Centrale del Recupero (Interazione pulita) */}
           <button
             onClick={() => setIsRestActive(!isRestActive)}
             className={`w-full h-40 rounded-3xl flex flex-col items-center justify-center p-6 shadow-sm border transition-all duration-300 active:scale-[0.99] ${
@@ -313,7 +306,6 @@ export const AllenatiView = ({ settings }) => {
             {[-30, -15, 15, 30].map((sec) => (
               <button
                 key={sec}
-                onTouchStart={(e) => modifyRestTime(e, sec)}
                 onClick={(e) => modifyRestTime(e, sec)}
                 className="flex-1 py-2 border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 rounded-xl text-[11px] font-mono font-bold text-[#15a34a] dark:text-emerald-400 active:scale-95 shadow-sm"
               >
@@ -324,66 +316,35 @@ export const AllenatiView = ({ settings }) => {
 
         </div>
 
-        {/* ================= REGOLATORI CARICO & RIPETIZIONI ================= */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 rounded-2xl p-4 shadow-sm space-y-3">
-          {/* Peso */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-black text-neutral-600 dark:text-neutral-400 pl-1">Carico (kg)</span>
-            <div className="flex items-center border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden bg-neutral-50 dark:bg-neutral-800">
-              <button
-                onTouchStart={(e) => handleAction(e, () => setCurrentWeight(prev => Math.max(0, prev - step)))}
-                onClick={(e) => handleAction(e, () => setCurrentWeight(prev => Math.max(0, prev - step)))}
-                className="w-11 h-10 flex items-center justify-center font-bold text-neutral-600 dark:text-white border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 active:bg-neutral-100"
-              >
-                —
-              </button>
-              <div className="w-24 text-center font-mono font-black text-[#15a34a] dark:text-emerald-400">
-                {currentWeight} kg
-              </div>
-              <button
-                onTouchStart={(e) => handleAction(e, () => setCurrentWeight(prev => prev + step))}
-                onClick={(e) => handleAction(e, () => setCurrentWeight(prev => prev + step))}
-                className="w-11 h-10 flex items-center justify-center font-bold text-neutral-600 dark:text-white border-l border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 active:bg-neutral-100"
-              >
-                +
-              </button>
-            </div>
-          </div>
+        {/* ================= REGOLATORI CARICO & REPS (USANO I COMPONENTI STEPPER REALI) ================= */}
+        <Card className="shadow-light-default dark:shadow-dark-default p-4 space-y-1">
+          <Stepper 
+            label="Carico" 
+            value={currentWeight} 
+            onChange={(val) => setCurrentWeight(val)} 
+            step={step} 
+            unit="kg" 
+          />
+          <Stepper 
+            label="Ripetizioni" 
+            value={currentReps} 
+            onChange={(val) => setCurrentReps(val)} 
+            step={1} 
+            unit="rip" 
+          />
+        </Card>
 
-          {/* Ripetizioni */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-black text-neutral-600 dark:text-neutral-400 pl-1">Ripetizioni</span>
-            <div className="flex items-center border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden bg-neutral-50 dark:bg-neutral-800">
-              <button
-                onTouchStart={(e) => handleAction(e, () => setCurrentReps(prev => Math.max(0, prev - 1)))}
-                onClick={(e) => handleAction(e, () => setCurrentReps(prev => Math.max(0, prev - 1)))}
-                className="w-11 h-10 flex items-center justify-center font-bold text-neutral-600 dark:text-white border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 active:bg-neutral-100"
-              >
-                —
-              </button>
-              <div className="w-24 text-center font-mono font-black text-[#15a34a] dark:text-emerald-400">
-                {currentReps} rip
-              </div>
-              <button
-                onTouchStart={(e) => handleAction(e, () => setCurrentReps(prev => prev + 1))}
-                onClick={(e) => handleAction(e, () => setCurrentReps(prev => prev + 1))}
-                className="w-11 h-10 flex items-center justify-center font-bold text-neutral-600 dark:text-white border-l border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 active:bg-neutral-100"
-              >
-                +
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* ================= BOTTONE D'AZIONE GLOBALE ================= */}
+        {/* ================= BOTTONE REGISTRAZIONE SET (USA BUTTON COMPONENT) ================= */}
         <div className="space-y-2">
-          <button
-            onTouchStart={(e) => handleAction(e, handleRegisterSet)}
-            onClick={(e) => handleAction(e, handleRegisterSet)}
-            className="w-full h-14 bg-[#15a34a] hover:bg-[#13a851] text-white font-black rounded-2xl text-base uppercase tracking-wider shadow-md active:scale-[0.98] flex items-center justify-center"
+          <Button
+            variant="primary"
+            size="large"
+            fullWidth
+            onClick={handleRegisterSet}
+            className="h-14 font-black tracking-wider text-base rounded-2xl bg-[#15a34a] dark:bg-[#15a34a] text-white active:bg-green-700"
           >
             {timerStatus === 'idle' ? 'INIZIA ALLENAMENTO' : `REGISTRA SET #${currentSet}`}
-          </button>
+          </Button>
           <p className="text-center text-[10px] text-neutral-400 font-extrabold uppercase tracking-widest">
             {timerStatus === 'idle' ? 'Premi per iniziare la sessione' : 'Registra il set per avviare il countdown'}
           </p>
@@ -394,16 +355,13 @@ export const AllenatiView = ({ settings }) => {
       {/* ================= NATIVE-LIKE BOTTOM SHEET (IL CASSETTO DELLA SOSTITUZIONE) ================= */}
       {isBottomSheetOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end animate-fade-in">
-          {/* Sfondo cliccabile per chiudere */}
           <div className="absolute inset-0" onClick={() => setIsBottomSheetOpen(false)} />
           
-          {/* Contenitore Sheet */}
           <div 
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             className="relative w-full max-w-[420px] mx-auto bg-white dark:bg-neutral-900 rounded-t-[2.5rem] p-6 shadow-2xl z-10 transition-transform duration-300 max-h-[85vh] overflow-y-auto"
           >
-            {/* Handle Bar per il feedback di trascinamento */}
             <div className="w-12 h-1.5 bg-neutral-300 dark:bg-neutral-700 rounded-full mx-auto mb-6" />
 
             <div className="space-y-5">
@@ -414,12 +372,12 @@ export const AllenatiView = ({ settings }) => {
 
               {/* TIER 1 */}
               <div className="space-y-2">
-                <span className="text-[10px] font-black tracking-widest text-emerald-600 dark:text-emerald-400 uppercase block">Tier 1 • Sostituto Diretto</span>
+                <span className="text-[10px] font-black tracking-widest text-[#15a34a] dark:text-emerald-400 uppercase block">Tier 1 • Sostituto Diretto</span>
                 {EXERCISE_DATABASE['CHEST PRESS'].tiers.tier1.map((ex) => (
                   <button
                     key={ex.name}
                     onClick={() => selectAlternative(ex)}
-                    className="w-full text-left p-3.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl border border-neutral-200/50 dark:border-neutral-700 flex justify-between items-center hover:bg-neutral-100"
+                    className="w-full text-left p-3.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl border border-neutral-200/50 dark:border-neutral-700 flex justify-between items-center hover:bg-neutral-100 dark:hover:bg-neutral-700"
                   >
                     <div>
                       <span className="text-sm font-bold block text-neutral-900 dark:text-white">{ex.name}</span>
@@ -437,7 +395,7 @@ export const AllenatiView = ({ settings }) => {
                   <button
                     key={ex.name}
                     onClick={() => selectAlternative(ex)}
-                    className="w-full text-left p-3.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl border border-neutral-200/50 dark:border-neutral-700 flex justify-between items-center hover:bg-neutral-100"
+                    className="w-full text-left p-3.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl border border-neutral-200/50 dark:border-neutral-700 flex justify-between items-center hover:bg-neutral-100 dark:hover:bg-neutral-700"
                   >
                     <div>
                       <span className="text-sm font-bold block text-neutral-900 dark:text-white">{ex.name}</span>
@@ -455,7 +413,7 @@ export const AllenatiView = ({ settings }) => {
                   <button
                     key={ex.name}
                     onClick={() => selectAlternative(ex)}
-                    className="w-full text-left p-3.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl border border-neutral-200/50 dark:border-neutral-700 flex justify-between items-center hover:bg-neutral-100"
+                    className="w-full text-left p-3.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl border border-neutral-200/50 dark:border-neutral-700 flex justify-between items-center hover:bg-neutral-100 dark:hover:bg-neutral-700"
                   >
                     <div>
                       <span className="text-sm font-bold block text-neutral-900 dark:text-white">{ex.name}</span>
@@ -468,12 +426,14 @@ export const AllenatiView = ({ settings }) => {
 
               {/* Tasto Chiudi in basso al centro */}
               <div className="pt-4 flex justify-center">
-                <button
+                <Button
+                  variant="secondary"
+                  size="small"
                   onClick={() => setIsBottomSheetOpen(false)}
-                  className="px-6 py-2.5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 text-xs font-black uppercase tracking-widest rounded-full shadow-md active:scale-95"
+                  className="rounded-full px-6 font-bold uppercase tracking-wider"
                 >
                   Chiudi
-                </button>
+                </Button>
               </div>
             </div>
           </div>
