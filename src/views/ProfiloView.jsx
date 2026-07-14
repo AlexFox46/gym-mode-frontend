@@ -1,9 +1,30 @@
 import React from 'react';
 import { Card, Button, Toggle } from '../components/UI';
+import { supabase } from '../supabaseClient'; 
 
 export const ProfiloView = ({ settings, onSettingsChange, onLogout }) => {
   const updateSetting = (key, value) => {
     onSettingsChange({ ...settings, [key]: value });
+  };
+
+  const handleEliminaAccount = async () => {
+    const conferma = window.confirm(
+      "ATTENZIONE: Sei sicuro di voler eliminare definitivamente il tuo account? Questa azione è irreversibile."
+    );
+    
+    if (conferma) {
+      try {
+        const { error } = await supabase.rpc('delete_user');
+        if (error) throw error;
+        
+        alert("Account eliminato con successo.");
+        await supabase.auth.signOut();
+        window.location.reload(); 
+      } catch (err) {
+        console.error("Errore durante l'eliminazione:", err);
+        alert("Impossibile eliminare l'account: " + err.message);
+      }
+    }
   };
 
   return (
@@ -16,27 +37,9 @@ export const ProfiloView = ({ settings, onSettingsChange, onLogout }) => {
         </div>
       </div>
 
-      {/* Sezione Biometrici */}
-      <div>
-        <span className="text-xs font-bold tracking-wider text-neutral-400 uppercase block mb-1.5">Biometrici</span>
-        <Card className="divide-y divide-neutral-200 dark:divide-neutral-800 p-0">
-          <div className="flex justify-between items-center p-3">
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">Peso Corporeo</span>
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-bold dark:text-white">{settings.weight} kg</span>
-              <Button size="small" variant="secondary" onClick={() => updateSetting('weight', settings.weight + 1)}>Modifica</Button>
-            </div>
-          </div>
-          <div className="flex justify-between items-center p-3">
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">Altezza</span>
-            <span className="font-mono font-bold dark:text-white">{settings.height} cm</span>
-          </div>
-        </Card>
-      </div>
-
       {/* Sezione Preferenze */}
       <div>
-        <span className="text-xs font-bold tracking-wider text-neutral-400 uppercase block mb-1.5">Preferenze</span>
+        <span className="text-xs font-bold tracking-wider text-neutral-400 uppercase block mb-1.5">Preferenze App</span>
         <Card className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-sm text-neutral-700 dark:text-neutral-300">Tema App</span>
@@ -97,10 +100,14 @@ export const ProfiloView = ({ settings, onSettingsChange, onLogout }) => {
             🗑 Cancella Storico Locale
           </Button>
           
-          {/* Zona Rossa - Autenticazione Supabase */}
-          <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
-            <Button variant="destructive" fullWidth onClick={onLogout}>
+          {/* Zona Rossa */}
+          <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800 space-y-2">
+            <Button variant="secondary" className="text-neutral-500 hover:text-neutral-700 w-full" onClick={onLogout}>
               🚪 Disconnetti Account
+            </Button>
+            
+            <Button variant="destructive" fullWidth onClick={handleEliminaAccount}>
+              ⚠️ ELIMINA ACCOUNT DEFINITIVAMENTE
             </Button>
           </div>
         </Card>
