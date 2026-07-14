@@ -26,7 +26,7 @@ const EQUIPMENT_TYPES = ['Bilanciere', 'Manubri', 'Macchina', 'Cavi', 'Corpo Lib
 
 export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva }) => {
   const [viewState, setViewState] = useState('list'); 
-  const [editingId, setEditingId] = useState(null); // NUOVO: Traccia se stiamo modificando
+  const [editingId, setEditingId] = useState(null); 
   
   const [newSchedaName, setNewSchedaName] = useState('');
   const [newSchedaDays, setNewSchedaDays] = useState(2);
@@ -42,6 +42,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
   const [targetSets, setTargetSets] = useState(4);
   const [targetReps, setTargetReps] = useState(10);
   const [targetWeight, setTargetWeight] = useState(20);
+  const [targetRest, setTargetRest] = useState(90); // Stato per il tempo di recupero
 
   const startCreation = () => {
     setEditingId(null);
@@ -50,12 +51,10 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     setViewState('setup');
   };
 
-  // NUOVO: Apre la scheda esistente nel Builder
   const handleEditScheda = (scheda) => {
     setEditingId(scheda.id);
     setNewSchedaName(scheda.name);
     setNewSchedaDays(scheda.daysCount);
-    // Deep copy per non mutare lo stato attivo prima del salvataggio
     setWorkoutRoutine(JSON.parse(JSON.stringify(scheda.routine)));
     setActiveBuilderDay('G1');
     setViewState('builder');
@@ -63,12 +62,9 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
 
   const proceedToBuilder = () => {
     if (!newSchedaName.trim()) return;
-    
     if (!editingId) {
       const initialRoutine = {};
-      for (let i = 1; i <= newSchedaDays; i++) {
-        initialRoutine[`G${i}`] = [];
-      }
+      for (let i = 1; i <= newSchedaDays; i++) initialRoutine[`G${i}`] = [];
       setWorkoutRoutine(initialRoutine);
     }
     setActiveBuilderDay('G1');
@@ -85,12 +81,10 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     };
 
     if (editingId) {
-      // Aggiorna esistente
       const schedeAggiornate = schede.map(s => s.id === editingId ? schedaAggiornata : s);
       setSchede(schedeAggiornate);
       if (schedaAttiva?.id === editingId) setSchedaAttiva(schedaAggiornata);
     } else {
-      // Crea nuova
       const schedeAggiornate = [...schede, schedaAggiornata];
       setSchede(schedeAggiornate);
       if (!schedaAttiva) setSchedaAttiva(schedaAggiornata);
@@ -129,6 +123,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     setTargetSets(4);
     setTargetReps(10);
     setTargetWeight(20);
+    setTargetRest(90); // Reset del recupero a 90 sec all'apertura
   };
 
   const confirmAndAddExercise = () => {
@@ -137,7 +132,8 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
       instanceId: Date.now() + Math.random(), 
       sets: targetSets,
       reps: targetReps,
-      weight: targetWeight
+      weight: targetWeight,
+      rest: targetRest 
     };
 
     setWorkoutRoutine(prev => ({
@@ -283,7 +279,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                 <div>
                   <h4 className="text-sm font-black text-neutral-900">{ex.name}</h4>
                   <p className="text-[10px] font-bold text-neutral-400 mt-0.5">
-                    {ex.sets} set × {ex.reps} rip @ {ex.weight}kg
+                    {ex.sets} set × {ex.reps} rip @ {ex.weight}kg • {ex.rest || 90}s rec.
                   </p>
                 </div>
               </div>
@@ -370,6 +366,8 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
               <Stepper label="Serie (Set)" value={targetSets} onChange={setTargetSets} step={1} />
               <Stepper label="Ripetizioni" value={targetReps} onChange={setTargetReps} step={1} />
               <Stepper label="Carico base" value={targetWeight} onChange={setTargetWeight} step={2.5} unit="kg" />
+              {/* Stepper del recupero aggiunto per coerenza visiva e architetturale */}
+              <Stepper label="Recupero" value={targetRest} onChange={setTargetRest} step={15} unit="sec" />
             </Card>
             <div className="flex gap-2 pb-6">
               <Button variant="secondary" fullWidth onClick={() => setConfiguringExercise(null)} className="rounded-2xl">Annulla</Button>
