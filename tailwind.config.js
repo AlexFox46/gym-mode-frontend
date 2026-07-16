@@ -1,31 +1,16 @@
-/** @type {import('tailwindcss').Config} */
+// tailwind.config.js
 module.exports = {
   darkMode: 'class',
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        // Palette "Athletic" basata sulle tue reference
-        primary: {
-          DEFAULT: '#CCFF00', // Lime Elettrico
-          dark: '#B8E600',
-        },
-        surface: {
-          DEFAULT: '#0A0A0A', // Antracite Profondo
-          secondary: '#1A1A1A',
-          tertiary: '#262626',
-        },
-        text: {
-          primary: '#FFFFFF',
-          secondary: '#A3A3A3',
-          tertiary: '#737373',
-        }
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-      },
-    },
-  },
-  plugins: [],
+        primary: '#FF5722', // Arancio Energetico
+        'primary-dark': '#E64A19',
+        surface: '#000000', // Nero assoluto
+        'surface-secondary': '#121212', // Nero leggermente rialzato
+        'surface-tertiary': '#262626', // Bordi/divisori
+        text: { primary: '#FFFFFF', secondary: '#A3A3A3', teriary: '#737373' }
+      }
+    }
+  }
 }
