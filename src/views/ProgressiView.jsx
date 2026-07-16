@@ -42,11 +42,15 @@ export const ProgressiView = ({ storico = [] }) => {
       {/* CALENDARIO */}
       <Card className="mb-6">
         <div className="flex items-center justify-between mb-6 border-b border-surface-tertiary pb-4">
-          <button onClick={() => setCurrentDate(new Date(currentYear, currentMonth - 1, 1))} className="p-2 text-text-tertiary hover:text-primary"><ChevronLeft size={20}/></button>
+          <button onClick={() => setCurrentDate(new Date(currentYear, currentMonth - 1, 1))} className="p-2 text-white hover:text-primary transition-colors">
+            <ChevronLeft size={20}/>
+          </button>
           <span className="text-xs font-black tracking-widest text-white uppercase">
             {currentDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}
           </span>
-          <button onClick={() => setCurrentDate(new Date(currentYear, currentMonth + 1, 1))} className="p-2 text-text-tertiary hover:text-primary"><ChevronRight size={20}/></button>
+          <button onClick={() => setCurrentDate(new Date(currentYear, currentMonth + 1, 1))} className="p-2 text-white hover:text-primary transition-colors">
+            <ChevronRight size={20}/>
+          </button>
         </div>
         
         <div className="grid grid-cols-7 gap-2 text-center mb-4">
