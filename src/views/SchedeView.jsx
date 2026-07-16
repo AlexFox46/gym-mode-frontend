@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Card, Button, Stepper } from '../components/UI';
 import { Plus, X, Search, CheckCircle2, Circle, Edit2 } from 'lucide-react';
 
-// Costanti di sistema
 const EXERCISE_CATALOG = [
   { id: 'e1', name: 'Chest Press', muscle: 'Petto', equipment: 'Macchina' },
   { id: 'e2', name: 'Panca Piana', muscle: 'Petto', equipment: 'Bilanciere' },
@@ -33,13 +32,12 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
   const [workoutRoutine, setWorkoutRoutine] = useState({});
   const [activeBuilderDay, setActiveBuilderDay] = useState('G1');
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
-  
-  // Stati filtri
+  const [error, setError] = useState(''); // Stato errore correttamente inizializzato qui
+
   const [searchQuery, setSearchQuery] = useState('');
   const [muscleFilter, setMuscleFilter] = useState('');
   const [equipmentFilter, setEquipmentFilter] = useState('');
 
-  // Logica filtri
   const filteredExercises = EXERCISE_CATALOG.filter(ex => {
     const matchesSearch = ex.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMuscle = muscleFilter ? ex.muscle === muscleFilter : true;
@@ -47,10 +45,13 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     return matchesSearch && matchesMuscle && matchesEquip;
   });
 
-  const startCreation = () => { setEditingId(null); setNewSchedaName(''); setNewSchedaDays(2); setViewState('setup'); };
+  const startCreation = () => { setEditingId(null); setNewSchedaName(''); setNewSchedaDays(2); setViewState('setup'); setError(''); };
   
   const proceedToBuilder = () => { 
-    if (!newSchedaName.trim()) return; 
+    if (!newSchedaName.trim()) {
+      setError('Devi inserire un nome per la scheda per continuare');
+      return;
+    }
     const initialRoutine = {}; 
     for (let i = 1; i <= newSchedaDays; i++) initialRoutine[`G${i}`] = []; 
     setWorkoutRoutine(initialRoutine);
@@ -69,7 +70,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
   return (
     <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32 text-text-primary">
       
-      {/* VIEW LISTA */}
       {viewState === 'list' && (
         <>
           <div className="flex items-center justify-between mb-8">
@@ -81,7 +81,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
               <Card key={s.id} onClick={() => setSchedaAttiva(s)} className={schedaAttiva?.id === s.id ? 'border-primary' : ''}>
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-white">{s.name}</span>
-                  <button onClick={(e) => { e.stopPropagation(); /* edit logic */ }}><Edit2 size={16} /></button>
+                  <button onClick={(e) => { e.stopPropagation(); }}><Edit2 size={16} /></button>
                 </div>
               </Card>
             ))}
@@ -89,7 +89,24 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
         </>
       )}
 
-      {/* VIEW BUILDER */}
+      {viewState === 'setup' && (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-black text-white">Configurazione</h2>
+          <div className="space-y-2">
+            <input 
+              type="text" 
+              value={newSchedaName} 
+              onChange={(e) => { setNewSchedaName(e.target.value); if(error) setError(''); }} 
+              className={`w-full bg-surface-secondary p-4 rounded-2xl text-white border ${error ? 'border-red-500' : 'border-surface-tertiary'}`} 
+              placeholder="Nome Scheda..." 
+            />
+            {error && <p className="text-red-500 text-[10px] font-black uppercase ml-2">{error}</p>}
+          </div>
+          <Stepper label="Giorni" value={newSchedaDays} onChange={setNewSchedaDays} step={1} unit="giorni" />
+          <Button variant="primary" fullWidth onClick={proceedToBuilder}>Avanti</Button>
+        </div>
+      )}
+
       {viewState === 'builder' && (
         <div className="space-y-6">
           <div className="flex gap-2 overflow-x-auto pb-2">
@@ -109,14 +126,12 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
             <Button variant="secondary" fullWidth onClick={() => setIsCatalogOpen(true)}>+ Aggiungi Esercizio</Button>
           </div>
 
-          {/* CATALOGO / FILTRI */}
           {isCatalogOpen && (
             <div className="fixed inset-0 bg-surface z-50 p-4 overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-black">Scegli Esercizio</h2>
                 <button onClick={() => setIsCatalogOpen(false)}><X size={24} /></button>
               </div>
-              
               <div className="space-y-4 mb-6">
                 <input type="text" placeholder="Cerca..." onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-surface-secondary p-3 rounded-xl border border-surface-tertiary" />
                 <div className="grid grid-cols-2 gap-2">
@@ -130,7 +145,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                   </select>
                 </div>
               </div>
-
               <div className="space-y-2">
                 {filteredExercises.map(ex => (
                   <div key={ex.id} className="flex justify-between items-center bg-surface-secondary p-4 rounded-xl border border-surface-tertiary">
