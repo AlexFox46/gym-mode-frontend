@@ -22,7 +22,7 @@ export const ProgressiView = ({ storico = [] }) => {
   const tonnellaggioMensile = logsInViewMonth.reduce((acc, log) => acc + (log.tonnage || 0), 0).toFixed(1);
 
   return (
-    <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32">
+    <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32 text-text-primary">
       
       {/* HEADER */}
       <div className="flex items-center justify-between mb-8">
@@ -30,7 +30,7 @@ export const ProgressiView = ({ storico = [] }) => {
           <span className="text-[10px] font-black text-primary uppercase tracking-widest block flex items-center gap-2">
             <Activity size={14} /> Tracciamento Costanza
           </span>
-          <h2 className="text-2xl font-black text-text-primary capitalize tracking-tight mt-1">
+          <h2 className="text-2xl font-black text-white capitalize tracking-tight mt-1">
             {currentDate.toLocaleDateString('it-IT', { month: 'long' })}
           </h2>
         </div>
@@ -60,7 +60,7 @@ export const ProgressiView = ({ storico = [] }) => {
             const dailyLog = logsInViewMonth.find(l => new Date(l.date).getDate() === dayNum);
             
             return (
-              <div key={dayNum} className={`h-12 flex flex-col items-center justify-center rounded-xl ${dailyLog ? 'bg-primary text-black' : 'bg-surface-secondary text-text-primary'}`}>
+              <div key={dayNum} className={`h-12 flex flex-col items-center justify-center rounded-xl ${dailyLog ? 'bg-primary text-black' : 'bg-surface-secondary text-white'}`}>
                 <span className="text-xs font-mono font-black">{dayNum}</span>
                 {dailyLog && <span className="text-[7px] font-black uppercase">{dailyLog.dayName}</span>}
               </div>
