@@ -21,6 +21,7 @@ const EXERCISE_CATALOG = [
   { id: 'e16', name: 'Push Down', muscle: 'Tricipiti', equipment: 'Cavi' }
 ];
 
+const [configuringExercise, setConfiguringExercise] = useState(null);
 const MUSCLE_GROUPS = ['Petto', 'Dorso', 'Gambe', 'Spalle', 'Bicipiti', 'Tricipiti'];
 const EQUIPMENT_TYPES = ['Bilanciere', 'Manubri', 'Macchina', 'Cavi', 'Corpo Libero'];
 
@@ -119,11 +120,16 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
 
           <div className="space-y-3">
             {workoutRoutine[activeBuilderDay]?.map((ex, i) => (
-              <Card key={ex.instanceId} className="flex justify-between items-center">
-                <span className="font-bold text-sm">{ex.name}</span>
-              </Card>
-            ))}
+              <Card key={ex.instanceId} className="flex justify-between items-center cursor-pointer hover:border-primary" onClick={() => setConfiguringExercise(ex)}>
+                <div>
+                  <p className="font-bold text-sm text-white">{ex.name}</p>
+                  <p className="text-[10px] text-text-secondary uppercase">{ex.sets}x{ex.reps} @ {ex.weight}kg • {ex.rest}s</p>
+                  </div>
+                  <button onClick={(e) => { e.stopPropagation(); /* logica delete */ }} className="text-text-tertiary"><X size={16}/></button>
+                </Card>
+             ))}
             <Button variant="secondary" fullWidth onClick={() => setIsCatalogOpen(true)}>+ Aggiungi Esercizio</Button>
+            <Button variant="primary" fullWidth onClick={() => {/* Logica Completa Scheda */}}>Completa Scheda</Button>
           </div>
 
           {isCatalogOpen && (
