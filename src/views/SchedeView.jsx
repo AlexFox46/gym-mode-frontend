@@ -83,8 +83,8 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
           </div>
         </>
       )}
-
-{/* VIEW SETUP */}
+      
+      {/* VIEW SETUP */}
       {viewState === 'setup' && (
         <div className="space-y-6">
           <h2 className="text-2xl font-black text-white">Configurazione</h2>
