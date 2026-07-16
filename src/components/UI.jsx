@@ -22,3 +22,13 @@ export const Stepper = ({ label, value, onChange, step = 1, unit = '' }) => (
     </div>
   </div>
 );
+
+export const Toggle = ({ checked, onChange }) => (
+  <button 
+    type="button"
+    onClick={() => onChange(!checked)} 
+    className={`w-14 h-8 rounded-full transition-all relative ${checked ? 'bg-primary' : 'bg-surface-tertiary'}`}
+  >
+    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${checked ? 'translate-x-6' : 'translate-x-0'}`} />
+  </button>
+);
