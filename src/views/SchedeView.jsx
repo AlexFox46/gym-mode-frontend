@@ -31,7 +31,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
   const [workoutRoutine, setWorkoutRoutine] = useState({});
   const [activeBuilderDay, setActiveBuilderDay] = useState('G1');
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
-  const [error, setError] = useState(''); // Stato corretto qui dentro
+  const [error, setError] = useState('');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [muscleFilter, setMuscleFilter] = useState('');
@@ -47,10 +47,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
   const startCreation = () => { setNewSchedaName(''); setNewSchedaDays(2); setViewState('setup'); setError(''); };
   
   const proceedToBuilder = () => { 
-    if (!newSchedaName.trim()) {
-      setError('Devi inserire un nome per la scheda per continuare');
-      return;
-    }
+    if (!newSchedaName.trim()) { setError('Inserisci un nome scheda'); return; }
     const initialRoutine = {}; 
     for (let i = 1; i <= newSchedaDays; i++) initialRoutine[`G${i}`] = []; 
     setWorkoutRoutine(initialRoutine);
@@ -58,22 +55,19 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     setViewState('builder'); 
   };
 
-  const saveScheda = () => {
-    const nuovaScheda = { id: Date.now(), name: newSchedaName, daysCount: newSchedaDays, routine: workoutRoutine };
-    setSchede([...schede, nuovaScheda]);
-    setViewState('list');
+  const addExerciseToDay = (ex) => {
+    setWorkoutRoutine(prev => ({ ...prev, [activeBuilderDay]: [...(prev[activeBuilderDay] || []), { ...ex, instanceId: Date.now() + Math.random(), sets: 4, reps: 10, weight: 20 }] }));
+    setIsCatalogOpen(false);
   };
 
-  const addExerciseToDay = (ex) => {
-    setWorkoutRoutine(prev => ({
-      ...prev,
-      [activeBuilderDay]: [...(prev[activeBuilderDay] || []), { ...ex, instanceId: Date.now() + Math.random(), sets: 4, reps: 10, weight: 20 }]
-    }));
-    setIsCatalogOpen(false);
+  const saveScheda = () => {
+    setSchede([...schede, { id: Date.now(), name: newSchedaName, daysCount: newSchedaDays, routine: workoutRoutine }]);
+    setViewState('list');
   };
 
   return (
     <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32 text-text-primary">
+      {/* VIEW LISTA */}
       {viewState === 'list' && (
         <>
           <div className="flex items-center justify-between mb-8">
@@ -83,65 +77,52 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
           <div className="space-y-4">
             {schede.map((s) => (
               <Card key={s.id} onClick={() => setSchedaAttiva(s)} className={schedaAttiva?.id === s.id ? 'border-primary' : ''}>
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-white">{s.name}</span>
-                  <button><Edit2 size={16} /></button>
-                </div>
+                <div className="flex justify-between items-center"><span className="font-bold text-white">{s.name}</span></div>
               </Card>
             ))}
           </div>
         </>
       )}
 
+      {/* VIEW SETUP */}
       {viewState === 'setup' && (
         <div className="space-y-6">
           <h2 className="text-2xl font-black text-white">Configurazione</h2>
-          <div className="space-y-2">
-            <input 
-              type="text" 
-              value={newSchedaName} 
-              onChange={(e) => { setNewSchedaName(e.target.value); if(error) setError(''); }} 
-              className={`w-full bg-surface-secondary p-4 rounded-2xl text-white border ${error ? 'border-red-500' : 'border-surface-tertiary'}`} 
-              placeholder="Nome Scheda..." 
-            />
-            {error && <p className="text-red-500 text-[10px] font-black uppercase ml-2">{error}</p>}
-          </div>
+          <input type="text" value={newSchedaName} onChange={(e) => setNewSchedaName(e.target.value)} className="w-full bg-surface-secondary p-4 rounded-2xl text-white border border-surface-tertiary" placeholder="Nome Scheda..." />
           <Stepper label="Giorni" value={newSchedaDays} onChange={setNewSchedaDays} step={1} unit="giorni" />
           <Button variant="primary" fullWidth onClick={proceedToBuilder}>Avanti</Button>
         </div>
       )}
 
+      {/* VIEW BUILDER */}
       {viewState === 'builder' && (
         <div className="space-y-6">
           <div className="flex gap-2 overflow-x-auto pb-2">
             {Object.keys(workoutRoutine).map(day => (
-              <button key={day} onClick={() => setActiveBuilderDay(day)} className={`px-4 py-2 rounded-xl font-black text-xs ${activeBuilderDay === day ? 'bg-primary text-black' : 'bg-surface-secondary'}`}>
-                {day}
-              </button>
+              <button key={day} onClick={() => setActiveBuilderDay(day)} className={`px-4 py-2 rounded-xl font-black text-xs ${activeBuilderDay === day ? 'bg-primary text-black' : 'bg-surface-secondary'}`}>{day}</button>
             ))}
           </div>
           <div className="space-y-3">
             {workoutRoutine[activeBuilderDay]?.map((ex) => (
-              <Card key={ex.instanceId} className="flex justify-between items-center">
-                <span className="font-bold text-sm">{ex.name}</span>
-              </Card>
+              <Card key={ex.instanceId} className="flex justify-between items-center"><span className="font-bold text-sm">{ex.name}</span></Card>
             ))}
             <Button variant="secondary" fullWidth onClick={() => setIsCatalogOpen(true)}>+ Aggiungi Esercizio</Button>
             <Button variant="primary" fullWidth onClick={saveScheda}>Completa Scheda</Button>
           </div>
-          
+
+          {/* CATALOGO E FILTRI */}
           {isCatalogOpen && (
             <div className="fixed inset-0 bg-surface z-50 p-4 overflow-y-auto">
-              {/* ... (Catalogo ed esercizi invariati) ... */}
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-black">Scegli Esercizio</h2>
-                <button onClick={() => setIsCatalogOpen(false)}><X size={24} /></button>
-              </div>
+              <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-black">Scegli Esercizio</h2><button onClick={() => setIsCatalogOpen(false)}><X size={24}/></button></div>
               <input type="text" placeholder="Cerca..." onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-surface-secondary p-3 rounded-xl mb-4 border border-surface-tertiary" />
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                <select onChange={(e) => setMuscleFilter(e.target.value)} className="bg-surface-secondary p-3 rounded-xl text-xs font-black uppercase border border-surface-tertiary"><option value="">Tutti i Muscoli</option>{MUSCLE_GROUPS.map(m => <option key={m} value={m}>{m}</option>)}</select>
+                <select onChange={(e) => setEquipmentFilter(e.target.value)} className="bg-surface-secondary p-3 rounded-xl text-xs font-black uppercase border border-surface-tertiary"><option value="">Attrezzatura</option>{EQUIPMENT_TYPES.map(e => <option key={e} value={e}>{e}</option>)}</select>
+              </div>
               {filteredExercises.map(ex => (
-                <div key={ex.id} className="flex justify-between items-center bg-surface-secondary p-4 rounded-xl mb-2">
+                <div key={ex.id} className="flex justify-between items-center bg-surface-secondary p-4 rounded-xl mb-2 border border-surface-tertiary">
                   <p className="font-bold text-sm text-white">{ex.name}</p>
-                  <button onClick={() => addExerciseToDay(ex)} className="bg-primary text-black p-2 rounded-lg"><Plus size={20} /></button>
+                  <button onClick={() => addExerciseToDay(ex)} className="bg-primary text-black p-2 rounded-lg"><Plus size={20}/></button>
                 </div>
               ))}
             </div>
