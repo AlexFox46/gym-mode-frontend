@@ -1,31 +1,62 @@
 import React from 'react';
 
-export const Button = ({ children, variant = 'primary', size = 'medium', className = '', ...props }) => {
-  const base = "font-black uppercase tracking-widest rounded-xl transition-all active:scale-[0.98] flex items-center justify-center";
-  const styles = variant === 'primary' 
-    ? "bg-primary text-black hover:bg-primary-dark" 
-    : "bg-surface-secondary text-white border border-surface-tertiary hover:bg-surface-tertiary";
-  return <button className={`${base} ${styles} h-[52px] px-8 ${className}`} {...props}>{children}</button>;
+// Bottone "Performante": alto contrasto, area di tocco minima 48px
+export const Button = ({ children, variant = 'primary', size = 'medium', fullWidth = false, className = '', ...props }) => {
+  const baseStyles = "font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.98] rounded-xl flex items-center justify-center select-none shadow-sm focus:ring-4 focus:ring-primary/30 outline-none";
+  
+  const variants = {
+    primary: "bg-primary text-black hover:bg-primary-dark", // Lime su nero
+    secondary: "bg-surface-secondary text-text-primary border border-surface-tertiary hover:bg-surface-tertiary",
+    destructive: "bg-red-600 text-white hover:bg-red-700",
+  };
+
+  const sizes = {
+    small: "h-[44px] px-6 text-[11px]",
+    medium: "h-[52px] px-8 text-xs",
+    large: "h-[64px] px-10 text-sm",
+  };
+
+  return (
+    <button className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${fullWidth ? 'w-full' : 'w-auto'} ${className}`} {...props}>
+      {children}
+    </button>
+  );
 };
 
-export const Card = ({ children, className = '' }) => (
-  <div className={`p-6 bg-surface-secondary rounded-3xl border border-surface-tertiary ${className}`}>{children}</div>
-);
-
-export const Stepper = ({ label, value, onChange, step = 1, unit = '' }) => (
-  <div className="flex justify-between items-center bg-surface-secondary p-4 rounded-2xl border border-surface-tertiary">
-    <span className="text-[10px] font-black text-text-secondary uppercase">{label}</span>
-    <div className="flex items-center gap-4">
-      <button onClick={() => onChange(Math.max(0, value - step))} className="w-10 h-10 rounded-lg bg-surface-tertiary text-white font-black">-</button>
-      <span className="font-mono font-black text-lg text-white w-12 text-center">{value}{unit}</span>
-      <button onClick={() => onChange(value + step)} className="w-10 h-10 rounded-lg bg-surface-tertiary text-primary font-black">+</button>
+// Stepper "Tattile": area di controllo ampia, leggibilità immediata
+export const Stepper = ({ label, value, onChange, step = 1, unit = '' }) => {
+  return (
+    <div className="flex justify-between items-center bg-surface-secondary p-4 rounded-2xl border border-surface-tertiary">
+      <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">{label}</span>
+      <div className="flex items-center gap-6">
+        <button 
+          aria-label={`Diminuisci ${label}`}
+          onClick={() => onChange(Math.max(0, parseFloat((value - step).toFixed(2))))} 
+          className="w-12 h-12 rounded-xl bg-surface-tertiary flex items-center justify-center font-black text-white hover:bg-[#333] active:scale-90 transition-all"
+        >–</button>
+        <span className="w-16 text-center font-mono font-black text-xl text-text-primary">
+          {value}<span className="text-[10px] ml-1 text-text-tertiary">{unit}</span>
+        </span>
+        <button 
+          aria-label={`Aumenta ${label}`}
+          onClick={() => onChange(parseFloat((value + step).toFixed(2)))} 
+          className="w-12 h-12 rounded-xl bg-surface-tertiary flex items-center justify-center font-black text-primary hover:bg-[#333] active:scale-90 transition-all"
+        >+</button>
+      </div>
     </div>
+  );
+};
+
+// Card "Elevata": sfondo scuro profondo per contrasto netto
+export const Card = ({ children, className = '' }) => (
+  <div className={`p-6 bg-surface rounded-3xl border border-surface-tertiary shadow-[0_4px_20px_-5px_rgba(0,0,0,0.3)] ${className}`}>
+    {children}
   </div>
 );
 
+// Toggle Switch: Feedback visivo netto
 export const Toggle = ({ checked, onChange }) => (
   <button 
-    type="button"
     onClick={() => onChange(!checked)} 
     className={`w-14 h-8 rounded-full transition-all relative ${checked ? 'bg-primary' : 'bg-surface-tertiary'}`}
   >
