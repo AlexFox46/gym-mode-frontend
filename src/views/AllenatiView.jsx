@@ -1,29 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Stepper, Card } from '../components/UI';
-import { X } from 'lucide-react';
-
-const EXERCISE_CATALOG = [
-  { id: 'e1', name: 'Chest Press', muscle: 'Petto', equipment: 'Macchina' },
-  { id: 'e2', name: 'Panca Piana', muscle: 'Petto', equipment: 'Bilanciere' },
-  { id: 'e3', name: 'Spinte Manubri piana', muscle: 'Petto', equipment: 'Manubri' },
-  { id: 'e4', name: 'Croci Cavi Alti', muscle: 'Petto', equipment: 'Cavi' },
-  { id: 'e5', name: 'Lat Machine', muscle: 'Dorso', equipment: 'Macchina' },
-  { id: 'e6', name: 'Trazioni', muscle: 'Dorso', equipment: 'Corpo Libero' },
-  { id: 'e7', name: 'Rematore Bilanciere', muscle: 'Dorso', equipment: 'Bilanciere' },
-  { id: 'e8', name: 'Pulley Basso', muscle: 'Dorso', equipment: 'Cavi' },
-  { id: 'e9', name: 'Squat', muscle: 'Gambe', equipment: 'Bilanciere' },
-  { id: 'e10', name: 'Leg Press', muscle: 'Gambe', equipment: 'Macchina' },
-  { id: 'e11', name: 'Leg Extension', muscle: 'Gambe', equipment: 'Macchina' },
-  { id: 'e12', name: 'Affondi', muscle: 'Gambe', equipment: 'Manubri' },
-  { id: 'e13', name: 'Military Press', muscle: 'Spalle', equipment: 'Bilanciere' },
-  { id: 'e14', name: 'Alzate Laterali', muscle: 'Spalle', equipment: 'Manubri' },
-  { id: 'e15', name: 'Curl Bilanciere', muscle: 'Bicipiti', equipment: 'Bilanciere' },
-  { id: 'e16', name: 'Push Down', muscle: 'Tricipiti', equipment: 'Cavi' }
-];
+import { X, BookOpen, Activity } from 'lucide-react';
 
 export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
   const [activeDay, setActiveDay] = useState('G1');
   const schemaDays = schedaAttiva ? Array.from({ length: schedaAttiva.daysCount }, (_, i) => `G${i + 1}`) : [];
+  
   const [localRoutine, setLocalRoutine] = useState([]);
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [currentWeight, setCurrentWeight] = useState(0);
@@ -66,24 +48,21 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
   }, [isRestActive, restTime, exerciseRest]);
 
   const handleRegisterSet = () => {
-    if (isRestActive) {
-      setIsRestActive(false);
-      setRestTime(exerciseRest);
-    }
+    if (isRestActive) { setIsRestActive(false); setRestTime(exerciseRest); }
     if (currentSet < (Number(currentExercise.sets) || 1)) {
       setCurrentSet(prev => prev + 1);
-      setRestTime(exerciseRest);
       setIsRestActive(true);
     } else if (exerciseIndex < localRoutine.length - 1) {
       setExerciseIndex(prev => prev + 1);
       setIsRestActive(false);
     } else {
-      onWorkoutComplete({ id: Date.now(), date: new Date().toISOString(), schedaName: schedaAttiva.name, dayName: activeDay, tonnage: 0 });
+      onWorkoutComplete({ id: Date.now(), date: new Date().toISOString(), schedaName: schedaAttiva.name, dayName: activeDay });
     }
   };
 
   return (
     <div className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary p-4 pb-32">
+      {/* Selettore Giorni */}
       <div className="flex gap-2 overflow-x-auto mb-6">
         {schemaDays.map(day => (
           <button key={day} onClick={() => setActiveDay(day)} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase ${activeDay === day ? 'bg-primary text-black' : 'bg-surface-secondary text-text-secondary'}`}>
@@ -106,6 +85,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
             </div>
           </Card>
 
+          {/* Timer e controlli */}
           <button onClick={() => setIsRestActive(!isRestActive)} className="w-full py-8 bg-surface-secondary rounded-3xl border border-surface-tertiary text-center">
             <span className="text-5xl font-mono font-black">{isRestActive ? `${Math.floor(restTime / 60)}:${String(restTime % 60).padStart(2, '0')}` : '--:--'}</span>
             <p className="text-[10px] font-black uppercase mt-2 tracking-widest">{isRestActive ? 'In Recupero' : 'Recupero'}</p>
@@ -113,7 +93,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
 
           <div className="grid grid-cols-4 gap-2">
             {[-30, -15, 15, 30].map(amt => (
-              <button key={amt} onClick={() => setRestTime(p => Math.max(0, p + amt))} className="bg-surface-secondary py-3 rounded-xl text-xs font-black text-text-secondary border border-surface-tertiary">
+              <button key={amt} onClick={() => setRestTime(p => Math.max(0, p + amt))} className="bg-surface-secondary py-3 rounded-xl text-[10px] font-black text-text-secondary border border-surface-tertiary">
                 {amt > 0 ? '+' : ''}{amt}s
               </button>
             ))}
@@ -128,19 +108,30 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete }) => {
             {isRestActive ? "SALTA & AVANTI" : `REGISTRA SET #${currentSet}`}
           </Button>
         </div>
-      ) : <div className="text-center mt-20 text-text-secondary">Nessun esercizio.</div>}
+      ) : (
+        /* Pagina Vuota Accogliente */
+        <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+          <div className="w-20 h-20 bg-surface-secondary rounded-full flex items-center justify-center mb-6 border border-surface-tertiary">
+            <BookOpen size={40} className="text-primary" />
+          </div>
+          <h3 className="text-xl font-black mb-3">Nessuna scheda attiva</h3>
+          <p className="text-text-secondary text-sm font-medium mb-8 max-w-[280px]">
+            Vai nella sezione <span className="text-primary font-bold">Schede</span> per selezionare il tuo programma di allenamento.
+          </p>
+        </div>
+      )}
 
       {/* MODALE SOSTITUISCI */}
       {isBottomSheetOpen && (
-        <div className="fixed inset-0 bg-surface z-50 p-6">
-          <div className="flex justify-between items-center mb-6">
+        <div className="fixed inset-0 bg-surface z-50 p-6 overflow-y-auto">
+          <div className="flex justify-between items-center mb-8">
             <h2 className="text-xl font-black">Sostituisci Esercizio</h2>
             <button onClick={() => setIsBottomSheetOpen(false)}><X /></button>
           </div>
           {['Prima Scelta', 'Seconda Scelta', 'Terza Scelta'].map((label, idx) => (
             <div key={label} className="mb-6">
-              <h4 className="text-[10px] font-black text-text-secondary uppercase mb-2">{label}</h4>
-              <button onClick={() => { /* Logica sostituzione */ setIsBottomSheetOpen(false); }} className="w-full text-left p-4 bg-surface-secondary rounded-2xl font-bold border border-surface-tertiary">
+              <h4 className="text-[10px] font-black text-text-secondary uppercase mb-3">{label}</h4>
+              <button className="w-full text-left p-5 bg-surface-secondary rounded-2xl font-bold border border-surface-tertiary hover:border-primary transition-all">
                 Esercizio Alternativo {idx + 1}
               </button>
             </div>
