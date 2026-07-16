@@ -9,117 +9,101 @@ export const ProfiloView = ({ settings, onSettingsChange, onLogout }) => {
   };
 
   const handleEliminaAccount = async () => {
-    const conferma = window.confirm(
-      "ATTENZIONE: Sei sicuro di voler eliminare definitivamente il tuo account? Questa azione è irreversibile."
-    );
-    
+    const conferma = window.confirm("ATTENZIONE: Sei sicuro di voler eliminare definitivamente il tuo account?");
     if (conferma) {
       try {
         const { error } = await supabase.rpc('delete_user');
         if (error) throw error;
-        
-        alert("Account eliminato con successo.");
         await supabase.auth.signOut();
         window.location.reload(); 
       } catch (err) {
-        console.error("Errore durante l'eliminazione:", err);
-        alert("Impossibile eliminare l'account: " + err.message);
+        alert("Errore: " + err.message);
       }
     }
   };
 
   return (
-    <div className="p-4 space-y-5 pb-28 bg-[#f0f4f8] dark:bg-neutral-950 min-h-screen font-sans">
+    // Wrapper responsivo centrato
+    <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32">
       
       {/* HEADER */}
-      <div className="flex items-center gap-4">
-        <div className="w-14 h-14 rounded-2xl bg-[#15a34a] flex items-center justify-center text-white shadow-md">
-          <User size={28} />
+      <div className="flex items-center gap-4 mb-8">
+        <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-black shadow-lg">
+          <User size={32} />
         </div>
         <div>
-          <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight">Il mio Profilo</h2>
-          <p className="text-xs font-semibold text-neutral-500 mt-0.5">Gestione account e preferenze</p>
+          <h2 className="text-2xl font-black text-text-primary tracking-tight">Il mio Profilo</h2>
+          <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mt-1">Impostazioni</p>
         </div>
       </div>
 
       {/* PREFERENZE APP */}
-      <div>
-        <span className="flex items-center gap-1.5 text-[10px] font-black tracking-widest text-neutral-400 uppercase mb-2 ml-1">
-          <Settings size={12} /> Preferenze App
-        </span>
-        <Card className="p-4 space-y-5 border-none ring-1 ring-neutral-200/50 dark:ring-neutral-800 shadow-sm">
-          
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Moon size={18} className="text-neutral-500" />
-              <span className="text-sm font-bold text-neutral-700 dark:text-neutral-300">Tema Interfaccia</span>
+      <div className="space-y-6">
+        <div>
+          <span className="flex items-center gap-2 text-[10px] font-black tracking-widest text-text-secondary uppercase mb-3 ml-1">
+            <Settings size={14} /> Preferenze
+          </span>
+          <Card>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <Moon size={20} className="text-text-tertiary" />
+                <span className="text-sm font-bold text-text-primary">Tema Interfaccia</span>
+              </div>
+              <select 
+                value={settings.theme_preference}
+                onChange={(e) => updateSetting('theme_preference', e.target.value)}
+                className="bg-surface-tertiary border-none rounded-xl p-2 text-[11px] font-black text-white focus:ring-2 focus:ring-primary outline-none"
+              >
+                <option value="System">Sistema</option>
+                <option value="Light">Light Mode</option>
+                <option value="Dark">Dark Mode</option>
+              </select>
             </div>
-            <select 
-              value={settings.theme_preference}
-              onChange={(e) => updateSetting('theme_preference', e.target.value)}
-              className="bg-neutral-100 dark:bg-neutral-800 border-none rounded-lg p-2 text-xs font-bold text-neutral-900 dark:text-white focus:ring-2 focus:ring-[#15a34a]"
-            >
-              <option value="System">Sistema</option>
-              <option value="Light">Light Mode</option>
-              <option value="Dark">Dark Mode</option>
-            </select>
-          </div>
+          </Card>
+        </div>
 
-        </Card>
-      </div>
-
-      {/* FEEDBACK ALLENAMENTO */}
-      <div>
-        <span className="flex items-center gap-1.5 text-[10px] font-black tracking-widest text-neutral-400 uppercase mb-2 ml-1">
-          <Smartphone size={12} /> Feedback Allenamento
-        </span>
-        <Card className="p-4 space-y-5 border-none ring-1 ring-neutral-200/50 dark:ring-neutral-800 shadow-sm">
-          
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Smartphone size={18} className="text-neutral-500" />
-              <span className="text-sm font-bold text-neutral-700 dark:text-neutral-300">Vibrazione (Haptic)</span>
+        {/* FEEDBACK */}
+        <div>
+          <span className="flex items-center gap-2 text-[10px] font-black tracking-widest text-text-secondary uppercase mb-3 ml-1">
+            <Smartphone size={14} /> Feedback
+          </span>
+          <Card className="space-y-6">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <Smartphone size={20} className="text-text-tertiary" />
+                <span className="text-sm font-bold text-text-primary">Vibrazione (Haptic)</span>
+              </div>
+              <Toggle checked={settings.vibration} onChange={(val) => updateSetting('vibration', val)} />
             </div>
-            <Toggle checked={settings.vibration} onChange={(val) => updateSetting('vibration', val)} />
-          </div>
-          
-          <div className="flex justify-between items-center pt-2 border-t border-neutral-100 dark:border-neutral-800">
-            <div className="flex items-center gap-2">
-              <Bell size={18} className="text-neutral-500" />
-              <span className="text-sm font-bold text-neutral-700 dark:text-neutral-300">Suono fine timer</span>
+            <div className="flex justify-between items-center pt-4 border-t border-surface-tertiary">
+              <div className="flex items-center gap-3">
+                <Bell size={20} className="text-text-tertiary" />
+                <span className="text-sm font-bold text-text-primary">Suono fine timer</span>
+              </div>
+              <Toggle checked={settings.prep_sound} onChange={(val) => updateSetting('prep_sound', val)} />
             </div>
-            <Toggle checked={settings.prep_sound} onChange={(val) => updateSetting('prep_sound', val)} />
-          </div>
-          
-        </Card>
-      </div>
+          </Card>
+        </div>
 
-      {/* AZIONI E SICUREZZA */}
-      <div className="pt-4">
-        <span className="text-[10px] font-black tracking-widest text-neutral-400 uppercase block mb-2 ml-1">Zona Sicurezza</span>
-        <Card className="p-4 space-y-3 bg-white dark:bg-neutral-900 border-dashed border-2 border-neutral-200 dark:border-neutral-800 shadow-none">
-          
-          <Button variant="secondary" fullWidth onClick={() => alert("Esportazione CSV avviata.")} className="gap-2 justify-start rounded-xl text-xs">
-            <Download size={16} /> Esporta Storico Logs (CSV)
-          </Button>
-          
-          <Button variant="secondary" fullWidth onClick={() => alert("Storico eliminato localmente.")} className="gap-2 justify-start rounded-xl text-xs text-neutral-600">
-            <Trash2 size={16} /> Cancella Storico Locale
-          </Button>
-          
-          <div className="pt-3 mt-3 border-t border-neutral-100 dark:border-neutral-800 space-y-3">
-            <Button variant="secondary" fullWidth onClick={onLogout} className="gap-2 justify-center rounded-xl text-xs font-black border-none bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200">
-              <LogOut size={16} /> Disconnetti Account
+        {/* AZIONI E SICUREZZA */}
+        <div>
+          <span className="text-[10px] font-black tracking-widest text-text-secondary uppercase mb-3 ml-1 block">Zona Sicurezza</span>
+          <div className="space-y-3">
+            <Button variant="secondary" fullWidth onClick={() => alert("Esportazione CSV avviata.")}>
+              <Download size={16} className="mr-2" /> Esporta Storico
             </Button>
-            
-            <Button variant="destructive" fullWidth onClick={handleEliminaAccount} className="gap-2 justify-center rounded-xl text-xs font-black shadow-md">
-              <AlertTriangle size={16} /> Elimina Account Definitivamente
+            <Button variant="secondary" fullWidth onClick={() => alert("Storico eliminato.")}>
+              <Trash2 size={16} className="mr-2" /> Pulisci Logs
+            </Button>
+            <Button variant="secondary" fullWidth onClick={onLogout} className="mt-6 bg-surface-tertiary">
+              <LogOut size={16} className="mr-2" /> Esci
+            </Button>
+            <Button variant="destructive" fullWidth onClick={handleEliminaAccount}>
+              <AlertTriangle size={16} className="mr-2" /> Elimina Account
             </Button>
           </div>
-          
-        </Card>
+        </div>
       </div>
-      
     </div>
   );
 };
