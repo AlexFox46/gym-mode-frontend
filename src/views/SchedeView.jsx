@@ -83,22 +83,13 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
           </div>
         </>
       )}
-      
+
       {/* VIEW SETUP */}
       {viewState === 'setup' && (
         <div className="space-y-6">
           <h2 className="text-2xl font-black text-white">Configurazione</h2>
           <div className="space-y-2">
-            <input 
-              type="text" 
-              value={newSchedaName} 
-              onChange={(e) => { 
-                setNewSchedaName(e.target.value); 
-                if (error) setError(''); // Pulisce l'errore mentre scrive
-              }} 
-              className={`w-full bg-surface-secondary p-4 rounded-2xl text-white border ${error ? 'border-red-500' : 'border-surface-tertiary'}`} 
-              placeholder="Nome Scheda..." 
-            />
+            <input type="text" value={newSchedaName} onChange={(e) => { setNewSchedaName(e.target.value); if(error) setError(''); }} className={`w-full bg-surface-secondary p-4 rounded-2xl text-white border ${error ? 'border-red-500' : 'border-surface-tertiary'}`} placeholder="Nome Scheda..." />
             {error && <p className="text-red-500 text-[10px] font-black uppercase ml-2">{error}</p>}
           </div>
           <Stepper label="Giorni" value={newSchedaDays} onChange={setNewSchedaDays} step={1} unit="giorni" />
@@ -122,7 +113,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
             <Button variant="primary" fullWidth onClick={saveScheda}>Completa Scheda</Button>
           </div>
 
-          {/* CATALOGO E FILTRI */}
           {isCatalogOpen && (
             <div className="fixed inset-0 bg-surface z-50 p-4 overflow-y-auto">
               <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-black">Scegli Esercizio</h2><button onClick={() => setIsCatalogOpen(false)}><X size={24}/></button></div>
