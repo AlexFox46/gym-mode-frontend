@@ -22,7 +22,7 @@ function App() {
   const [leMieSchede, setLeMieSchede] = useState([]);
   const [schedaAttiva, setSchedaAttiva] = useState(null);
   
-  // NUOVO: Stato globale per lo storico degli allenamenti
+  // Stato globale per lo storico degli allenamenti
   const [storicoAllenamenti, setStoricoAllenamenti] = useState([]);
 
   useEffect(() => {
@@ -52,10 +52,15 @@ function App() {
     }
   };
 
-  // NUOVO: Funzione per registrare la fine dell'allenamento
+  // Funzione per registrare la fine dell'allenamento
   const handleWorkoutComplete = (logEntry) => {
     setStoricoAllenamenti(prev => [...prev, logEntry]);
-    setActiveTab('progressi'); // Reindirizza l'utente per fargli vedere il risultato
+    setActiveTab('progressi');
+  };
+
+  // Funzione per navigare a Schede
+  const handleNavigateToSchede = () => {
+    setActiveTab('schede');
   };
 
   if (authLoading) {
@@ -74,8 +79,9 @@ function App() {
         {activeTab === 'allenati' && (
           <AllenatiView 
             settings={settings} 
-            schedaAttiva={schedaAttiva} 
-            onWorkoutComplete={handleWorkoutComplete} // Passiamo la funzione
+            schedaAttiva={schedaAttiva}
+            onWorkoutComplete={handleWorkoutComplete}
+            onNavigateToSchede={handleNavigateToSchede}
           />
         )}
         {activeTab === 'schede' && (
@@ -87,7 +93,7 @@ function App() {
           />
         )}
         {activeTab === 'progressi' && (
-          <ProgressiView storico={storicoAllenamenti} /> // Passiamo i dati reali
+          <ProgressiView storico={storicoAllenamenti} />
         )}
         {activeTab === 'profilo' && (
           <ProfiloView 
