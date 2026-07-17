@@ -2,29 +2,7 @@ import React, { useState } from 'react';
 import { Card, Button, Stepper } from '../components/UI';
 import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical } from 'lucide-react';
 
-const EXERCISE_CATALOG = [
-  { id: 'e1', name: 'Chest Press', muscle: 'Petto', equipment: 'Macchina' },
-  { id: 'e2', name: 'Panca Piana', muscle: 'Petto', equipment: 'Bilanciere' },
-  { id: 'e3', name: 'Spinte Manubri piana', muscle: 'Petto', equipment: 'Manubri' },
-  { id: 'e4', name: 'Croci Cavi Alti', muscle: 'Petto', equipment: 'Cavi' },
-  { id: 'e5', name: 'Lat Machine', muscle: 'Dorso', equipment: 'Macchina' },
-  { id: 'e6', name: 'Trazioni', muscle: 'Dorso', equipment: 'Corpo Libero' },
-  { id: 'e7', name: 'Rematore Bilanciere', muscle: 'Dorso', equipment: 'Bilanciere' },
-  { id: 'e8', name: 'Pulley Basso', muscle: 'Dorso', equipment: 'Cavi' },
-  { id: 'e9', name: 'Squat', muscle: 'Gambe', equipment: 'Bilanciere' },
-  { id: 'e10', name: 'Leg Press', muscle: 'Gambe', equipment: 'Macchina' },
-  { id: 'e11', name: 'Leg Extension', muscle: 'Gambe', equipment: 'Macchina' },
-  { id: 'e12', name: 'Affondi', muscle: 'Gambe', equipment: 'Manubri' },
-  { id: 'e13', name: 'Military Press', muscle: 'Spalle', equipment: 'Bilanciere' },
-  { id: 'e14', name: 'Alzate Laterali', muscle: 'Spalle', equipment: 'Manubri' },
-  { id: 'e15', name: 'Curl Bilanciere', muscle: 'Bicipiti', equipment: 'Bilanciere' },
-  { id: 'e16', name: 'Push Down', muscle: 'Tricipiti', equipment: 'Cavi' }
-];
-
-const MUSCLE_GROUPS = ['Petto', 'Dorso', 'Gambe', 'Spalle', 'Bicipiti', 'Tricipiti'];
-const EQUIPMENT_TYPES = ['Bilanciere', 'Manubri', 'Macchina', 'Cavi', 'Corpo Libero'];
-
-export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva }) => {
+export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, esercizi = [] }) => {
   const [viewState, setViewState] = useState('list');
   const [newSchedaName, setNewSchedaName] = useState('');
   const [newSchedaDays, setNewSchedaDays] = useState(2);
@@ -43,7 +21,11 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
   const [draggedExerciseIndex, setDraggedExerciseIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
 
-  const filteredExercises = EXERCISE_CATALOG.filter(ex => {
+  // Estrai i muscoli e gli attrezzi unici dagli esercizi Supabase
+  const muscleGroups = [...new Set(esercizi.map(ex => ex.muscle))].sort();
+  const equipmentTypes = [...new Set(esercizi.map(ex => ex.equipment))].sort();
+
+  const filteredExercises = esercizi.filter(ex => {
     const matchesSearch = ex.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMuscle = muscleFilter ? ex.muscle === muscleFilter : true;
     const matchesEquip = equipmentFilter ? ex.equipment === equipmentFilter : true;
@@ -70,7 +52,14 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
   };
 
   const addExerciseToDay = (ex) => {
-    const newEx = { ...ex, instanceId: Date.now() + Math.random(), sets: 4, reps: 10, weight: 20, rest: 90 };
+    const newEx = { 
+      ...ex, 
+      instanceId: Date.now() + Math.random(), 
+      sets: 4, 
+      reps: 10, 
+      weight: 20, 
+      rest: ex.default_rest_time || 90 
+    };
     setEditingExercise(newEx);
     setEditingExerciseIndex(null);
     setIsCatalogOpen(false);
@@ -78,7 +67,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
 
   const saveExerciseConfiguration = () => {
     if (editingExerciseIndex !== null) {
-      // Modifica esercizio esistente
       const updatedRoutine = [...workoutRoutine[activeBuilderDay]];
       updatedRoutine[editingExerciseIndex] = editingExercise;
       setWorkoutRoutine(prev => ({
@@ -86,7 +74,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
         [activeBuilderDay]: updatedRoutine
       }));
     } else {
-      // Nuovo esercizio
       setWorkoutRoutine(prev => ({
         ...prev,
         [activeBuilderDay]: [...(prev[activeBuilderDay] || []), editingExercise]
@@ -109,11 +96,9 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     setIsCatalogOpen(false);
   };
 
-  // Drag & Drop handlers - FIXED
   const handleDragStart = (index) => {
     setDraggedExerciseIndex(index);
     setDragOverIndex(index);
-    // Vibrazione feedback (se supportato)
     if (navigator.vibrate) {
       navigator.vibrate(50);
     }
@@ -135,9 +120,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     const newRoutine = [...workoutRoutine[activeBuilderDay]];
     const draggedItem = newRoutine[draggedExerciseIndex];
     
-    // Rimuovi da posizione originale
     newRoutine.splice(draggedExerciseIndex, 1);
-    // Inserisci nella nuova posizione
     newRoutine.splice(dropIndex > draggedExerciseIndex ? dropIndex - 1 : dropIndex, 0, draggedItem);
     
     setWorkoutRoutine(prev => ({
@@ -192,7 +175,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
   };
 
   const activateScheda = (scheda) => {
-    // Disattiva tutte le altre
     const updatedSchede = schede.map(s => ({
       ...s,
       isActive: s.id === scheda.id
@@ -277,7 +259,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
 
       {viewState === 'builder' && (
         <div className="space-y-6">
-          {/* Chips Giorni - Con logica button primary/secondary */}
           <div className="flex gap-2 overflow-x-auto pb-2">
             {Object.keys(workoutRoutine).map(day => (
               <button 
@@ -294,7 +275,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
             ))}
           </div>
 
-          {/* Empty State */}
           {workoutRoutine[activeBuilderDay]?.length === 0 && (
             <div className="border-2 border-dashed border-surface-tertiary rounded-3xl p-8 text-center space-y-4">
               <Dumbbell size={40} className="text-text-tertiary mx-auto" />
@@ -305,7 +285,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
             </div>
           )}
 
-          {/* Lista Esercizi con Drag & Drop */}
           <div className="space-y-3">
             {workoutRoutine[activeBuilderDay]?.map((ex, idx) => (
               <div
@@ -360,7 +339,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
             </Button>
           </div>
 
-          {/* CATALOGO */}
           {isCatalogOpen && (
             <div className="fixed inset-0 bg-surface z-50 p-4 overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
@@ -368,7 +346,6 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                 <button onClick={() => setIsCatalogOpen(false)}><X size={24}/></button>
               </div>
 
-              {/* Filtri */}
               <div className="space-y-3 mb-6">
                 <input 
                   type="text" 
@@ -383,7 +360,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                   className="w-full bg-surface-secondary p-3 rounded-xl border border-surface-tertiary text-white text-sm"
                 >
                   <option value="">Tutti i muscoli</option>
-                  {MUSCLE_GROUPS.map(m => <option key={m} value={m}>{m}</option>)}
+                  {muscleGroups.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
 
                 <select 
@@ -392,32 +369,36 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                   className="w-full bg-surface-secondary p-3 rounded-xl border border-surface-tertiary text-white text-sm"
                 >
                   <option value="">Tutti gli attrezzi</option>
-                  {EQUIPMENT_TYPES.map(e => <option key={e} value={e}>{e}</option>)}
+                  {equipmentTypes.map(e => <option key={e} value={e}>{e}</option>)}
                 </select>
               </div>
 
-              {/* Lista Esercizi */}
-              {filteredExercises.map(ex => (
-                <div 
-                  key={ex.id} 
-                  className="flex justify-between items-center bg-surface-secondary p-4 rounded-xl mb-2 border border-surface-tertiary"
-                >
-                  <div className="flex-1">
-                    <p className="font-bold text-sm text-white">{ex.name}</p>
-                    <p className="text-[10px] text-text-secondary">{ex.muscle} • {ex.equipment}</p>
-                  </div>
-                  <button 
-                    onClick={() => addExerciseToDay(ex)} 
-                    className="bg-primary text-white p-2 rounded-lg hover:opacity-90 transition-opacity"
-                  >
-                    <Plus size={20}/>
-                  </button>
+              {filteredExercises.length === 0 ? (
+                <div className="text-center py-8 text-text-secondary">
+                  <p className="text-sm">Nessun esercizio trovato</p>
                 </div>
-              ))}
+              ) : (
+                filteredExercises.map(ex => (
+                  <div 
+                    key={ex.id} 
+                    className="flex justify-between items-center bg-surface-secondary p-4 rounded-xl mb-2 border border-surface-tertiary"
+                  >
+                    <div className="flex-1">
+                      <p className="font-bold text-sm text-white">{ex.name}</p>
+                      <p className="text-[10px] text-text-secondary">{ex.muscle} • {ex.equipment}</p>
+                    </div>
+                    <button 
+                      onClick={() => addExerciseToDay(ex)} 
+                      className="bg-primary text-white p-2 rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                      <Plus size={20}/>
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           )}
 
-          {/* CONFIGURATORE ESERCIZIO */}
           {editingExercise && (
             <div className="fixed inset-x-0 bottom-0 bg-surface border-t border-surface-tertiary p-6 z-[60] rounded-t-3xl shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
               <div className="flex justify-between items-center mb-6">
