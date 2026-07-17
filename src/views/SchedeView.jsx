@@ -242,14 +242,15 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                     >
                       <Trash2 size={16} />
                     </button>
-                    <Button 
-                      variant={s.isActive ? "tertiary" : "primary"}
-                      size="medium"
-                      onClick={() => !s.isActive && activateScheda(s)}
-                      disabled={s.isActive}
-                    >
-                      {s.isActive ? '✓' : 'Attiva'}
-                    </Button>
+                    {!s.isActive && (
+                      <Button 
+                        variant="primary"
+                        size="medium"
+                        onClick={() => activateScheda(s)}
+                      >
+                        Attiva
+                      </Button>
+                    )}
                   </div>
                 </Card>
               ))
@@ -276,12 +277,17 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
 
       {viewState === 'builder' && (
         <div className="space-y-6">
+          {/* Chips Giorni - Con logica button primary/secondary */}
           <div className="flex gap-2 overflow-x-auto pb-2">
             {Object.keys(workoutRoutine).map(day => (
               <button 
                 key={day} 
                 onClick={() => setActiveBuilderDay(day)} 
-                className={`px-4 py-2 rounded-xl font-black text-xs whitespace-nowrap ${activeBuilderDay === day ? 'bg-primary text-black' : 'bg-surface-secondary text-text-secondary'}`}
+                className={`px-4 py-2 rounded-xl font-black text-xs whitespace-nowrap transition-all ${
+                  activeBuilderDay === day 
+                    ? 'bg-primary text-white' 
+                    : 'bg-transparent border-2 border-primary text-primary hover:opacity-75'
+                }`}
               >
                 {day}
               </button>
@@ -294,7 +300,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
               <Dumbbell size={40} className="text-text-tertiary mx-auto" />
               <div>
                 <p className="text-text-primary font-black text-sm">Nessun esercizio aggiunto</p>
-                <p className="text-text-secondary text-xs mt-1">Inizia a costruire il tuo allenamento per {activeBuilderDay}</p>
+                <p className="text-text-secondary text-xs mt-1">Inizia a costruire il tuo allenamento</p>
               </div>
             </div>
           )}
@@ -341,16 +347,16 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
               <Plus size={16} className="mr-2" />
               AGGIUNGI ESERCIZIO
             </Button>
-            <Button variant="primary" fullWidth onClick={saveScheda}>
+            <Button variant="secondary" fullWidth onClick={saveScheda}>
               COMPLETA SCHEDA
             </Button>
             <Button 
-              variant="secondary" 
+              variant="destructive" 
               fullWidth 
               onClick={deleteDay}
             >
               <Trash2 size={16} className="mr-2" />
-              ELIMINA GIORNATA {activeBuilderDay}
+              ELIMINA GIORNATA
             </Button>
           </div>
 
