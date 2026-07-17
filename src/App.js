@@ -24,6 +24,43 @@ function App() {
   
   // Stato globale per lo storico degli allenamenti
   const [storicoAllenamenti, setStoricoAllenamenti] = useState([]);
+  
+  // Stato globale per gli esercizi fetchati da Supabase
+  const [esercizi, setEsercizi] = useState([]);
+
+  // Fetch esercizi da Supabase all'avvio
+  useEffect(() => {
+    const fetchEsercizi = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('exercises')
+          .select('id, name, movement_pattern, primary_muscle_group, equipment, default_rest_time')
+          .order('name', { ascending: true });
+        
+        if (error) {
+          console.error('Errore nel fetch degli esercizi:', error);
+          return;
+        }
+        
+        // Trasforma i dati nel formato atteso da SchedeView
+        const eserciziformattati = data.map(ex => ({
+          id: ex.id,
+          name: ex.name,
+          muscle: ex.primary_muscle_group,
+          equipment: ex.equipment,
+          movement_pattern: ex.movement_pattern,
+          default_rest_time: ex.default_rest_time
+        }));
+        
+        setEsercizi(eserciziformattati);
+        console.log(`✅ Caricati ${eserciziformattati.length} esercizi da Supabase`);
+      } catch (err) {
+        console.error('Errore durante il fetch degli esercizi:', err);
+      }
+    };
+    
+    fetchEsercizi();
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -90,6 +127,7 @@ function App() {
             setSchede={setLeMieSchede}
             schedaAttiva={schedaAttiva}
             setSchedaAttiva={setSchedaAttiva}
+            esercizi={esercizi}
           />
         )}
         {activeTab === 'progressi' && (
