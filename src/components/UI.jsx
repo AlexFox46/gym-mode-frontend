@@ -1,13 +1,13 @@
 import React from 'react';
 
 // Bottone "Performante": alto contrasto, area di tocco minima 48px
-export const Button = ({ children, variant = 'primary', size = 'medium', fullWidth = false, className = '', ...props }) => {
+export const Button = ({ children, variant = 'primary', size = 'medium', fullWidth = false, disabled = false, className = '', ...props }) => {
   const baseStyles = "font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.98] rounded-xl flex items-center justify-center select-none shadow-sm focus:ring-4 focus:ring-primary/30 outline-none";
   
   const variants = {
-    primary: "bg-primary text-black hover:bg-primary-dark", // Lime su nero
-    secondary: "bg-surface-secondary text-text-primary border border-surface-tertiary hover:bg-surface-tertiary",
-    destructive: "bg-red-600 text-white hover:bg-red-700",
+    primary: disabled ? "bg-surface-tertiary text-text-tertiary cursor-not-allowed opacity-50" : "bg-primary text-black hover:bg-primary-dark", // Lime su nero
+    secondary: disabled ? "bg-surface-tertiary text-text-tertiary border border-surface-tertiary cursor-not-allowed opacity-50" : "bg-surface-secondary text-text-primary border border-surface-tertiary hover:bg-surface-tertiary",
+    destructive: disabled ? "bg-surface-tertiary text-text-tertiary cursor-not-allowed opacity-50" : "bg-red-600 text-white hover:bg-red-700",
   };
 
   const sizes = {
@@ -17,7 +17,11 @@ export const Button = ({ children, variant = 'primary', size = 'medium', fullWid
   };
 
   return (
-    <button className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${fullWidth ? 'w-full' : 'w-auto'} ${className}`} {...props}>
+    <button 
+      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${fullWidth ? 'w-full' : 'w-auto'} ${className}`} 
+      disabled={disabled}
+      {...props}
+    >
       {children}
     </button>
   );
