@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { supabase } from '../supabaseClient';
 import { Card, Button, Stepper } from '../components/UI';
 import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical } from 'lucide-react';
 
-export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, esercizi = [] }) => {
+export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, esercizi = [], userId }) => {
   const [viewState, setViewState] = useState('list');
   const [newSchedaName, setNewSchedaName] = useState('');
   const [newSchedaDays, setNewSchedaDays] = useState(2);
@@ -12,6 +13,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   const [error, setError] = useState('');
   const [editingExercise, setEditingExercise] = useState(null);
   const [editingExerciseIndex, setEditingExerciseIndex] = useState(null);
+  const [editingSchedaId, setEditingSchedaId] = useState(null);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [muscleFilter, setMuscleFilter] = useState('');
@@ -35,6 +37,8 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   const startCreation = () => { 
     setNewSchedaName(''); 
     setNewSchedaDays(2); 
+    setWorkoutRoutine({});
+    setEditingSchedaId(null);
     setViewState('setup'); 
     setError(''); 
   };
@@ -147,16 +151,48 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
     setActiveBuilderDay(`G1`);
   };
 
-  const saveScheda = () => {
-    const newScheda = { 
-      id: Date.now(), 
-      name: newSchedaName, 
-      daysCount: Object.keys(workoutRoutine).length, 
-      routine: workoutRoutine,
-      isActive: false
-    };
-    setSchede([...schede, newScheda]);
-    setViewState('list');
+  // Salva scheda su Supabase
+  const saveSchedule = async () => {
+    if (!userId) {
+      alert('Utente non autenticato');
+      return;
+    }
+
+    try {
+      const schedaData = {
+        user_id: userId,
+        name: newSchedaName,
+        days_count: Object.keys(workoutRoutine).length,
+        routine: workoutRoutine,
+        is_active: false
+      };
+
+      if (editingSchedaId) {
+        // Update
+        const { error } = await supabase
+          .from('workout_schemes')
+          .update(schedaData)
+          .eq('id', editingSchedaId);
+        
+        if (error) throw error;
+        console.log('✅ Scheda aggiornata');
+      } else {
+        // Insert
+        const { data, error } = await supabase
+          .from('workout_schemes')
+          .insert([schedaData])
+          .select();
+        
+        if (error) throw error;
+        console.log('✅ Scheda creata');
+      }
+
+      setViewState('list');
+      setEditingSchedaId(null);
+    } catch (err) {
+      console.error('Errore nel salvataggio della scheda:', err);
+      alert('Errore nel salvataggio della scheda');
+    }
   };
 
   const editScheda = (schedaToEdit) => {
@@ -164,23 +200,47 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
     setNewSchedaDays(schedaToEdit.daysCount);
     setWorkoutRoutine(JSON.parse(JSON.stringify(schedaToEdit.routine)));
     setActiveBuilderDay('G1');
+    setEditingSchedaId(schedaToEdit.id);
     setViewState('builder');
   };
 
-  const deleteScheda = (schedaId) => {
-    setSchede(schede.filter(s => s.id !== schedaId));
-    if (schedaAttiva?.id === schedaId) {
-      setSchedaAttiva(null);
+  const deleteScheda = async (schedaId) => {
+    if (!window.confirm('Sei sicuro di voler eliminare questa scheda?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('workout_schemes')
+        .delete()
+        .eq('id', schedaId);
+      
+      if (error) throw error;
+      console.log('✅ Scheda eliminata');
+    } catch (err) {
+      console.error('Errore nell\'eliminazione della scheda:', err);
+      alert('Errore nell\'eliminazione della scheda');
     }
   };
 
-  const activateScheda = (scheda) => {
-    const updatedSchede = schede.map(s => ({
-      ...s,
-      isActive: s.id === scheda.id
-    }));
-    setSchede(updatedSchede);
-    setSchedaAttiva({ ...scheda, isActive: true });
+  const activateScheda = async (scheda) => {
+    try {
+      // Disattiva tutte le altre
+      await supabase
+        .from('workout_schemes')
+        .update({ is_active: false })
+        .eq('user_id', userId);
+
+      // Attiva questa
+      const { error } = await supabase
+        .from('workout_schemes')
+        .update({ is_active: true })
+        .eq('id', scheda.id);
+      
+      if (error) throw error;
+      console.log('✅ Scheda attivata');
+    } catch (err) {
+      console.error('Errore nell\'attivazione della scheda:', err);
+      alert('Errore nell\'attivazione della scheda');
+    }
   };
 
   return (
@@ -326,7 +386,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
               <Plus size={16} className="mr-2" />
               AGGIUNGI ESERCIZIO
             </Button>
-            <Button variant="secondary" fullWidth onClick={saveScheda}>
+            <Button variant="secondary" fullWidth onClick={saveSchedule}>
               COMPLETA SCHEDA
             </Button>
             <Button 
