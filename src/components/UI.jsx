@@ -5,9 +5,18 @@ export const Button = ({ children, variant = 'primary', size = 'medium', fullWid
   const baseStyles = "font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.98] rounded-xl flex items-center justify-center select-none shadow-sm focus:ring-4 focus:ring-primary/30 outline-none";
   
   const variants = {
-    primary: disabled ? "bg-surface-tertiary text-text-tertiary cursor-not-allowed opacity-50" : "bg-primary text-black hover:bg-primary-dark", // Lime su nero
-    secondary: disabled ? "bg-surface-tertiary text-text-tertiary border border-surface-tertiary cursor-not-allowed opacity-50" : "bg-surface-secondary text-text-primary border border-surface-tertiary hover:bg-surface-tertiary",
-    destructive: disabled ? "bg-surface-tertiary text-text-tertiary cursor-not-allowed opacity-50" : "bg-red-600 text-white hover:bg-red-700",
+    primary: disabled 
+      ? "bg-surface-tertiary text-text-tertiary cursor-not-allowed opacity-50" 
+      : "bg-primary text-white hover:opacity-90", // Arancione pieno, testo bianco
+    secondary: disabled 
+      ? "bg-transparent border-2 border-surface-tertiary text-text-tertiary cursor-not-allowed opacity-50"
+      : "bg-transparent border-2 border-primary text-primary hover:opacity-75", // Outline arancione
+    tertiary: disabled
+      ? "bg-transparent border-2 border-surface-tertiary text-text-tertiary cursor-not-allowed opacity-50"
+      : "bg-transparent border-2 border-surface-tertiary text-text-primary hover:opacity-75", // Outline grigio
+    destructive: disabled
+      ? "bg-surface-tertiary text-text-tertiary cursor-not-allowed opacity-50"
+      : "bg-red-600 text-white hover:opacity-90", // Rosso pieno
   };
 
   const sizes = {
@@ -36,7 +45,7 @@ export const Stepper = ({ label, value, onChange, step = 1, unit = '' }) => {
         <button 
           aria-label={`Diminuisci ${label}`}
           onClick={() => onChange(Math.max(0, parseFloat((value - step).toFixed(2))))} 
-          className="w-12 h-12 rounded-xl bg-surface-tertiary flex items-center justify-center font-black text-white hover:bg-[#333] active:scale-90 transition-all"
+          className="w-12 h-12 rounded-xl bg-surface-tertiary flex items-center justify-center font-black text-white hover:opacity-75 active:scale-90 transition-all"
         >–</button>
         <span className="w-16 text-center font-mono font-black text-xl text-text-primary">
           {value}<span className="text-[10px] ml-1 text-text-tertiary">{unit}</span>
@@ -44,7 +53,7 @@ export const Stepper = ({ label, value, onChange, step = 1, unit = '' }) => {
         <button 
           aria-label={`Aumenta ${label}`}
           onClick={() => onChange(parseFloat((value + step).toFixed(2)))} 
-          className="w-12 h-12 rounded-xl bg-surface-tertiary flex items-center justify-center font-black text-primary hover:bg-[#333] active:scale-90 transition-all"
+          className="w-12 h-12 rounded-xl bg-surface-tertiary flex items-center justify-center font-black text-primary hover:opacity-75 active:scale-90 transition-all"
         >+</button>
       </div>
     </div>
