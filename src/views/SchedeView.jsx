@@ -109,33 +109,47 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
     setIsCatalogOpen(false);
   };
 
-  // Drag & Drop handlers
+  // Drag & Drop handlers - FIXED
   const handleDragStart = (index) => {
     setDraggedExerciseIndex(index);
+    setDragOverIndex(index);
     // Vibrazione feedback (se supportato)
     if (navigator.vibrate) {
       navigator.vibrate(50);
     }
   };
 
-  const handleDragOver = (index) => {
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
     setDragOverIndex(index);
   };
 
-  const handleDrop = (dropIndex) => {
-    if (draggedExerciseIndex === null) return;
+  const handleDrop = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedExerciseIndex === null || draggedExerciseIndex === dropIndex) {
+      setDraggedExerciseIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
     
     const newRoutine = [...workoutRoutine[activeBuilderDay]];
     const draggedItem = newRoutine[draggedExerciseIndex];
     
+    // Rimuovi da posizione originale
     newRoutine.splice(draggedExerciseIndex, 1);
-    newRoutine.splice(dropIndex, 0, draggedItem);
+    // Inserisci nella nuova posizione
+    newRoutine.splice(dropIndex > draggedExerciseIndex ? dropIndex - 1 : dropIndex, 0, draggedItem);
     
     setWorkoutRoutine(prev => ({
       ...prev,
       [activeBuilderDay]: newRoutine
     }));
     
+    setDraggedExerciseIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
     setDraggedExerciseIndex(null);
     setDragOverIndex(null);
   };
@@ -193,7 +207,10 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
         <>
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-2xl font-black text-white">Le mie Schede</h1>
-            <Button variant="primary" onClick={startCreation}><Plus size={16} /></Button>
+            <Button variant="primary" size="medium" onClick={startCreation}>
+              <Plus size={16} className="mr-2" />
+              NUOVA SCHEDA
+            </Button>
           </div>
           <div className="space-y-4">
             {schede.length === 0 ? (
@@ -226,11 +243,10 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                       <Trash2 size={16} />
                     </button>
                     <Button 
-                      variant={s.isActive ? "secondary" : "primary"}
-                      size="small"
+                      variant={s.isActive ? "tertiary" : "primary"}
+                      size="medium"
                       onClick={() => !s.isActive && activateScheda(s)}
                       disabled={s.isActive}
-                      className={s.isActive ? 'opacity-50 cursor-not-allowed' : ''}
                     >
                       {s.isActive ? '✓' : 'Attiva'}
                     </Button>
@@ -290,12 +306,12 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                 key={ex.instanceId}
                 draggable
                 onDragStart={() => handleDragStart(idx)}
-                onDragOver={() => handleDragOver(idx)}
-                onDrop={() => handleDrop(idx)}
-                onDragLeave={() => setDragOverIndex(null)}
+                onDragOver={(e) => handleDragOver(e, idx)}
+                onDrop={(e) => handleDrop(e, idx)}
+                onDragEnd={handleDragEnd}
                 className={`transition-all cursor-grab active:cursor-grabbing ${
-                  draggedExerciseIndex === idx ? 'scale-105 opacity-100 z-20' : 'scale-100 opacity-100'
-                } ${dragOverIndex === idx && draggedExerciseIndex !== idx ? 'translate-y-2 border-t-2 border-primary' : ''}`}
+                  draggedExerciseIndex === idx ? 'scale-105 opacity-100 z-20 shadow-xl' : 'scale-100 opacity-100'
+                } ${dragOverIndex === idx && draggedExerciseIndex !== idx ? 'border-t-2 border-primary pt-2' : ''}`}
               >
                 <Card className="flex items-center gap-3 p-4">
                   <GripVertical size={16} className="text-text-tertiary flex-shrink-0" />
@@ -321,18 +337,21 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
           </div>
 
           <div className="space-y-2">
-            <Button variant="secondary" fullWidth onClick={() => setIsCatalogOpen(true)}>
-              + AGGIUNGI ESERCIZIO
+            <Button variant="primary" fullWidth onClick={() => setIsCatalogOpen(true)}>
+              <Plus size={16} className="mr-2" />
+              AGGIUNGI ESERCIZIO
+            </Button>
+            <Button variant="primary" fullWidth onClick={saveScheda}>
+              COMPLETA SCHEDA
             </Button>
             <Button 
-              variant="destructive" 
+              variant="secondary" 
               fullWidth 
               onClick={deleteDay}
-              className="bg-red-600 hover:bg-red-700"
             >
+              <Trash2 size={16} className="mr-2" />
               ELIMINA GIORNATA {activeBuilderDay}
             </Button>
-            <Button variant="primary" fullWidth onClick={saveScheda}>Completa Scheda</Button>
           </div>
 
           {/* CATALOGO */}
@@ -383,7 +402,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva })
                   </div>
                   <button 
                     onClick={() => addExerciseToDay(ex)} 
-                    className="bg-primary text-black p-2 rounded-lg hover:bg-primary/80 transition-colors"
+                    className="bg-primary text-white p-2 rounded-lg hover:opacity-90 transition-opacity"
                   >
                     <Plus size={20}/>
                   </button>
