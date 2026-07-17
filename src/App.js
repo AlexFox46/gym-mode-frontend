@@ -42,7 +42,6 @@ function App() {
           return;
         }
         
-        // Trasforma i dati nel formato atteso da SchedeView
         const eserciziformattati = data.map(ex => ({
           id: ex.id,
           name: ex.name,
@@ -62,16 +61,89 @@ function App() {
     fetchEsercizi();
   }, []);
 
+  // Fetch schede dell'utente loggato
+  const fetchSchede = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('workout_schemes')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Errore nel fetch delle schede:', error);
+        return;
+      }
+      
+      const schedeFormattate = data.map(scheda => ({
+        id: scheda.id,
+        name: scheda.name,
+        daysCount: scheda.days_count || 2,
+        routine: scheda.routine || {},
+        isActive: scheda.is_active || false
+      }));
+      
+      setLeMieSchede(schedeFormattate);
+      
+      // Imposta la scheda attiva
+      const attiva = schedeFormattate.find(s => s.isActive);
+      setSchedaAttiva(attiva || null);
+      
+      console.log(`✅ Caricate ${schedeFormattate.length} schede da Supabase`);
+    } catch (err) {
+      console.error('Errore durante il fetch delle schede:', err);
+    }
+  };
+
+  // Setup real-time listener per schede
+  const setupSchedeListener = (userId) => {
+    const channel = supabase
+      .channel(`workout_schemes:${userId}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'workout_schemes',
+        filter: `user_id=eq.${userId}`
+      }, (payload) => {
+        console.log('🔄 Cambio rilevato nelle schede:', payload);
+        fetchSchede(userId);
+      })
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
+
+  // Auth state management
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        setUser(session.user);
+        fetchSchede(session.user.id);
+        setupSchedeListener(session.user.id);
+      } else {
+        setUser(null);
+        setLeMieSchede([]);
+        setSchedaAttiva(null);
+      }
       setAuthLoading(false);
     });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        setUser(session.user);
+        fetchSchede(session.user.id);
+        setupSchedeListener(session.user.id);
+      } else {
+        setUser(null);
+        setLeMieSchede([]);
+        setSchedaAttiva(null);
+      }
       setAuthLoading(false);
     });
-    return () => subscription.unsubscribe();
+
+    return () => subscription?.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -86,16 +158,16 @@ function App() {
     if (window.confirm("Sei sicuro di voler uscire?")) {
       await supabase.auth.signOut();
       setUser(null);
+      setLeMieSchede([]);
+      setSchedaAttiva(null);
     }
   };
 
-  // Funzione per registrare la fine dell'allenamento
   const handleWorkoutComplete = (logEntry) => {
     setStoricoAllenamenti(prev => [...prev, logEntry]);
     setActiveTab('progressi');
   };
 
-  // Funzione per navigare a Schede
   const handleNavigateToSchede = () => {
     setActiveTab('schede');
   };
@@ -128,6 +200,7 @@ function App() {
             schedaAttiva={schedaAttiva}
             setSchedaAttiva={setSchedaAttiva}
             esercizi={esercizi}
+            userId={user?.id}
           />
         )}
         {activeTab === 'progressi' && (
