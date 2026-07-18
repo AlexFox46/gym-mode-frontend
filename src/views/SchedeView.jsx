@@ -56,18 +56,21 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   };
 
   const addExerciseToDay = (ex) => {
-    const newEx = { 
-      ...ex, 
-      instanceId: Date.now() + Math.random(), 
-      sets: 4, 
-      reps: 10, 
-      weight: 20, 
-      rest: ex.default_rest_time || 90 
-    };
-    setEditingExercise(newEx);
-    setEditingExerciseIndex(null);
-    setIsCatalogOpen(false);
+  console.log('ex ricevuto:', ex);  // ← AGGIUNGI QUESTA RIGA
+  console.log('ex.id:', ex.id);     // ← E QUESTA
+  
+  const newEx = { 
+    ...ex, 
+    instanceId: Date.now() + Math.random(), 
+    sets: 4, 
+    reps: 10, 
+    weight: 20, 
+    rest: ex.default_rest_time || 90 
   };
+  setEditingExercise(newEx);
+  setEditingExerciseIndex(null);
+  setIsCatalogOpen(false);
+};
 
   const saveExerciseConfiguration = () => {
     if (editingExerciseIndex !== null) {
