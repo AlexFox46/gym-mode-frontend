@@ -122,11 +122,13 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   };
 
   const handleOpenAlternatives = () => {
-    if (currentExercise?.id) {
-      fetchAlternatives(currentExercise.id);
-      setShowAlternatives(true);
-    }
-  };
+  console.log('currentExercise:', currentExercise);
+  console.log('currentExercise.id:', currentExercise?.id);
+  if (currentExercise?.id) {
+    fetchAlternatives(currentExercise.id);
+    setShowAlternatives(true);
+  }
+};
 
   const handleSelectAlternative = (alternativeExercise) => {
     // Sostituisci temporaneamente l'esercizio corrente
