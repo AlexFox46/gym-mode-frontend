@@ -71,9 +71,9 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     
     // Usa rpc per fare la query correttamente
     const { data, error } = await supabase
-      .rpc('get_exercise_alternatives', {
-        p_exercise_id: exerciseId
-      });
+  .rpc('get_exercise_alternatives', {  // ← USA IL NOME CHE HAI CREATO
+    p_exercise_id: exerciseId
+  });
 
     console.log('Alternatives:', data, error);
 
