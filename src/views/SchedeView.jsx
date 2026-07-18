@@ -223,43 +223,80 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   };
 
   const deleteScheda = async (schedaId) => {
-    if (!window.confirm('Sei sicuro di voler eliminare questa scheda?')) return;
+  if (!window.confirm('Sei sicuro di voler eliminare questa scheda?')) return;
 
-    try {
-      const { error } = await supabase
-        .from('workout_schemes')
-        .delete()
-        .eq('id', schedaId);
-      
-      if (error) throw error;
-      console.log('✅ Scheda eliminata');
-    } catch (err) {
-      console.error('Errore nell\'eliminazione della scheda:', err);
-      alert('Errore nell\'eliminazione della scheda');
+  try {
+    const { error } = await supabase
+      .from('workout_schemes')
+      .delete()
+      .eq('id', schedaId);
+    
+    if (error) throw error;
+    console.log('✅ Scheda eliminata');
+
+    // Refetch le schede
+    const { data: allSchede, error: fetchError } = await supabase
+      .from('workout_schemes')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (!fetchError && allSchede) {
+      const schedeFormattate = allSchede.map(scheda => ({
+        id: scheda.id,
+        name: scheda.name,
+        daysCount: scheda.days_count || 2,
+        routine: scheda.routine || {},
+        isActive: scheda.is_active || false
+      }));
+      setSchede(schedeFormattate);
     }
-  };
+  } catch (err) {
+    console.error('Errore nell\'eliminazione della scheda:', err);
+    alert('Errore nell\'eliminazione della scheda');
+  }
+};
 
   const activateScheda = async (scheda) => {
-    try {
-      // Disattiva tutte le altre
-      await supabase
-        .from('workout_schemes')
-        .update({ is_active: false })
-        .eq('user_id', userId);
+  try {
+    // Disattiva tutte le altre
+    await supabase
+      .from('workout_schemes')
+      .update({ is_active: false })
+      .eq('user_id', userId);
 
-      // Attiva questa
-      const { error } = await supabase
-        .from('workout_schemes')
-        .update({ is_active: true })
-        .eq('id', scheda.id);
-      
-      if (error) throw error;
-      console.log('✅ Scheda attivata');
-    } catch (err) {
-      console.error('Errore nell\'attivazione della scheda:', err);
-      alert('Errore nell\'attivazione della scheda');
+    // Attiva questa
+    const { error } = await supabase
+      .from('workout_schemes')
+      .update({ is_active: true })
+      .eq('id', scheda.id);
+    
+    if (error) throw error;
+    console.log('✅ Scheda attivata');
+
+    // Refetch le schede
+    const { data: allSchede, error: fetchError } = await supabase
+      .from('workout_schemes')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (!fetchError && allSchede) {
+      const schedeFormattate = allSchede.map(s => ({
+        id: s.id,
+        name: s.name,
+        daysCount: s.days_count || 2,
+        routine: s.routine || {},
+        isActive: s.is_active || false
+      }));
+      setSchede(schedeFormattate);
+      setSchedaAttiva(schedeFormattate.find(s => s.isActive) || null);
     }
-  };
+  } catch (err) {
+    console.error('Errore nell\'attivazione della scheda:', err);
+    alert('Errore nell\'attivazione della scheda');
+  }
+};
 
   return (
     <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32 text-text-primary">
