@@ -65,30 +65,34 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
 
   // Fetch alternative da Supabase
   const fetchAlternatives = async (exerciseId) => {
-    setLoadingAlternatives(true);
-    try {
-      const { data, error } = await supabase
-        .from('exercise_alternatives')
-        .select(`
-          tier,
-          priority_order,
-          alternative_exercise_id,
-          exercises!exercise_alternatives_alternative_exercise_id_fkey (
-            id,
-            name,
-            primary_muscle_group,
-            equipment
-          )
-        `)
-        .eq('original_exercise_id', exerciseId)
-        .order('tier', { ascending: true })
-        .order('priority_order', { ascending: true });
+  setLoadingAlternatives(true);
+  console.log('fetchAlternatives called with ID:', exerciseId);  // ← AGGIUNGI QUESTA RIGA
+  try {
+    const { data, error } = await supabase
+      .from('exercise_alternatives')
+      .select(`
+        tier,
+        priority_order,
+        alternative_exercise_id,
+        exercises!exercise_alternatives_alternative_exercise_id_fkey (
+          id,
+          name,
+          primary_muscle_group,
+          equipment
+        )
+      `)
+      .eq('original_exercise_id', exerciseId)
+      .order('tier', { ascending: true })
+      .order('priority_order', { ascending: true });
 
-      if (error) {
-        console.error('Errore nel fetch delle alternative:', error);
-        setAlternatives([]);
-        return;
-      }
+    console.log('Fetch result - data:', data, 'error:', error);  // ← E QUESTA RIGA
+
+    if (error) {
+      console.error('Errore nel fetch delle alternative:', error);
+      setAlternatives([]);
+      return;
+    }
+    // ... resto del codice
 
       // Raggruppa per tier con nomi italiani
       const tierNames = {
