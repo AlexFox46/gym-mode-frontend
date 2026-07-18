@@ -65,6 +65,9 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
 
   // Fetch alternative da Supabase
  const fetchAlternatives = async (exerciseId) => {
+  console.log('=== FETCH ALTERNATIVES DEBUG ===');
+  console.log('exerciseId ricevuto:', exerciseId);
+  console.log('typeof exerciseId:', typeof exerciseId);
   setLoadingAlternatives(true);
   try {
     console.log('Fetching alternatives for:', exerciseId);
