@@ -65,71 +65,71 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
 
   // Fetch alternative da Supabase
   const fetchAlternatives = async (exerciseId) => {
-  setLoadingAlternatives(true);
-  try {
-    // Prendi le alternative IDs da RPC
-    const { data: altIds, error: rpcError } = await supabase
-      .rpc('get_exercise_alternatives', {
-        p_exercise_id: exerciseId
+    setLoadingAlternatives(true);
+    try {
+      // Prendi le alternative IDs da RPC
+      const { data: altIds, error: rpcError } = await supabase
+        .rpc('get_exercise_alternatives', {
+          p_exercise_id: exerciseId
+        });
+
+      if (rpcError) throw rpcError;
+      if (!altIds || altIds.length === 0) {
+        setAlternatives({});
+        setLoadingAlternatives(false);
+        return;
+      }
+
+      // Estrai gli IDs
+      const ids = altIds.map(a => a.alternative_exercise_id);
+
+      // Prendi i nomi degli esercizi
+      const { data: exercises, error: exError } = await supabase
+        .from('exercises')
+        .select('id, name, primary_muscle_group, equipment')
+        .in('id', ids);
+
+      if (exError) throw exError;
+
+      // Raggruppa per tier
+      const tierNames = {
+        'TIER_1': 'Sostituti Ottimi',
+        'TIER_2': 'Sostituti Buoni',
+        'TIER_3': 'Sostituti Accettabili'
+      };
+
+      const grouped = {};
+      altIds.forEach(alt => {
+        const ex = exercises?.find(e => e.id === alt.alternative_exercise_id);
+        if (ex) {
+          const tier = tierNames[alt.tier] || alt.tier;
+          if (!grouped[tier]) grouped[tier] = [];
+          grouped[tier].push({
+            id: ex.id,
+            name: ex.name,
+            muscle: ex.primary_muscle_group,
+            equipment: ex.equipment
+          });
+        }
       });
 
-    if (rpcError) throw rpcError;
-    if (!altIds || altIds.length === 0) {
+      setAlternatives(grouped);
+    } catch (err) {
+      console.error('Errore:', err);
       setAlternatives({});
+    } finally {
       setLoadingAlternatives(false);
-      return;
     }
-
-    // Estrai gli IDs
-    const ids = altIds.map(a => a.alternative_exercise_id);
-
-    // Prendi i nomi degli esercizi
-    const { data: exercises, error: exError } = await supabase
-      .from('exercises')
-      .select('id, name, primary_muscle_group, equipment')
-      .in('id', ids);
-
-    if (exError) throw exError;
-
-    // Raggruppa per tier
-    const tierNames = {
-      'TIER_1': 'Sostituti Ottimi',
-      'TIER_2': 'Sostituti Buoni',
-      'TIER_3': 'Sostituti Accettabili'
-    };
-
-    const grouped = {};
-    altIds.forEach(alt => {
-      const ex = exercises?.find(e => e.id === alt.alternative_exercise_id);
-      if (ex) {
-        const tier = tierNames[alt.tier] || alt.tier;
-        if (!grouped[tier]) grouped[tier] = [];
-        grouped[tier].push({
-          id: ex.id,
-          name: ex.name,
-          muscle: ex.primary_muscle_group,
-          equipment: ex.equipment
-        });
-      }
-    });
-
-    setAlternatives(grouped);
-  } catch (err) {
-    console.error('Errore:', err);
-    setAlternatives({});
-  } finally {
-    setLoadingAlternatives(false);
-  }
-};
+  };
 
   const handleOpenAlternatives = () => {
-  console.log('currentExercise:', currentExercise);
-  console.log('currentExercise.id:', currentExercise?.id);
-  if (currentExercise?.id) {
-    fetchAlternatives(currentExercise.id);
-    setShowAlternatives(true);
-  }
-};
+    console.log('currentExercise:', currentExercise);
+    console.log('currentExercise.id:', currentExercise?.id);
+    if (currentExercise?.id) {
+      fetchAlternatives(currentExercise.id);
+      setShowAlternatives(true);
+    }
+  };
 
   const handleSelectAlternative = (alternativeExercise) => {
     // Sostituisci temporaneamente l'esercizio corrente
