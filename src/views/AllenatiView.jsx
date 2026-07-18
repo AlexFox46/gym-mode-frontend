@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 import { Button, Stepper, Card } from '../components/UI';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Repeat2 } from 'lucide-react';
 
 export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavigateToSchede }) => {
   const [activeDay, setActiveDay] = useState('G1');
@@ -36,6 +37,11 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const [restTime, setRestTime] = useState(90);
   const [isRestActive, setIsRestActive] = useState(false);
 
+  // Stato per il bottom sheet delle alternative
+  const [showAlternatives, setShowAlternatives] = useState(false);
+  const [alternatives, setAlternatives] = useState([]);
+  const [loadingAlternatives, setLoadingAlternatives] = useState(false);
+
   useEffect(() => {
     if (currentExercise) {
       setCurrentWeight(Number(currentExercise.weight) || 0);
@@ -56,6 +62,90 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     }
     return () => clearInterval(interval);
   }, [isRestActive, restTime, exerciseRest]);
+
+  // Fetch alternative da Supabase
+  const fetchAlternatives = async (exerciseId) => {
+    setLoadingAlternatives(true);
+    try {
+      const { data, error } = await supabase
+        .from('exercise_alternatives')
+        .select(`
+          tier,
+          priority_order,
+          alternative_exercise_id,
+          exercises!exercise_alternatives_alternative_exercise_id_fkey (
+            id,
+            name,
+            primary_muscle_group,
+            equipment
+          )
+        `)
+        .eq('original_exercise_id', exerciseId)
+        .order('tier', { ascending: true })
+        .order('priority_order', { ascending: true });
+
+      if (error) {
+        console.error('Errore nel fetch delle alternative:', error);
+        setAlternatives([]);
+        return;
+      }
+
+      // Raggruppa per tier con nomi italiani
+      const tierNames = {
+        'TIER_1': 'Sostituti Ottimi',
+        'TIER_2': 'Sostituti Buoni',
+        'TIER_3': 'Sostituti Accettabili'
+      };
+
+      const groupedAlternatives = {};
+      data.forEach(alt => {
+        const tierName = tierNames[alt.tier] || alt.tier;
+        if (!groupedAlternatives[tierName]) {
+          groupedAlternatives[tierName] = [];
+        }
+        groupedAlternatives[tierName].push({
+          id: alt.exercises.id,
+          name: alt.exercises.name,
+          muscle: alt.exercises.primary_muscle_group,
+          equipment: alt.exercises.equipment,
+          tier: tierName
+        });
+      });
+
+      setAlternatives(groupedAlternatives);
+    } catch (err) {
+      console.error('Errore durante il fetch delle alternative:', err);
+      setAlternatives([]);
+    } finally {
+      setLoadingAlternatives(false);
+    }
+  };
+
+  const handleOpenAlternatives = () => {
+    if (currentExercise?.id) {
+      fetchAlternatives(currentExercise.id);
+      setShowAlternatives(true);
+    }
+  };
+
+  const handleSelectAlternative = (alternativeExercise) => {
+    // Sostituisci temporaneamente l'esercizio corrente
+    const updatedExercise = {
+      ...currentExercise,
+      id: alternativeExercise.id,
+      name: alternativeExercise.name,
+      muscle: alternativeExercise.muscle,
+      equipment: alternativeExercise.equipment
+    };
+    
+    // Aggiorna nella routine locale
+    const updatedRoutine = [...localRoutine];
+    updatedRoutine[exerciseIndex] = updatedExercise;
+    setLocalRoutine(updatedRoutine);
+    
+    // Chiudi il bottom sheet
+    setShowAlternatives(false);
+  };
 
   // LOGICA REGISTRAZIONE SET
   const handleRegisterSet = () => {
@@ -179,10 +269,71 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           <Stepper label="Ripetizioni" value={currentReps} onChange={setCurrentReps} step={1} unit="rip" />
         </Card>
 
-        <Button size="large" fullWidth onClick={handleRegisterSet} className="text-black bg-primary">
-          {isRestActive ? "SALTA & AVANTI" : `REGISTRA SET #${currentSet}`}
-        </Button>
+        <div className="space-y-2">
+          <Button size="large" fullWidth onClick={handleRegisterSet} className="text-black bg-primary">
+            {isRestActive ? "SALTA & AVANTI" : `REGISTRA SET #${currentSet}`}
+          </Button>
+          
+          <Button 
+            variant="secondary" 
+            size="large" 
+            fullWidth 
+            onClick={handleOpenAlternatives}
+            className="flex items-center justify-center gap-2"
+          >
+            <Repeat2 size={16} />
+            SOSTITUISCI ⇄
+          </Button>
+        </div>
       </div>
+
+      {/* BOTTOM SHEET ALTERNATIVE */}
+      {showAlternatives && (
+        <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setShowAlternatives(false)}>
+          <div 
+            className="fixed inset-x-0 bottom-0 bg-surface border-t border-surface-tertiary rounded-t-3xl max-w-[420px] mx-auto z-50 max-h-[80vh] overflow-y-auto"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="p-6 space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-black text-white">Scegli un Esercizio</h2>
+                <button 
+                  onClick={() => setShowAlternatives(false)}
+                  className="text-text-secondary hover:text-text-primary text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {loadingAlternatives ? (
+                <div className="text-center py-8">
+                  <p className="text-text-secondary">Caricamento...</p>
+                </div>
+              ) : Object.keys(alternatives).length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-text-secondary">Nessuna alternativa disponibile</p>
+                </div>
+              ) : (
+                Object.entries(alternatives).map(([tierName, exercises]) => (
+                  <div key={tierName} className="space-y-3">
+                    <h3 className="text-sm font-black uppercase tracking-widest text-primary">{tierName}</h3>
+                    {exercises.map((ex) => (
+                      <button
+                        key={ex.id}
+                        onClick={() => handleSelectAlternative(ex)}
+                        className="w-full text-left bg-surface-secondary p-4 rounded-xl border border-surface-tertiary hover:border-primary transition-all"
+                      >
+                        <p className="font-bold text-white text-sm">{ex.name}</p>
+                        <p className="text-[10px] text-text-secondary mt-1">{ex.muscle} • {ex.equipment}</p>
+                      </button>
+                    ))}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
