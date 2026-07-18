@@ -153,47 +153,65 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
 
   // Salva scheda su Supabase
   const saveSchedule = async () => {
-    if (!userId) {
-      alert('Utente non autenticato');
-      return;
+  if (!userId) {
+    alert('Utente non autenticato');
+    return;
+  }
+
+  try {
+    const schedaData = {
+      user_id: userId,
+      name: newSchedaName,
+      days_count: Object.keys(workoutRoutine).length,
+      routine: workoutRoutine,
+      is_active: false
+    };
+
+    if (editingSchedaId) {
+      // Update
+      const { error } = await supabase
+        .from('workout_schemes')
+        .update(schedaData)
+        .eq('id', editingSchedaId);
+      
+      if (error) throw error;
+      console.log('✅ Scheda aggiornata');
+    } else {
+      // Insert
+      const { data, error } = await supabase
+        .from('workout_schemes')
+        .insert([schedaData])
+        .select();
+      
+      if (error) throw error;
+      console.log('✅ Scheda creata');
     }
 
-    try {
-      const schedaData = {
-        user_id: userId,
-        name: newSchedaName,
-        days_count: Object.keys(workoutRoutine).length,
-        routine: workoutRoutine,
-        is_active: false
-      };
-
-      if (editingSchedaId) {
-        // Update
-        const { error } = await supabase
-          .from('workout_schemes')
-          .update(schedaData)
-          .eq('id', editingSchedaId);
-        
-        if (error) throw error;
-        console.log('✅ Scheda aggiornata');
-      } else {
-        // Insert
-        const { data, error } = await supabase
-          .from('workout_schemes')
-          .insert([schedaData])
-          .select();
-        
-        if (error) throw error;
-        console.log('✅ Scheda creata');
-      }
-
-      setViewState('list');
-      setEditingSchedaId(null);
-    } catch (err) {
-      console.error('Errore nel salvataggio della scheda:', err);
-      alert('Errore nel salvataggio della scheda');
+    // Refetch le schede per aggiornare la lista
+    const { data: allSchede, error: fetchError } = await supabase
+      .from('workout_schemes')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (!fetchError && allSchede) {
+      const schedeFormattate = allSchede.map(scheda => ({
+        id: scheda.id,
+        name: scheda.name,
+        daysCount: scheda.days_count || 2,
+        routine: scheda.routine || {},
+        isActive: scheda.is_active || false
+      }));
+      setSchede(schedeFormattate);
     }
-  };
+
+    setViewState('list');
+    setEditingSchedaId(null);
+  } catch (err) {
+    console.error('Errore nel salvataggio della scheda:', err);
+    alert('Errore nel salvataggio della scheda');
+  }
+};
 
   const editScheda = (schedaToEdit) => {
     setNewSchedaName(schedaToEdit.name);
