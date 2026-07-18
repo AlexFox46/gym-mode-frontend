@@ -65,39 +65,24 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
 
   // Fetch alternative da Supabase
  const fetchAlternatives = async (exerciseId) => {
-  console.log('=== FETCH ALTERNATIVES DEBUG ===');
-  console.log('exerciseId ricevuto:', exerciseId);
-  console.log('typeof exerciseId:', typeof exerciseId);
   setLoadingAlternatives(true);
   try {
     console.log('Fetching alternatives for:', exerciseId);
     
+    // Usa rpc per fare la query correttamente
     const { data, error } = await supabase
-      .from('exercise_alternatives')
-      .select('*')
-      .eq('original_exercise_id', exerciseId);
+      .rpc('get_exercise_alternatives', {
+        p_exercise_id: exerciseId
+      });
 
-    console.log('Raw alternatives:', data);
+    console.log('Alternatives:', data, error);
 
     if (error) throw error;
-
     if (!data || data.length === 0) {
       setAlternatives({});
+      setLoadingAlternatives(false);
       return;
     }
-
-    // Prendi gli alternative_exercise_id
-    const altIds = data.map(d => d.alternative_exercise_id);
-    
-    // Prendi i nomi
-    const { data: exercises, error: exError } = await supabase
-      .from('exercises')
-      .select('id, name, primary_muscle_group, equipment')
-      .in('id', altIds);
-
-    console.log('Exercises found:', exercises);
-
-    if (exError) throw exError;
 
     // Raggruppa per tier
     const tierNames = {
@@ -108,20 +93,16 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
 
     const grouped = {};
     data.forEach(alt => {
-      const ex = exercises?.find(e => e.id === alt.alternative_exercise_id);
-      if (ex) {
-        const tier = tierNames[alt.tier] || alt.tier;
-        if (!grouped[tier]) grouped[tier] = [];
-        grouped[tier].push({
-          id: ex.id,
-          name: ex.name,
-          muscle: ex.primary_muscle_group,
-          equipment: ex.equipment
-        });
-      }
+      const tier = tierNames[alt.tier] || alt.tier;
+      if (!grouped[tier]) grouped[tier] = [];
+      grouped[tier].push({
+        id: alt.alternative_exercise_id,
+        name: alt.alternative_name,
+        muscle: alt.alternative_muscle,
+        equipment: alt.alternative_equipment
+      });
     });
 
-    console.log('Grouped alternatives:', grouped);
     setAlternatives(grouped);
   } catch (err) {
     console.error('Errore:', err);
