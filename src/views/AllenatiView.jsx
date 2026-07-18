@@ -66,64 +66,59 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   // Fetch alternative da Supabase
   const fetchAlternatives = async (exerciseId) => {
   setLoadingAlternatives(true);
-  console.log('fetchAlternatives called with ID:', exerciseId);  // ← AGGIUNGI QUESTA RIGA
   try {
-    const { data, error } = await supabase
+    // Prima: prendi solo gli alternative_exercise_id
+    const { data: alternatives, error } = await supabase
       .from('exercise_alternatives')
-      .select(`
-        tier,
-        priority_order,
-        alternative_exercise_id,
-        exercises!exercise_alternatives_alternative_exercise_id_fkey (
-          id,
-          name,
-          primary_muscle_group,
-          equipment
-        )
-      `)
+      .select('tier, priority_order, alternative_exercise_id')
       .eq('original_exercise_id', exerciseId)
       .order('tier', { ascending: true })
       .order('priority_order', { ascending: true });
 
-    console.log('Fetch result - data:', data, 'error:', error);  // ← E QUESTA RIGA
+    if (error) throw error;
 
-    if (error) {
-      console.error('Errore nel fetch delle alternative:', error);
-      setAlternatives([]);
-      return;
-    }
-    // ... resto del codice
+    // Poi: prendi i nomi degli esercizi alternativi
+    const alternativeIds = alternatives.map(alt => alt.alternative_exercise_id);
+    const { data: exercises, error: exError } = await supabase
+      .from('exercises')
+      .select('id, name, primary_muscle_group, equipment')
+      .in('id', alternativeIds);
 
-      // Raggruppa per tier con nomi italiani
-      const tierNames = {
-        'TIER_1': 'Sostituti Ottimi',
-        'TIER_2': 'Sostituti Buoni',
-        'TIER_3': 'Sostituti Accettabili'
-      };
+    if (exError) throw exError;
 
-      const groupedAlternatives = {};
-      data.forEach(alt => {
+    // Combina i dati
+    const tierNames = {
+      'TIER_1': 'Sostituti Ottimi',
+      'TIER_2': 'Sostituti Buoni',
+      'TIER_3': 'Sostituti Accettabili'
+    };
+
+    const groupedAlternatives = {};
+    alternatives.forEach(alt => {
+      const exercise = exercises.find(ex => ex.id === alt.alternative_exercise_id);
+      if (exercise) {
         const tierName = tierNames[alt.tier] || alt.tier;
         if (!groupedAlternatives[tierName]) {
           groupedAlternatives[tierName] = [];
         }
         groupedAlternatives[tierName].push({
-          id: alt.exercises.id,
-          name: alt.exercises.name,
-          muscle: alt.exercises.primary_muscle_group,
-          equipment: alt.exercises.equipment,
+          id: exercise.id,
+          name: exercise.name,
+          muscle: exercise.primary_muscle_group,
+          equipment: exercise.equipment,
           tier: tierName
         });
-      });
+      }
+    });
 
-      setAlternatives(groupedAlternatives);
-    } catch (err) {
-      console.error('Errore durante il fetch delle alternative:', err);
-      setAlternatives([]);
-    } finally {
-      setLoadingAlternatives(false);
-    }
-  };
+    setAlternatives(groupedAlternatives);
+  } catch (err) {
+    console.error('Errore durante il fetch delle alternative:', err);
+    setAlternatives([]);
+  } finally {
+    setLoadingAlternatives(false);
+  }
+};
 
   const handleOpenAlternatives = () => {
   console.log('currentExercise:', currentExercise);
