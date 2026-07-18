@@ -64,57 +64,65 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   }, [isRestActive, restTime, exerciseRest]);
 
   // Fetch alternative da Supabase
-  const fetchAlternatives = async (exerciseId) => {
+ const fetchAlternatives = async (exerciseId) => {
   setLoadingAlternatives(true);
   try {
-    // Prima: prendi solo gli alternative_exercise_id
-    const { data: alternatives, error } = await supabase
+    console.log('Fetching alternatives for:', exerciseId);
+    
+    const { data, error } = await supabase
       .from('exercise_alternatives')
-      .select('tier, priority_order, alternative_exercise_id')
-      .eq('original_exercise_id', exerciseId)
-      .order('tier', { ascending: true })
-      .order('priority_order', { ascending: true });
+      .select('*')
+      .eq('original_exercise_id', exerciseId);
+
+    console.log('Raw alternatives:', data);
 
     if (error) throw error;
 
-    // Poi: prendi i nomi degli esercizi alternativi
-    const alternativeIds = alternatives.map(alt => alt.alternative_exercise_id);
+    if (!data || data.length === 0) {
+      setAlternatives({});
+      return;
+    }
+
+    // Prendi gli alternative_exercise_id
+    const altIds = data.map(d => d.alternative_exercise_id);
+    
+    // Prendi i nomi
     const { data: exercises, error: exError } = await supabase
       .from('exercises')
       .select('id, name, primary_muscle_group, equipment')
-      .in('id', alternativeIds);
+      .in('id', altIds);
+
+    console.log('Exercises found:', exercises);
 
     if (exError) throw exError;
 
-    // Combina i dati
+    // Raggruppa per tier
     const tierNames = {
       'TIER_1': 'Sostituti Ottimi',
       'TIER_2': 'Sostituti Buoni',
       'TIER_3': 'Sostituti Accettabili'
     };
 
-    const groupedAlternatives = {};
-    alternatives.forEach(alt => {
-      const exercise = exercises.find(ex => ex.id === alt.alternative_exercise_id);
-      if (exercise) {
-        const tierName = tierNames[alt.tier] || alt.tier;
-        if (!groupedAlternatives[tierName]) {
-          groupedAlternatives[tierName] = [];
-        }
-        groupedAlternatives[tierName].push({
-          id: exercise.id,
-          name: exercise.name,
-          muscle: exercise.primary_muscle_group,
-          equipment: exercise.equipment,
-          tier: tierName
+    const grouped = {};
+    data.forEach(alt => {
+      const ex = exercises?.find(e => e.id === alt.alternative_exercise_id);
+      if (ex) {
+        const tier = tierNames[alt.tier] || alt.tier;
+        if (!grouped[tier]) grouped[tier] = [];
+        grouped[tier].push({
+          id: ex.id,
+          name: ex.name,
+          muscle: ex.primary_muscle_group,
+          equipment: ex.equipment
         });
       }
     });
 
-    setAlternatives(groupedAlternatives);
+    console.log('Grouped alternatives:', grouped);
+    setAlternatives(grouped);
   } catch (err) {
-    console.error('Errore durante il fetch delle alternative:', err);
-    setAlternatives([]);
+    console.error('Errore:', err);
+    setAlternatives({});
   } finally {
     setLoadingAlternatives(false);
   }
