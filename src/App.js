@@ -61,6 +61,32 @@ function App() {
     fetchEsercizi();
   }, []);
 
+const createProfileIfNotExists = async (userId) => {
+    try {
+      const { data, error: selectError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', userId)
+        .single();
+      
+      if (selectError && selectError.code === 'PGRST116') {
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert([{ id: userId }]);
+        
+        if (insertError) {
+          console.error('Errore nella creazione del profilo:', insertError);
+          return false;
+        }
+        console.log('✅ Profilo creato automaticamente');
+      }
+      return true;
+    } catch (err) {
+      console.error('Errore nel controllo profilo:', err);
+      return false;
+    }
+  };
+  
   // Fetch schede dell'utente loggato
   const fetchSchede = async (userId) => {
     try {
@@ -116,12 +142,14 @@ function App() {
   };
 
   // Auth state management
-  useEffect(() => {
+   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUser(session.user);
-        fetchSchede(session.user.id);
-        setupSchedeListener(session.user.id);
+        createProfileIfNotExists(session.user.id).then(() => {
+          fetchSchede(session.user.id);
+          setupSchedeListener(session.user.id);
+        });
       } else {
         setUser(null);
         setLeMieSchede([]);
@@ -133,8 +161,10 @@ function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUser(session.user);
-        fetchSchede(session.user.id);
-        setupSchedeListener(session.user.id);
+        createProfileIfNotExists(session.user.id).then(() => {
+          fetchSchede(session.user.id);
+          setupSchedeListener(session.user.id);
+        });
       } else {
         setUser(null);
         setLeMieSchede([]);
