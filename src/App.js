@@ -5,7 +5,13 @@ import { AllenatiView } from './views/AllenatiView';
 import { SchedeView } from './views/SchedeView';
 import { ProgressiView } from './views/ProgressiView';
 import { ProfiloView } from './views/ProfiloView';
-import { Dumbbell, BookOpen, TrendingUp, User } from 'lucide-react'; 
+import { Dumbbell, BookOpen, TrendingUp, User } from 'lucide-react';
+import { 
+  fetchEsercizi, 
+  createProfileIfNotExists, 
+  fetchSchede, 
+  setupSchedeListener 
+} from './services/supabaseServices';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -21,161 +27,61 @@ function App() {
 
   const [leMieSchede, setLeMieSchede] = useState([]);
   const [schedaAttiva, setSchedaAttiva] = useState(null);
-  
-  // Stato globale per lo storico degli allenamenti
   const [storicoAllenamenti, setStoricoAllenamenti] = useState([]);
-  
-  // Stato globale per gli esercizi fetchati da Supabase
   const [esercizi, setEsercizi] = useState([]);
 
   // Fetch esercizi da Supabase all'avvio
   useEffect(() => {
-    const fetchEsercizi = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('exercises')
-          .select('id, name, movement_pattern, primary_muscle_group, equipment, default_rest_time')
-          .order('name', { ascending: true });
-        
-        if (error) {
-          console.error('Errore nel fetch degli esercizi:', error);
-          return;
-        }
-        
-        const eserciziformattati = data.map(ex => ({
-          id: ex.id,
-          name: ex.name,
-          muscle: ex.primary_muscle_group,
-          equipment: ex.equipment,
-          movement_pattern: ex.movement_pattern,
-          default_rest_time: ex.default_rest_time
-        }));
-        
-        setEsercizi(eserciziformattati);
-        console.log(`✅ Caricati ${eserciziformattati.length} esercizi da Supabase`);
-      } catch (err) {
-        console.error('Errore durante il fetch degli esercizi:', err);
-      }
-    };
-    
-    fetchEsercizi();
+    fetchEsercizi().then(data => {
+      setEsercizi(data);
+      console.log(`✅ Caricati ${data.length} esercizi da Supabase`);
+    });
   }, []);
 
-const createProfileIfNotExists = async (userId) => {
-    try {
-      const { data, error: selectError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', userId)
-        .single();
-      
-      if (selectError && selectError.code === 'PGRST116') {
-        const { error: insertError } = await supabase
-          .from('profiles')
-          .insert([{ id: userId }]);
-        
-        if (insertError) {
-          console.error('Errore nella creazione del profilo:', insertError);
-          return false;
-        }
-        console.log('✅ Profilo creato automaticamente');
-      }
-      return true;
-    } catch (err) {
-      console.error('Errore nel controllo profilo:', err);
-      return false;
+  // Handler unificato per la sessione utente
+  const handleUserSession = async (session) => {
+    if (session?.user) {
+      setUser(session.user);
+      await createProfileIfNotExists(session.user.id);
+      const schede = await fetchSchede(session.user.id);
+      setLeMieSchede(schede);
+      setSchedaAttiva(schede.find(s => s.isActive) || null);
+    } else {
+      setUser(null);
+      setLeMieSchede([]);
+      setSchedaAttiva(null);
     }
-  };
-  
-  // Fetch schede dell'utente loggato
-  const fetchSchede = async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from('workout_schemes')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Errore nel fetch delle schede:', error);
-        return;
-      }
-      
-      const schedeFormattate = data.map(scheda => ({
-        id: scheda.id,
-        name: scheda.name,
-        daysCount: scheda.days_count || 2,
-        routine: scheda.routine || {},
-        isActive: scheda.is_active || false
-      }));
-      
-      setLeMieSchede(schedeFormattate);
-      
-      // Imposta la scheda attiva
-      const attiva = schedeFormattate.find(s => s.isActive);
-      setSchedaAttiva(attiva || null);
-      
-      console.log(`✅ Caricate ${schedeFormattate.length} schede da Supabase`);
-    } catch (err) {
-      console.error('Errore durante il fetch delle schede:', err);
-    }
+    setAuthLoading(false);
   };
 
-  // Setup real-time listener per schede
-  const setupSchedeListener = (userId) => {
-    const channel = supabase
-      .channel(`workout_schemes:${userId}`)
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'workout_schemes',
-        filter: `user_id=eq.${userId}`
-      }, (payload) => {
-        console.log('🔄 Cambio rilevato nelle schede:', payload);
-        fetchSchede(userId);
-      })
-      .subscribe();
-    
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
+  // Setup Auth Listener e Real-time Schede
+  useEffect(() => {
+    let unsubscribeSchedeListener = null;
 
-  // Auth state management
-   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
+      handleUserSession(session);
       if (session?.user) {
-        setUser(session.user);
-        createProfileIfNotExists(session.user.id).then(() => {
-          fetchSchede(session.user.id);
-          setupSchedeListener(session.user.id);
+        unsubscribeSchedeListener = setupSchedeListener(session.user.id, async () => {
+          const schede = await fetchSchede(session.user.id);
+          setLeMieSchede(schede);
+          setSchedaAttiva(schede.find(s => s.isActive) || null);
         });
-      } else {
-        setUser(null);
-        setLeMieSchede([]);
-        setSchedaAttiva(null);
       }
-      setAuthLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        createProfileIfNotExists(session.user.id).then(() => {
-          fetchSchede(session.user.id);
-          setupSchedeListener(session.user.id);
-        });
-      } else {
-        setUser(null);
-        setLeMieSchede([]);
-        setSchedaAttiva(null);
-      }
-      setAuthLoading(false);
+      handleUserSession(session);
     });
 
-    return () => subscription?.unsubscribe();
+    return () => {
+      subscription?.unsubscribe();
+      if (typeof unsubscribeSchedeListener === 'function') {
+        unsubscribeSchedeListener();
+      }
+    };
   }, []);
 
+  // Gestione Tema Light / Dark
   useEffect(() => {
     const root = window.document.documentElement;
     if (settings.theme_preference === 'Dark') root.classList.add('dark');
