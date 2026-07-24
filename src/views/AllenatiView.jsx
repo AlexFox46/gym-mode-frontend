@@ -8,10 +8,9 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const schemaDays = schedaAttiva ? Array.from({ length: schedaAttiva.daysCount }, (_, i) => `G${i + 1}`) : [];
   const [localRoutine, setLocalRoutine] = useState([]);
   const [exerciseIndex, setExerciseIndex] = useState(0);
-
-  // Touch Swipe Refs per cambio giorno con gesto a scorrimento
-  const touchStartX = useRef(null);
-  const touchStartY = useRef(null);
+  
+  // Riferimento al contenitore per lo slide
+  const scrollContainerRef = useRef(null);
 
   // Stato per la modalità di allenamento attiva (Pre-allenamento vs In corso)
   const [isWorkoutStarted, setIsWorkoutStarted] = useState(false);
@@ -100,36 +99,27 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     }
   };
 
-  // Gestione Swipe Touch per cambiare giorno (Slide Destra / Sinistra)
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
+  // Gestione Swipe e Cambio Giorno tramite scroll orizzontale
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    const scrollLeft = scrollContainerRef.current.scrollLeft;
+    // Calcoliamo la larghezza di uno snap element (circa il 90% della larghezza del container)
+    const itemWidth = scrollContainerRef.current.offsetWidth * 0.9;
+    const index = Math.round(scrollLeft / itemWidth);
+    
+    if (schemaDays[index] && schemaDays[index] !== activeDay) {
+      setActiveDay(schemaDays[index]);
+      triggerHaptic(10);
+    }
   };
 
-  const handleTouchEnd = (e) => {
-    if (touchStartX.current === null || touchStartY.current === null) return;
-    const touchEndX = e.changedTouches[0].clientX;
-    const touchEndY = e.changedTouches[0].clientY;
-
-    const diffX = touchEndX - touchStartX.current;
-    const diffY = touchEndY - touchStartY.current;
-
-    // Swipe orizzontale significativo (> 45px) e prevalente sul movimento verticale
-    if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY)) {
-      const currentIndex = schemaDays.indexOf(activeDay);
-      if (diffX < 0 && currentIndex < schemaDays.length - 1) {
-        // Swipe verso Sinistra -> Avanti al giorno successivo
-        setActiveDay(schemaDays[currentIndex + 1]);
-        triggerHaptic(30);
-      } else if (diffX > 0 && currentIndex > 0) {
-        // Swipe verso Destra -> Indietro al giorno precedente
-        setActiveDay(schemaDays[currentIndex - 1]);
-        triggerHaptic(30);
-      }
+  const scrollToDay = (day) => {
+    setActiveDay(day);
+    const index = schemaDays.indexOf(day);
+    if (scrollContainerRef.current) {
+       const itemWidth = scrollContainerRef.current.offsetWidth * 0.9;
+       scrollContainerRef.current.scrollTo({ left: index * itemWidth, behavior: 'smooth' });
     }
-
-    touchStartX.current = null;
-    touchStartY.current = null;
   };
 
   useEffect(() => {
@@ -286,80 +276,18 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     );
   }
 
-  // -------------------------------------------------------------------------
-  // STATO 2: Se il giorno selezionato non ha esercizi configurati
-  // -------------------------------------------------------------------------
-  if (localRoutine.length === 0) {
-    return (
-      <div 
-        className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary p-4 pb-32 select-none"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Selettore Giorno */}
-        <div className="flex gap-2 overflow-x-auto mb-6">
-          {schemaDays.map(day => (
-            <button 
-              key={day} 
-              onClick={() => setActiveDay(day)} 
-              className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${activeDay === day ? 'bg-primary text-black shadow-md' : 'bg-surface-secondary text-text-secondary'}`}
-            >
-              {day}
-            </button>
-          ))}
-        </div>
-
-        <div className="text-center mt-16 space-y-6">
-          <div className="w-16 h-16 rounded-2xl bg-surface-secondary flex items-center justify-center border border-surface-tertiary mx-auto">
-            <Dumbbell size={32} className="text-text-tertiary" />
-          </div>
-          <div>
-            <h2 className="text-lg font-black text-white mb-1">Questo giorno non ha esercizi configurati</h2>
-            <p className="text-text-secondary text-xs">Aggiungi esercizi in questa giornata per poterti allenare.</p>
-          </div>
-
-          <div className="space-y-3 pt-4">
-            <Button 
-              variant="primary" 
-              fullWidth 
-              onClick={onNavigateToSchede}
-              className="flex items-center justify-center gap-2"
-            >
-              <Plus size={18} />
-              AGGIUNGI ESERCIZI
-            </Button>
-            
-            <Button 
-              variant="secondary" 
-              fullWidth 
-              onClick={() => setActiveDay(schemaDays[0] || 'G1')}
-              className="flex items-center justify-center gap-2"
-            >
-              <ArrowLeft size={18} />
-              INDIETRO
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // =========================================================================
-  // FASE A: PRE-ALLENAMENTO ("AVVIA ALLENAMENTO" - UNICA CARD RIASSUNTIVA + SWIPE GESTURE)
+  // FASE A: PRE-ALLENAMENTO CAROUSEL SWIPEABLE ("AVVIA ALLENAMENTO" / "GIORNO VUOTO")
   // =========================================================================
   if (!isWorkoutStarted) {
     return (
-      <div 
-        className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary p-4 pb-32 select-none"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
+      <div className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary pt-4 pb-32 select-none overflow-hidden">
         {/* Selettore Giorno */}
-        <div className="flex gap-2 overflow-x-auto mb-6">
+        <div className="flex gap-2 overflow-x-auto mb-6 px-4 hide-scrollbar">
           {schemaDays.map(day => (
             <button 
               key={day} 
-              onClick={() => setActiveDay(day)} 
+              onClick={() => scrollToDay(day)} 
               className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${activeDay === day ? 'bg-primary text-black shadow-md scale-105' : 'bg-surface-secondary text-text-secondary'}`}
             >
               {day}
@@ -367,62 +295,95 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           ))}
         </div>
 
-        {/* UNICA CARD CONTENENTE TUTTI GLI ELEMENTI DEL RECAP */}
-        <Card className="mb-6 space-y-4 bg-surface-secondary border-2 border-surface-tertiary p-5 transition-all">
-          {/* Header Card */}
-          <div className="flex items-center justify-between border-b border-surface-tertiary pb-3">
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full">
-              {schedaAttiva.name}
-            </span>
-            <span className="text-[10px] font-bold text-text-secondary uppercase bg-surface-tertiary px-2.5 py-1 rounded-lg">
-              {localRoutine.length} Esercizi
-            </span>
-          </div>
-
-          <div>
-            <h1 className="text-2xl font-black text-white">Allenamento {activeDay}</h1>
-            <p className="text-xs text-text-secondary mt-1">
-              Rivedi la lista degli esercizi in programma. <span className="text-primary font-bold">Scorri col dito (swipe)</span> per cambiare giorno.
-            </p>
-          </div>
-
-          {/* Divider */}
-          <div className="border-t border-surface-tertiary pt-3">
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3">Esercizi in programma</h2>
+        {/* CONTAINER CAROUSEL SWIPEABLE */}
+        <div 
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="flex overflow-x-auto snap-x snap-mandatory px-4 pb-8 hide-scrollbar -mx-4"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {schemaDays.map(day => {
+            const isActive = day === activeDay;
+            const dayRoutine = schedaAttiva?.routine?.[day] || [];
             
-            {/* Lista Esercizi all'interno della stessa Card */}
-            <div className="space-y-2.5">
-              {localRoutine.map((ex, idx) => (
-                <div 
-                  key={ex.instanceId || idx} 
-                  className="p-3 rounded-2xl bg-surface/80 border border-surface-tertiary flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-surface-tertiary flex items-center justify-center font-bold text-xs text-primary">
-                      #{idx + 1}
+            return (
+              <div 
+                key={day} 
+                className={`min-w-[90%] snap-center shrink-0 pr-4 first:ml-4 last:mr-4 transition-all duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-[0.92] opacity-40'}`}
+              >
+                {dayRoutine.length === 0 ? (
+                  /* CARD GIORNO VUOTO */
+                  <div className="text-center bg-surface-secondary border-2 border-surface-tertiary rounded-3xl p-8 space-y-6">
+                    <div className="w-16 h-16 rounded-2xl bg-surface/50 flex items-center justify-center border border-surface-tertiary mx-auto">
+                      <Dumbbell size={32} className="text-text-tertiary" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-white text-xs leading-tight">{ex.name}</h3>
-                      <p className="text-[10px] text-text-secondary mt-0.5">{ex.sets} set × {ex.reps} rip @ {ex.weight}kg</p>
+                      <h2 className="text-lg font-black text-white mb-1">Allenamento {day} Vuoto</h2>
+                      <p className="text-text-secondary text-xs">Questo giorno non ha esercizi configurati.</p>
+                    </div>
+                    <div className="space-y-3 pt-4">
+                      <Button variant="primary" fullWidth onClick={onNavigateToSchede} className="flex items-center justify-center gap-2 py-4">
+                        <Plus size={18} /> AGGIUNGI ESERCIZI
+                      </Button>
+                      <Button variant="secondary" fullWidth onClick={() => scrollToDay(schemaDays[0] || 'G1')} className="flex items-center justify-center gap-2 py-4 border border-surface-tertiary">
+                        <ArrowLeft size={18} /> VAI A G1
+                      </Button>
                     </div>
                   </div>
-                  <span className="text-[10px] text-text-tertiary font-mono bg-surface-tertiary/50 px-2 py-1 rounded-md">{ex.rest || 90}s rec</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
+                ) : (
+                  /* CARD PRE-ALLENAMENTO COMPLETA */
+                  <div className="flex flex-col h-full space-y-4">
+                    <Card className="flex-1 bg-surface-secondary border-2 border-surface-tertiary p-5">
+                      <div className="flex items-center justify-between border-b border-surface-tertiary pb-3">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full">
+                          {schedaAttiva.name}
+                        </span>
+                        <span className="text-[10px] font-bold text-text-secondary uppercase bg-surface-tertiary px-2.5 py-1 rounded-lg">
+                          {dayRoutine.length} Esercizi
+                        </span>
+                      </div>
 
-        {/* Pulsante Principale: AVVIA ALLENAMENTO */}
-        <Button 
-          size="large" 
-          fullWidth 
-          onClick={handleStartWorkout}
-          className="text-black bg-primary font-black py-5 text-base flex items-center justify-center gap-3 shadow-xl hover:opacity-95 transition-all"
-        >
-          <Play size={20} fill="black" />
-          AVVIA ALLENAMENTO
-        </Button>
+                      <div className="mt-4 mb-4">
+                        <h1 className="text-2xl font-black text-white">Allenamento {day}</h1>
+                        <p className="text-xs text-text-secondary mt-1">
+                          Lista degli esercizi in programma. <span className="text-primary font-bold">Scorri col dito</span> per cambiare giorno.
+                        </p>
+                      </div>
+
+                      <div className="border-t border-surface-tertiary pt-3">
+                        <h2 className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3">Esercizi in programma</h2>
+                        <div className="space-y-2.5">
+                          {dayRoutine.map((ex, idx) => (
+                            <div key={ex.instanceId || idx} className="p-3 rounded-2xl bg-surface/80 border border-surface-tertiary flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-surface-tertiary flex items-center justify-center font-bold text-xs text-primary">#{idx + 1}</div>
+                                <div>
+                                  <h3 className="font-bold text-white text-xs leading-tight">{ex.name}</h3>
+                                  <p className="text-[10px] text-text-secondary mt-0.5">{ex.sets} set × {ex.reps} rip @ {ex.weight}kg</p>
+                                </div>
+                              </div>
+                              <span className="text-[10px] text-text-tertiary font-mono bg-surface-tertiary/50 px-2 py-1 rounded-md">{ex.rest || 90}s</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Button 
+                      size="large" 
+                      fullWidth 
+                      onClick={handleStartWorkout}
+                      className="text-black bg-primary font-black py-5 text-base flex items-center justify-center gap-3 shadow-xl hover:opacity-95 transition-all w-full"
+                    >
+                      <Play size={20} fill="black" />
+                      AVVIA ALLENAMENTO
+                    </Button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   }

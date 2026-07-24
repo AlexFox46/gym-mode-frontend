@@ -22,6 +22,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   // Drag & Drop / Touch State
   const [draggedExerciseIndex, setDraggedExerciseIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [dragOffsetY, setDragOffsetY] = useState(0);
   const touchStartY = useRef(null);
 
   // Estrai i muscoli e gli attrezzi unici dagli esercizi Supabase
@@ -166,10 +167,11 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
     setDragOverIndex(null);
   };
 
-  // Gestione Touch Drag su Mobile
+  // Gestione Touch Drag su Mobile nativa e fluida
   const handleTouchStart = (index, e) => {
     touchStartY.current = e.touches[0].clientY;
     setDraggedExerciseIndex(index);
+    setDragOffsetY(0);
     if (navigator.vibrate) navigator.vibrate(40);
   };
 
@@ -177,18 +179,37 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
     if (draggedExerciseIndex === null || !touchStartY.current) return;
     const currentY = e.touches[0].clientY;
     const diff = currentY - touchStartY.current;
-
-    // Soglia di scorrimento per lo swap del dito (40px)
-    if (Math.abs(diff) > 45) {
-      const direction = diff > 0 ? 1 : -1;
-      moveExercise(draggedExerciseIndex, direction);
-      setDraggedExerciseIndex(draggedExerciseIndex + direction);
-      touchStartY.current = currentY;
-    }
+    // Sposta visivamente l'elemento seguendo il dito senza re-renderizzare l'array
+    setDragOffsetY(diff);
   };
 
   const handleTouchEnd = () => {
+    if (draggedExerciseIndex === null) return;
+    
+    // Altezza stimata della card per calcolare lo spostamento
+    const itemHeight = 90;
+    const jump = Math.round(dragOffsetY / itemHeight);
+    
+    if (jump !== 0) {
+      const currentList = [...(workoutRoutine[activeBuilderDay] || [])];
+      let newIndex = draggedExerciseIndex + jump;
+      newIndex = Math.max(0, Math.min(currentList.length - 1, newIndex));
+      
+      if (newIndex !== draggedExerciseIndex) {
+        const temp = currentList[draggedExerciseIndex];
+        currentList.splice(draggedExerciseIndex, 1);
+        currentList.splice(newIndex, 0, temp);
+        
+        setWorkoutRoutine(prev => ({
+          ...prev,
+          [activeBuilderDay]: currentList
+        }));
+        if (navigator.vibrate) navigator.vibrate(30);
+      }
+    }
+    
     setDraggedExerciseIndex(null);
+    setDragOffsetY(0);
     touchStartY.current = null;
   };
 
@@ -448,17 +469,23 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
           {/* LISTA ESERCIZI CON SUPPORTO TOUCH DRAG & PULSANTI FRECCIA SU/GIÙ */}
           <div className="space-y-3">
             {workoutRoutine[activeBuilderDay]?.map((ex, idx) => (
-              <div
-                key={ex.instanceId}
-                draggable
-                onDragStart={() => handleDragStart(idx)}
-                onDragOver={(e) => handleDragOver(e, idx)}
-                onDrop={(e) => handleDrop(e, idx)}
-                onDragEnd={handleDragEnd}
-                className={`transition-all ${
-                  draggedExerciseIndex === idx ? 'scale-105 opacity-90 z-20 shadow-xl border-2 border-primary rounded-2xl' : 'scale-100 opacity-100'
-                } ${dragOverIndex === idx && draggedExerciseIndex !== idx ? 'border-t-2 border-primary pt-2' : ''}`}
-              >
+                <div
+                  key={ex.instanceId}
+                  draggable
+                  onDragStart={() => handleDragStart(idx)}
+                  onDragOver={(e) => handleDragOver(e, idx)}
+                  onDrop={(e) => handleDrop(e, idx)}
+                  onDragEnd={handleDragEnd}
+                  style={{
+                    transform: draggedExerciseIndex === idx ? `translateY(${dragOffsetY}px)` : 'none',
+                    zIndex: draggedExerciseIndex === idx ? 50 : 1,
+                    position: draggedExerciseIndex === idx ? 'relative' : 'static',
+                    transition: draggedExerciseIndex === idx ? 'none' : 'transform 0.3s ease',
+                  }}
+                  className={`${
+                    draggedExerciseIndex === idx ? 'scale-105 opacity-90 shadow-2xl border-2 border-primary rounded-2xl' : 'scale-100 opacity-100'
+                  } ${dragOverIndex === idx && draggedExerciseIndex !== idx ? 'border-t-2 border-primary pt-2' : ''}`}
+                >
                 <Card className="flex items-center gap-2 p-3 bg-surface-secondary border border-surface-tertiary">
                   
                   {/* Maniglia Touch Drag con vibrazione */}
