@@ -103,8 +103,9 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
     const scrollLeft = scrollContainerRef.current.scrollLeft;
-    // Calcoliamo la larghezza di uno snap element (circa l'80% della larghezza del container)
-    const itemWidth = scrollContainerRef.current.offsetWidth * 0.8;
+    // La larghezza dell'elemento più il gap (80% + 16px di gap)
+    const containerWidth = scrollContainerRef.current.offsetWidth;
+    const itemWidth = (containerWidth * 0.8) + 16;
     const index = Math.round(scrollLeft / itemWidth);
     
     if (schemaDays[index] && schemaDays[index] !== activeDay) {
@@ -117,7 +118,8 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     setActiveDay(day);
     const index = schemaDays.indexOf(day);
     if (scrollContainerRef.current) {
-       const itemWidth = scrollContainerRef.current.offsetWidth * 0.8;
+       const containerWidth = scrollContainerRef.current.offsetWidth;
+       const itemWidth = (containerWidth * 0.8) + 16;
        scrollContainerRef.current.scrollTo({ left: index * itemWidth, behavior: 'smooth' });
     }
   };
@@ -299,7 +301,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
         <div 
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="flex overflow-x-auto snap-x snap-mandatory px-4 pb-8 hide-scrollbar -mx-4"
+          className="flex overflow-x-auto snap-x snap-mandatory px-[10%] gap-4 pb-8 hide-scrollbar -mx-4"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {schemaDays.map(day => {
@@ -309,7 +311,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
             return (
               <div 
                 key={day} 
-                className={`w-[80%] snap-center shrink-0 pr-4 first:ml-4 last:mr-4 transition-all duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-[0.92] opacity-40'}`}
+                className={`w-[80%] snap-center shrink-0 transition-all duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-[0.92] opacity-40'}`}
               >
                 {dayRoutine.length === 0 ? (
                   /* CARD GIORNO VUOTO */
