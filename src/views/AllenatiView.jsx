@@ -284,7 +284,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     return (
       <div className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary pt-4 pb-32 select-none overflow-hidden">
         {/* Selettore Giorno */}
-        <div className="flex gap-2 overflow-x-auto mb-6 px-4 hide-scrollbar">
+        <div className="flex gap-2 overflow-x-auto mb-3 px-4 hide-scrollbar">
           {schemaDays.map(day => (
             <button 
               key={day} 
@@ -294,6 +294,13 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
               {day}
             </button>
           ))}
+        </div>
+
+        {/* Indicatore Swipe tra Tab e Card */}
+        <div className="px-4 mb-4 text-center">
+          <p className="text-xs text-text-secondary">
+            <span className="text-primary font-bold">Scorri col dito</span> per cambiare giorno
+          </p>
         </div>
 
         {/* CONTAINER CAROUSEL SWIPEABLE */}
@@ -350,7 +357,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
                       <div className="mt-4 mb-4">
                         <h1 className="text-2xl font-black text-white">Allenamento {day}</h1>
                         <p className="text-xs text-text-secondary mt-1">
-                          Lista degli esercizi in programma. <span className="text-primary font-bold">Scorri col dito</span> per cambiare giorno.
+                          Lista degli esercizi in programma.
                         </p>
                       </div>
 
