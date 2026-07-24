@@ -103,9 +103,8 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
     const scrollLeft = scrollContainerRef.current.scrollLeft;
-    // La larghezza dell'elemento più il gap (80% + 16px di gap)
     const containerWidth = scrollContainerRef.current.offsetWidth;
-    const itemWidth = (containerWidth * 0.8) + 16;
+    const itemWidth = (containerWidth * 0.82) + 12;
     const index = Math.round(scrollLeft / itemWidth);
     
     if (schemaDays[index] && schemaDays[index] !== activeDay) {
@@ -117,9 +116,9 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const scrollToDay = (day) => {
     setActiveDay(day);
     const index = schemaDays.indexOf(day);
-    if (scrollContainerRef.current) {
+    if (scrollContainerRef.current && index !== -1) {
        const containerWidth = scrollContainerRef.current.offsetWidth;
-       const itemWidth = (containerWidth * 0.8) + 16;
+       const itemWidth = (containerWidth * 0.82) + 12;
        scrollContainerRef.current.scrollTo({ left: index * itemWidth, behavior: 'smooth' });
     }
   };
@@ -301,9 +300,12 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
         <div 
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="flex overflow-x-auto snap-x snap-mandatory px-[10%] gap-4 pb-8 hide-scrollbar -mx-4"
+          className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-8 hide-scrollbar -mx-4 items-stretch"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
+          {/* Spacer iniziale per centrare perfettamente G1 */}
+          <div className="w-[9%] shrink-0 snap-none" />
+
           {schemaDays.map(day => {
             const isActive = day === activeDay;
             const dayRoutine = schedaAttiva?.routine?.[day] || [];
@@ -311,7 +313,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
             return (
               <div 
                 key={day} 
-                className={`w-[80%] snap-center shrink-0 transition-all duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-[0.92] opacity-40'}`}
+                className={`w-[82%] snap-center shrink-0 transition-all duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-[0.92] opacity-40'}`}
               >
                 {dayRoutine.length === 0 ? (
                   /* CARD GIORNO VUOTO */
@@ -385,6 +387,9 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
               </div>
             );
           })}
+
+          {/* Spacer finale per centrare l'ultima card */}
+          <div className="w-[9%] shrink-0 snap-none" />
         </div>
       </div>
     );
