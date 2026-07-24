@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import { Card, Button, Stepper } from '../components/UI';
-import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical } from 'lucide-react';
+import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 
 export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, esercizi = [], userId }) => {
   const [viewState, setViewState] = useState('list');
@@ -19,9 +19,10 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   const [muscleFilter, setMuscleFilter] = useState('');
   const [equipmentFilter, setEquipmentFilter] = useState('');
 
-  // Drag & Drop state
+  // Drag & Drop / Touch State
   const [draggedExerciseIndex, setDraggedExerciseIndex] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
+  const touchStartY = useRef(null);
 
   // Estrai i muscoli e gli attrezzi unici dagli esercizi Supabase
   const muscleGroups = [...new Set(esercizi.map(ex => ex.muscle))].sort();
@@ -56,21 +57,18 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   };
 
   const addExerciseToDay = (ex) => {
-  console.log('ex ricevuto:', ex);  // ← AGGIUNGI QUESTA RIGA
-  console.log('ex.id:', ex.id);     // ← E QUESTA
-  
-  const newEx = { 
-    ...ex, 
-    instanceId: Date.now() + Math.random(), 
-    sets: 4, 
-    reps: 10, 
-    weight: 20, 
-    rest: ex.default_rest_time || 90 
+    const newEx = { 
+      ...ex, 
+      instanceId: Date.now() + Math.random(), 
+      sets: 4, 
+      reps: 10, 
+      weight: 20, 
+      rest: ex.default_rest_time || 90 
+    };
+    setEditingExercise(newEx);
+    setEditingExerciseIndex(null);
+    setIsCatalogOpen(false);
   };
-  setEditingExercise(newEx);
-  setEditingExerciseIndex(null);
-  setIsCatalogOpen(false);
-};
 
   const saveExerciseConfiguration = () => {
     if (editingExerciseIndex !== null) {
@@ -103,12 +101,36 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
     setIsCatalogOpen(false);
   };
 
+  // =========================================================================
+  // LOGICA REORDERING SPOSTAMENTO ESERCIZI (Touch + Mouse Desktop)
+  // =========================================================================
+
+  // Spostamento tramite pulsanti Su / Giù (100% Touch-Friendly)
+  const moveExercise = (index, direction) => {
+    const currentList = [...(workoutRoutine[activeBuilderDay] || [])];
+    const targetIndex = index + direction;
+
+    if (targetIndex < 0 || targetIndex >= currentList.length) return;
+
+    const temp = currentList[index];
+    currentList[index] = currentList[targetIndex];
+    currentList[targetIndex] = temp;
+
+    if (navigator.vibrate) {
+      navigator.vibrate(30);
+    }
+
+    setWorkoutRoutine(prev => ({
+      ...prev,
+      [activeBuilderDay]: currentList
+    }));
+  };
+
+  // Drag Desktop Handlers
   const handleDragStart = (index) => {
     setDraggedExerciseIndex(index);
     setDragOverIndex(index);
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
-    }
+    if (navigator.vibrate) navigator.vibrate(40);
   };
 
   const handleDragOver = (e, index) => {
@@ -144,6 +166,32 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
     setDragOverIndex(null);
   };
 
+  // Gestione Touch Drag su Mobile
+  const handleTouchStart = (index, e) => {
+    touchStartY.current = e.touches[0].clientY;
+    setDraggedExerciseIndex(index);
+    if (navigator.vibrate) navigator.vibrate(40);
+  };
+
+  const handleTouchMove = (e) => {
+    if (draggedExerciseIndex === null || !touchStartY.current) return;
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - touchStartY.current;
+
+    // Soglia di scorrimento per lo swap del dito (40px)
+    if (Math.abs(diff) > 45) {
+      const direction = diff > 0 ? 1 : -1;
+      moveExercise(draggedExerciseIndex, direction);
+      setDraggedExerciseIndex(draggedExerciseIndex + direction);
+      touchStartY.current = currentY;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setDraggedExerciseIndex(null);
+    touchStartY.current = null;
+  };
+
   const deleteDay = () => {
     const days = Object.keys(workoutRoutine).filter(d => d !== activeBuilderDay);
     const newRoutine = {};
@@ -156,65 +204,61 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
 
   // Salva scheda su Supabase
   const saveSchedule = async () => {
-  if (!userId) {
-    alert('Utente non autenticato');
-    return;
-  }
-
-  try {
-    const schedaData = {
-      user_id: userId,
-      name: newSchedaName,
-      days_count: Object.keys(workoutRoutine).length,
-      routine: workoutRoutine,
-      is_active: false
-    };
-
-    if (editingSchedaId) {
-      // Update
-      const { error } = await supabase
-        .from('workout_schemes')
-        .update(schedaData)
-        .eq('id', editingSchedaId);
-      
-      if (error) throw error;
-      console.log('✅ Scheda aggiornata');
-    } else {
-      // Insert
-      const { data, error } = await supabase
-        .from('workout_schemes')
-        .insert([schedaData])
-        .select();
-      
-      if (error) throw error;
-      console.log('✅ Scheda creata');
+    if (!userId) {
+      alert('Utente non autenticato');
+      return;
     }
 
-    // Refetch le schede per aggiornare la lista
-    const { data: allSchede, error: fetchError } = await supabase
-      .from('workout_schemes')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-    
-    if (!fetchError && allSchede) {
-      const schedeFormattate = allSchede.map(scheda => ({
-        id: scheda.id,
-        name: scheda.name,
-        daysCount: scheda.days_count || 2,
-        routine: scheda.routine || {},
-        isActive: scheda.is_active || false
-      }));
-      setSchede(schedeFormattate);
-    }
+    try {
+      const schedaData = {
+        user_id: userId,
+        name: newSchedaName,
+        days_count: Object.keys(workoutRoutine).length,
+        routine: workoutRoutine,
+        is_active: false
+      };
 
-    setViewState('list');
-    setEditingSchedaId(null);
-  } catch (err) {
-    console.error('Errore nel salvataggio della scheda:', err);
-    alert('Errore nel salvataggio della scheda');
-  }
-};
+      if (editingSchedaId) {
+        const { error } = await supabase
+          .from('workout_schemes')
+          .update(schedaData)
+          .eq('id', editingSchedaId);
+        
+        if (error) throw error;
+        console.log('✅ Scheda aggiornata');
+      } else {
+        const { error } = await supabase
+          .from('workout_schemes')
+          .insert([schedaData]);
+        
+        if (error) throw error;
+        console.log('✅ Scheda creata');
+      }
+
+      const { data: allSchede, error: fetchError } = await supabase
+        .from('workout_schemes')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      
+      if (!fetchError && allSchede) {
+        const schedeFormattate = allSchede.map(scheda => ({
+          id: scheda.id,
+          name: scheda.name,
+          daysCount: scheda.days_count || 2,
+          routine: scheda.routine || {},
+          isActive: scheda.is_active || false
+        }));
+        setSchede(schedeFormattate);
+      }
+
+      setViewState('list');
+      setEditingSchedaId(null);
+    } catch (err) {
+      console.error('Errore nel salvataggio della scheda:', err);
+      alert('Errore nel salvataggio della scheda');
+    }
+  };
 
   const editScheda = (schedaToEdit) => {
     setNewSchedaName(schedaToEdit.name);
@@ -226,83 +270,79 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   };
 
   const deleteScheda = async (schedaId) => {
-  if (!window.confirm('Sei sicuro di voler eliminare questa scheda?')) return;
+    if (!window.confirm('Sei sicuro di voler eliminare questa scheda?')) return;
 
-  try {
-    const { error } = await supabase
-      .from('workout_schemes')
-      .delete()
-      .eq('id', schedaId);
-    
-    if (error) throw error;
-    console.log('✅ Scheda eliminata');
+    try {
+      const { error } = await supabase
+        .from('workout_schemes')
+        .delete()
+        .eq('id', schedaId);
+      
+      if (error) throw error;
+      console.log('✅ Scheda eliminata');
 
-    // Refetch le schede
-    const { data: allSchede, error: fetchError } = await supabase
-      .from('workout_schemes')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-    
-    if (!fetchError && allSchede) {
-      const schedeFormattate = allSchede.map(scheda => ({
-        id: scheda.id,
-        name: scheda.name,
-        daysCount: scheda.days_count || 2,
-        routine: scheda.routine || {},
-        isActive: scheda.is_active || false
-      }));
-      setSchede(schedeFormattate);
+      const { data: allSchede, error: fetchError } = await supabase
+        .from('workout_schemes')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      
+      if (!fetchError && allSchede) {
+        const schedeFormattate = allSchede.map(scheda => ({
+          id: scheda.id,
+          name: scheda.name,
+          daysCount: scheda.days_count || 2,
+          routine: scheda.routine || {},
+          isActive: scheda.is_active || false
+        }));
+        setSchede(schedeFormattate);
+      }
+    } catch (err) {
+      console.error('Errore nell\'eliminazione della scheda:', err);
+      alert('Errore nell\'eliminazione della scheda');
     }
-  } catch (err) {
-    console.error('Errore nell\'eliminazione della scheda:', err);
-    alert('Errore nell\'eliminazione della scheda');
-  }
-};
+  };
 
   const activateScheda = async (scheda) => {
-  try {
-    // Disattiva tutte le altre
-    await supabase
-      .from('workout_schemes')
-      .update({ is_active: false })
-      .eq('user_id', userId);
+    try {
+      await supabase
+        .from('workout_schemes')
+        .update({ is_active: false })
+        .eq('user_id', userId);
 
-    // Attiva questa
-    const { error } = await supabase
-      .from('workout_schemes')
-      .update({ is_active: true })
-      .eq('id', scheda.id);
-    
-    if (error) throw error;
-    console.log('✅ Scheda attivata');
+      const { error } = await supabase
+        .from('workout_schemes')
+        .update({ is_active: true })
+        .eq('id', scheda.id);
+      
+      if (error) throw error;
+      console.log('✅ Scheda attivata');
 
-    // Refetch le schede
-    const { data: allSchede, error: fetchError } = await supabase
-      .from('workout_schemes')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-    
-    if (!fetchError && allSchede) {
-      const schedeFormattate = allSchede.map(s => ({
-        id: s.id,
-        name: s.name,
-        daysCount: s.days_count || 2,
-        routine: s.routine || {},
-        isActive: s.is_active || false
-      }));
-      setSchede(schedeFormattate);
-      setSchedaAttiva(schedeFormattate.find(s => s.isActive) || null);
+      const { data: allSchede, error: fetchError } = await supabase
+        .from('workout_schemes')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      
+      if (!fetchError && allSchede) {
+        const schedeFormattate = allSchede.map(s => ({
+          id: s.id,
+          name: s.name,
+          daysCount: s.days_count || 2,
+          routine: s.routine || {},
+          isActive: s.is_active || false
+        }));
+        setSchede(schedeFormattate);
+        setSchedaAttiva(schedeFormattate.find(s => s.isActive) || null);
+      }
+    } catch (err) {
+      console.error('Errore nell\'attivazione della scheda:', err);
+      alert('Errore nell\'attivazione della scheda');
     }
-  } catch (err) {
-    console.error('Errore nell\'attivazione della scheda:', err);
-    alert('Errore nell\'attivazione della scheda');
-  }
-};
+  };
 
   return (
-    <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32 text-text-primary">
+    <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32 text-text-primary select-none touch-manipulation">
       {viewState === 'list' && (
         <>
           <div className="flex items-center justify-between mb-8">
@@ -332,15 +372,17 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
                   <div className="flex gap-2">
                     <button 
                       onClick={() => editScheda(s)}
-                      className="p-2 text-text-secondary hover:text-primary transition-colors"
+                      className="p-3 text-text-secondary hover:text-primary active:scale-95 transition-transform"
+                      title="Modifica"
                     >
-                      <Edit2 size={16} />
+                      <Edit2 size={18} />
                     </button>
                     <button 
                       onClick={() => deleteScheda(s.id)}
-                      className="p-2 text-text-secondary hover:text-red-500 transition-colors"
+                      className="p-3 text-text-secondary hover:text-red-500 active:scale-95 transition-transform"
+                      title="Elimina"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={18} />
                     </button>
                     {!s.isActive && (
                       <Button 
@@ -382,7 +424,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
               <button 
                 key={day} 
                 onClick={() => setActiveBuilderDay(day)} 
-                className={`px-4 py-2 rounded-xl font-black text-xs whitespace-nowrap transition-all ${
+                className={`px-4 py-2.5 rounded-xl font-black text-xs whitespace-nowrap transition-all active:scale-95 ${
                   activeBuilderDay === day 
                     ? 'bg-primary text-white' 
                     : 'bg-transparent border-2 border-primary text-primary hover:opacity-75'
@@ -403,6 +445,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
             </div>
           )}
 
+          {/* LISTA ESERCIZI CON SUPPORTO TOUCH DRAG & PULSANTI FRECCIA SU/GIÙ */}
           <div className="space-y-3">
             {workoutRoutine[activeBuilderDay]?.map((ex, idx) => (
               <div
@@ -412,34 +455,72 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
                 onDragOver={(e) => handleDragOver(e, idx)}
                 onDrop={(e) => handleDrop(e, idx)}
                 onDragEnd={handleDragEnd}
-                className={`transition-all cursor-grab active:cursor-grabbing ${
-                  draggedExerciseIndex === idx ? 'scale-105 opacity-100 z-20 shadow-xl' : 'scale-100 opacity-100'
+                className={`transition-all ${
+                  draggedExerciseIndex === idx ? 'scale-105 opacity-90 z-20 shadow-xl border-2 border-primary rounded-2xl' : 'scale-100 opacity-100'
                 } ${dragOverIndex === idx && draggedExerciseIndex !== idx ? 'border-t-2 border-primary pt-2' : ''}`}
               >
-                <Card className="flex items-center gap-3 p-4">
-                  <GripVertical size={16} className="text-text-tertiary flex-shrink-0" />
-                  <div className="flex-1">
+                <Card className="flex items-center gap-2 p-3 bg-surface-secondary border border-surface-tertiary">
+                  
+                  {/* Maniglia Touch Drag con vibrazione */}
+                  <div 
+                    onTouchStart={(e) => handleTouchStart(idx, e)}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    className="p-2 touch-none cursor-grab active:cursor-grabbing text-text-tertiary hover:text-primary transition-colors"
+                    title="Trascina con il dito per riordinare"
+                  >
+                    <GripVertical size={20} />
+                  </div>
+
+                  {/* Pulsanti Rapidi Touch Su / Giù */}
+                  <div className="flex flex-col gap-0.5 border-r border-surface-tertiary pr-2">
+                    <button
+                      onClick={() => moveExercise(idx, -1)}
+                      disabled={idx === 0}
+                      className="p-1 text-text-secondary hover:text-primary disabled:opacity-20 active:scale-125 transition-transform"
+                      title="Sposta Su"
+                    >
+                      <ChevronUp size={16} />
+                    </button>
+                    <button
+                      onClick={() => moveExercise(idx, 1)}
+                      disabled={idx === (workoutRoutine[activeBuilderDay]?.length - 1)}
+                      className="p-1 text-text-secondary hover:text-primary disabled:opacity-20 active:scale-125 transition-transform"
+                      title="Sposta Giù"
+                    >
+                      <ChevronDown size={16} />
+                    </button>
+                  </div>
+
+                  {/* Info Esercizio */}
+                  <div className="flex-1 ml-1">
                     <p className="font-bold text-white text-sm">{ex.name}</p>
                     <p className="text-[10px] text-text-secondary">{ex.sets}×{ex.reps} @ {ex.weight}kg • {ex.rest}s</p>
                   </div>
-                  <button 
-                    onClick={() => editExercise(idx)}
-                    className="p-2 text-text-secondary hover:text-primary transition-colors"
-                  >
-                    <Edit2 size={16} />
-                  </button>
-                  <button 
-                    onClick={() => deleteExercise(idx)}
-                    className="p-2 text-text-secondary hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+
+                  {/* Azioni Modifica / Elimina con touch area generosa */}
+                  <div className="flex items-center gap-1">
+                    <button 
+                      onClick={() => editExercise(idx)}
+                      className="p-2.5 text-text-secondary hover:text-primary active:scale-95 transition-transform"
+                      title="Modifica"
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                    <button 
+                      onClick={() => deleteExercise(idx)}
+                      className="p-2.5 text-text-secondary hover:text-red-500 active:scale-95 transition-transform"
+                      title="Elimina"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </Card>
               </div>
             ))}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 pt-2">
             <Button variant="primary" fullWidth onClick={() => setIsCatalogOpen(true)}>
               <Plus size={16} className="mr-2" />
               AGGIUNGI ESERCIZIO
@@ -461,7 +542,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
             <div className="fixed inset-0 bg-surface z-50 p-4 overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-black">Scegli Esercizio</h2>
-                <button onClick={() => setIsCatalogOpen(false)}><X size={24}/></button>
+                <button onClick={() => setIsCatalogOpen(false)} className="p-2"><X size={24}/></button>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -469,13 +550,13 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
                   type="text" 
                   placeholder="Cerca..." 
                   onChange={(e) => setSearchQuery(e.target.value)} 
-                  className="w-full bg-surface-secondary p-3 rounded-xl border border-surface-tertiary text-white text-sm" 
+                  className="w-full bg-surface-secondary p-4 rounded-xl border border-surface-tertiary text-white text-sm" 
                 />
                 
                 <select 
                   value={muscleFilter}
                   onChange={(e) => setMuscleFilter(e.target.value)}
-                  className="w-full bg-surface-secondary p-3 rounded-xl border border-surface-tertiary text-white text-sm"
+                  className="w-full bg-surface-secondary p-4 rounded-xl border border-surface-tertiary text-white text-sm"
                 >
                   <option value="">Tutti i muscoli</option>
                   {muscleGroups.map(m => <option key={m} value={m}>{m}</option>)}
@@ -484,7 +565,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
                 <select 
                   value={equipmentFilter}
                   onChange={(e) => setEquipmentFilter(e.target.value)}
-                  className="w-full bg-surface-secondary p-3 rounded-xl border border-surface-tertiary text-white text-sm"
+                  className="w-full bg-surface-secondary p-4 rounded-xl border border-surface-tertiary text-white text-sm"
                 >
                   <option value="">Tutti gli attrezzi</option>
                   {equipmentTypes.map(e => <option key={e} value={e}>{e}</option>)}
@@ -507,7 +588,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
                     </div>
                     <button 
                       onClick={() => addExerciseToDay(ex)} 
-                      className="bg-primary text-white p-2 rounded-lg hover:opacity-90 transition-opacity"
+                      className="bg-primary text-white p-3 rounded-xl hover:opacity-90 active:scale-95 transition-all"
                     >
                       <Plus size={20}/>
                     </button>
@@ -521,7 +602,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
             <div className="fixed inset-x-0 bottom-0 bg-surface border-t border-surface-tertiary p-6 z-[60] rounded-t-3xl shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-black">{editingExercise.name}</h2>
-                <button onClick={() => { setEditingExercise(null); setEditingExerciseIndex(null); }}><X size={24}/></button>
+                <button onClick={() => { setEditingExercise(null); setEditingExerciseIndex(null); }} className="p-2"><X size={24}/></button>
               </div>
               <div className="space-y-4">
                 <Stepper label="Serie" value={editingExercise.sets} onChange={(val) => setEditingExercise({...editingExercise, sets: val})} step={1} unit="set" />
