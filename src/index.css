@@ -2,18 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background-color: #000000;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
 @layer base {
   body {
-    margin: 0;
-    @apply bg-neutral-50 text-neutral-950 font-sans antialiased;
+    @apply bg-surface text-text-primary font-sans antialiased;
   }
   
   html.dark body {
-    @apply bg-neutral-950 text-neutral-50;
+    @apply bg-surface text-text-primary;
   }
 }
 
 /* Forziamo un contenitore rigido per simulare lo smartphone sul desktop */
 .app-container {
-  @apply min-h-screen max-w-[420px] mx-auto bg-neutral-50 dark:bg-neutral-950 flex flex-col relative border-x border-neutral-200 dark:border-neutral-800 shadow-xl;
+  @apply min-h-screen max-w-[420px] mx-auto bg-surface flex flex-col relative border-x border-surface-tertiary shadow-xl;
 }

@@ -19,7 +19,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('allenati');
   
   const [settings, setSettings] = useState({
-    theme_preference: 'Light', 
+    theme_preference: 'Dark', 
     step_increment: 1, 
     vibration: true, 
     prep_sound: true
@@ -110,8 +110,8 @@ function App() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-950">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-success"></div>
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -151,22 +151,78 @@ function App() {
         )}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 max-w-[420px] mx-auto bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 h-16 flex justify-around items-center z-40 px-2 shadow-lg">
-        <button onClick={() => setActiveTab('allenati')} className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${activeTab === 'allenati' ? 'text-success' : 'text-neutral-400'}`}>
-          <Dumbbell size={24} strokeWidth={activeTab === 'allenati' ? 2.5 : 2} />
-          <span className="font-sans text-[10px] font-bold uppercase mt-1">Allenati</span>
+      {/* Nav Bar Inferiore con icona piena, arancione e testo bold per la voce attiva */}
+      <nav className="fixed bottom-0 left-0 right-0 max-w-[420px] mx-auto bg-surface-secondary border-t border-surface-tertiary h-16 flex justify-around items-center z-40 px-2 shadow-2xl">
+        <button 
+          onClick={() => setActiveTab('allenati')} 
+          className={`flex flex-col items-center justify-center w-16 h-full transition-all ${
+            activeTab === 'allenati' ? 'text-primary scale-105' : 'text-neutral-400 hover:text-neutral-200'
+          }`}
+        >
+          <Dumbbell 
+            size={24} 
+            strokeWidth={activeTab === 'allenati' ? 2.5 : 1.8} 
+            fill={activeTab === 'allenati' ? 'currentColor' : 'none'} 
+          />
+          <span className={`font-sans text-[10px] uppercase mt-1 tracking-wider ${
+            activeTab === 'allenati' ? 'font-black text-primary' : 'font-semibold text-neutral-400'
+          }`}>
+            Allenati
+          </span>
         </button>
-        <button onClick={() => setActiveTab('schede')} className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${activeTab === 'schede' ? 'text-success' : 'text-neutral-400'}`}>
-          <BookOpen size={24} strokeWidth={activeTab === 'schede' ? 2.5 : 2} />
-          <span className="font-sans text-[10px] font-bold uppercase mt-1">Schede</span>
+
+        <button 
+          onClick={() => setActiveTab('schede')} 
+          className={`flex flex-col items-center justify-center w-16 h-full transition-all ${
+            activeTab === 'schede' ? 'text-primary scale-105' : 'text-neutral-400 hover:text-neutral-200'
+          }`}
+        >
+          <BookOpen 
+            size={24} 
+            strokeWidth={activeTab === 'schede' ? 2.5 : 1.8} 
+            fill={activeTab === 'schede' ? 'currentColor' : 'none'} 
+          />
+          <span className={`font-sans text-[10px] uppercase mt-1 tracking-wider ${
+            activeTab === 'schede' ? 'font-black text-primary' : 'font-semibold text-neutral-400'
+          }`}>
+            Schede
+          </span>
         </button>
-        <button onClick={() => setActiveTab('progressi')} className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${activeTab === 'progressi' ? 'text-success' : 'text-neutral-400'}`}>
-          <TrendingUp size={24} strokeWidth={activeTab === 'progressi' ? 2.5 : 2} />
-          <span className="font-sans text-[10px] font-bold uppercase mt-1">Progressi</span>
+
+        <button 
+          onClick={() => setActiveTab('progressi')} 
+          className={`flex flex-col items-center justify-center w-16 h-full transition-all ${
+            activeTab === 'progressi' ? 'text-primary scale-105' : 'text-neutral-400 hover:text-neutral-200'
+          }`}
+        >
+          <TrendingUp 
+            size={24} 
+            strokeWidth={activeTab === 'progressi' ? 2.5 : 1.8} 
+            fill={activeTab === 'progressi' ? 'currentColor' : 'none'} 
+          />
+          <span className={`font-sans text-[10px] uppercase mt-1 tracking-wider ${
+            activeTab === 'progressi' ? 'font-black text-primary' : 'font-semibold text-neutral-400'
+          }`}>
+            Progressi
+          </span>
         </button>
-        <button onClick={() => setActiveTab('profilo')} className={`flex flex-col items-center justify-center w-16 h-full transition-colors ${activeTab === 'profilo' ? 'text-success' : 'text-neutral-400'}`}>
-          <User size={24} strokeWidth={activeTab === 'profilo' ? 2.5 : 2} />
-          <span className="font-sans text-[10px] font-bold uppercase mt-1">Profilo</span>
+
+        <button 
+          onClick={() => setActiveTab('profilo')} 
+          className={`flex flex-col items-center justify-center w-16 h-full transition-all ${
+            activeTab === 'profilo' ? 'text-primary scale-105' : 'text-neutral-400 hover:text-neutral-200'
+          }`}
+        >
+          <User 
+            size={24} 
+            strokeWidth={activeTab === 'profilo' ? 2.5 : 1.8} 
+            fill={activeTab === 'profilo' ? 'currentColor' : 'none'} 
+          />
+          <span className={`font-sans text-[10px] uppercase mt-1 tracking-wider ${
+            activeTab === 'profilo' ? 'font-black text-primary' : 'font-semibold text-neutral-400'
+          }`}>
+            Profilo
+          </span>
         </button>
       </nav>
     </div>
