@@ -103,8 +103,8 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
     const scrollLeft = scrollContainerRef.current.scrollLeft;
-    // Calcoliamo la larghezza di uno snap element (circa il 90% della larghezza del container)
-    const itemWidth = scrollContainerRef.current.offsetWidth * 0.9;
+    // Calcoliamo la larghezza di uno snap element (circa l'80% della larghezza del container)
+    const itemWidth = scrollContainerRef.current.offsetWidth * 0.8;
     const index = Math.round(scrollLeft / itemWidth);
     
     if (schemaDays[index] && schemaDays[index] !== activeDay) {
@@ -117,7 +117,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     setActiveDay(day);
     const index = schemaDays.indexOf(day);
     if (scrollContainerRef.current) {
-       const itemWidth = scrollContainerRef.current.offsetWidth * 0.9;
+       const itemWidth = scrollContainerRef.current.offsetWidth * 0.8;
        scrollContainerRef.current.scrollTo({ left: index * itemWidth, behavior: 'smooth' });
     }
   };
@@ -309,7 +309,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
             return (
               <div 
                 key={day} 
-                className={`min-w-[90%] snap-center shrink-0 pr-4 first:ml-4 last:mr-4 transition-all duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-[0.92] opacity-40'}`}
+                className={`min-w-[80%] snap-center shrink-0 pr-4 first:ml-4 last:mr-4 transition-all duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-[0.92] opacity-40'}`}
               >
                 {dayRoutine.length === 0 ? (
                   /* CARD GIORNO VUOTO */
