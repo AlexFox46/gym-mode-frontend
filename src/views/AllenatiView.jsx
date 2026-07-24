@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Stepper, Card } from '../components/UI';
 import { BookOpen, Repeat2, Play, CheckCircle2, XCircle, Clock, Dumbbell, ArrowLeft, Plus } from 'lucide-react';
 import { fetchExerciseAlternatives } from '../services/supabaseServices';
@@ -8,6 +8,10 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const schemaDays = schedaAttiva ? Array.from({ length: schedaAttiva.daysCount }, (_, i) => `G${i + 1}`) : [];
   const [localRoutine, setLocalRoutine] = useState([]);
   const [exerciseIndex, setExerciseIndex] = useState(0);
+
+  // Touch Swipe Refs per cambio giorno con gesto a scorrimento
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
 
   // Stato per la modalità di allenamento attiva (Pre-allenamento vs In corso)
   const [isWorkoutStarted, setIsWorkoutStarted] = useState(false);
@@ -94,6 +98,38 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     } catch (e) {
       console.log('Audio Context error', e);
     }
+  };
+
+  // Gestione Swipe Touch per cambiare giorno (Slide Destra / Sinistra)
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+
+    const diffX = touchEndX - touchStartX.current;
+    const diffY = touchEndY - touchStartY.current;
+
+    // Swipe orizzontale significativo (> 45px) e prevalente sul movimento verticale
+    if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY)) {
+      const currentIndex = schemaDays.indexOf(activeDay);
+      if (diffX < 0 && currentIndex < schemaDays.length - 1) {
+        // Swipe verso Sinistra -> Avanti al giorno successivo
+        setActiveDay(schemaDays[currentIndex + 1]);
+        triggerHaptic(30);
+      } else if (diffX > 0 && currentIndex > 0) {
+        // Swipe verso Destra -> Indietro al giorno precedente
+        setActiveDay(schemaDays[currentIndex - 1]);
+        triggerHaptic(30);
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
   };
 
   useEffect(() => {
@@ -255,7 +291,11 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   // -------------------------------------------------------------------------
   if (localRoutine.length === 0) {
     return (
-      <div className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary p-4 pb-32">
+      <div 
+        className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary p-4 pb-32 select-none"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {/* Selettore Giorno */}
         <div className="flex gap-2 overflow-x-auto mb-6">
           {schemaDays.map(day => (
@@ -305,18 +345,22 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   }
 
   // =========================================================================
-  // FASE A: PRE-ALLENAMENTO ("AVVIA ALLENAMENTO" - UNICA CARD RIASSUNTIVA)
+  // FASE A: PRE-ALLENAMENTO ("AVVIA ALLENAMENTO" - UNICA CARD RIASSUNTIVA + SWIPE GESTURE)
   // =========================================================================
   if (!isWorkoutStarted) {
     return (
-      <div className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary p-4 pb-32">
+      <div 
+        className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary p-4 pb-32 select-none"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {/* Selettore Giorno */}
         <div className="flex gap-2 overflow-x-auto mb-6">
           {schemaDays.map(day => (
             <button 
               key={day} 
               onClick={() => setActiveDay(day)} 
-              className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${activeDay === day ? 'bg-primary text-black shadow-md' : 'bg-surface-secondary text-text-secondary'}`}
+              className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${activeDay === day ? 'bg-primary text-black shadow-md scale-105' : 'bg-surface-secondary text-text-secondary'}`}
             >
               {day}
             </button>
@@ -324,7 +368,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
         </div>
 
         {/* UNICA CARD CONTENENTE TUTTI GLI ELEMENTI DEL RECAP */}
-        <Card className="mb-6 space-y-4 bg-surface-secondary border-2 border-surface-tertiary p-5">
+        <Card className="mb-6 space-y-4 bg-surface-secondary border-2 border-surface-tertiary p-5 transition-all">
           {/* Header Card */}
           <div className="flex items-center justify-between border-b border-surface-tertiary pb-3">
             <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full">
@@ -338,7 +382,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           <div>
             <h1 className="text-2xl font-black text-white">Allenamento {activeDay}</h1>
             <p className="text-xs text-text-secondary mt-1">
-              Rivedi la lista degli esercizi in programma prima di iniziare la sessione.
+              Rivedi la lista degli esercizi in programma. <span className="text-primary font-bold">Scorri col dito (swipe)</span> per cambiare giorno.
             </p>
           </div>
 
