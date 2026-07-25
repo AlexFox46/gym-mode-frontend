@@ -407,8 +407,6 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     } else {
       // Tutti gli esercizi della giornata completati!
       triggerHaptic([300, 100, 300]);
-      setIsWorkoutStarted(false);
-      clearWorkoutState();
 
       const basePayload = { 
         id: Date.now(), 
@@ -436,6 +434,8 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       hardestExerciseId: feedbackHardestExerciseId || null
     };
 
+    setIsWorkoutStarted(false);
+    clearWorkoutState();
     setShowFeedbackModal(false);
     onWorkoutComplete(finalPayload);
   };
