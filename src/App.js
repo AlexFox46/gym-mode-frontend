@@ -10,7 +10,9 @@ import {
   fetchEsercizi, 
   createProfileIfNotExists, 
   fetchSchede, 
-  setupSchedeListener 
+  setupSchedeListener,
+  saveWorkoutLog,
+  fetchWorkoutLogs
 } from './services/supabaseServices';
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
   const [schedaAttiva, setSchedaAttiva] = useState(null);
   const [storicoAllenamenti, setStoricoAllenamenti] = useState([]);
   const [esercizi, setEsercizi] = useState([]);
+  const [editDay, setEditDay] = useState(null);
 
   // Fetch esercizi da Supabase all'avvio
   useEffect(() => {
@@ -46,6 +49,19 @@ function App() {
       const schede = await fetchSchede(session.user.id);
       setLeMieSchede(schede);
       setSchedaAttiva(schede.find(s => s.isActive) || null);
+      // Carica storico allenamenti da Supabase
+      const logs = await fetchWorkoutLogs(session.user.id);
+      // Merge con eventuali log in localStorage non sincronizzati
+      const localLogs = JSON.parse(localStorage.getItem('gym_workout_history') || '[]');
+      const mergedLogs = [...logs];
+      localLogs.forEach(ll => {
+        if (!mergedLogs.find(ml => ml.date === ll.date && ml.dayName === ll.dayName)) {
+          mergedLogs.push(ll);
+        }
+      });
+      setStoricoAllenamenti(mergedLogs);
+      // Pulisci localStorage dopo la sync
+      localStorage.removeItem('gym_workout_history');
     } else {
       setUser(null);
       setLeMieSchede([]);
@@ -99,12 +115,22 @@ function App() {
     }
   };
 
-  const handleWorkoutComplete = (logEntry) => {
+  const handleWorkoutComplete = async (logEntry) => {
     setStoricoAllenamenti(prev => [...prev, logEntry]);
+    // Salva su localStorage come fallback immediato
+    const currentLogs = JSON.parse(localStorage.getItem('gym_workout_history') || '[]');
+    localStorage.setItem('gym_workout_history', JSON.stringify([...currentLogs, logEntry]));
+    // Salva su Supabase in background
+    if (user?.id) {
+      await saveWorkoutLog(user.id, logEntry);
+      // Se salvato con successo, rimuovi da localStorage
+      localStorage.removeItem('gym_workout_history');
+    }
     setActiveTab('progressi');
   };
 
-  const handleNavigateToSchede = () => {
+  const handleNavigateToSchede = (dayToEdit = null) => {
+    setEditDay(dayToEdit);
     setActiveTab('schede');
   };
 
@@ -127,6 +153,7 @@ function App() {
             schedaAttiva={schedaAttiva}
             onWorkoutComplete={handleWorkoutComplete}
             onNavigateToSchede={handleNavigateToSchede}
+            userId={user?.id}
           />
         )}
         {activeTab === 'schede' && (
@@ -137,6 +164,8 @@ function App() {
             setSchedaAttiva={setSchedaAttiva}
             esercizi={esercizi}
             userId={user?.id}
+            editDay={editDay}
+            setEditDay={setEditDay}
           />
         )}
         {activeTab === 'progressi' && (

@@ -188,3 +188,61 @@ export const fetchExerciseAlternatives = async (exerciseId, muscle, movementPatt
     return {};
   }
 };
+
+/**
+ * Salva un log di allenamento completato su Supabase
+ */
+export const saveWorkoutLog = async (userId, logEntry) => {
+  try {
+    const { error } = await supabase
+      .from('workout_logs')
+      .insert([{
+        user_id: userId,
+        date: logEntry.date,
+        scheda_name: logEntry.schedaName,
+        day_name: logEntry.dayName,
+        duration_minutes: logEntry.durationMinutes,
+        tonnage: logEntry.tonnage || 0
+      }]);
+
+    if (error) {
+      console.error('Errore nel salvataggio del log allenamento:', error);
+      return false;
+    }
+    console.log('✅ Log allenamento salvato su Supabase');
+    return true;
+  } catch (err) {
+    console.error('Errore inatteso nel salvataggio log:', err);
+    return false;
+  }
+};
+
+/**
+ * Recupera lo storico degli allenamenti dell'utente da Supabase
+ */
+export const fetchWorkoutLogs = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from('workout_logs')
+      .select('id, date, scheda_name, day_name, duration_minutes, tonnage')
+      .eq('user_id', userId)
+      .order('date', { ascending: false });
+
+    if (error) {
+      console.error('Errore nel fetch dello storico allenamenti:', error);
+      return [];
+    }
+
+    return data.map(log => ({
+      id: log.id,
+      date: log.date,
+      schedaName: log.scheda_name,
+      dayName: log.day_name,
+      durationMinutes: log.duration_minutes,
+      tonnage: log.tonnage
+    }));
+  } catch (err) {
+    console.error('Errore inatteso nel fetch storico:', err);
+    return [];
+  }
+};

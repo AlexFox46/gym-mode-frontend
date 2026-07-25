@@ -1,9 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Stepper, Card } from '../components/UI';
-import { BookOpen, Repeat2, Play, CheckCircle2, XCircle, Clock, Dumbbell, ArrowLeft, Plus } from 'lucide-react';
+import { BookOpen, Repeat2, Play, CheckCircle2, XCircle, Clock, Dumbbell, ArrowLeft, Plus, Info, Pencil } from 'lucide-react';
 import { fetchExerciseAlternatives } from '../services/supabaseServices';
 
-export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavigateToSchede }) => {
+// ============================================================================
+// HELPER: Persistenza Allenamento in Corso via localStorage
+// ============================================================================
+const WORKOUT_STORAGE_KEY = 'gym_active_workout';
+
+const saveWorkoutState = (state) => {
+  try {
+    localStorage.setItem(WORKOUT_STORAGE_KEY, JSON.stringify({
+      ...state,
+      savedAt: Date.now()
+    }));
+  } catch (e) {
+    console.warn('Errore salvataggio workout state:', e);
+  }
+};
+
+const loadWorkoutState = () => {
+  try {
+    const raw = localStorage.getItem(WORKOUT_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    console.warn('Errore caricamento workout state:', e);
+    return null;
+  }
+};
+
+const clearWorkoutState = () => {
+  try {
+    localStorage.removeItem(WORKOUT_STORAGE_KEY);
+  } catch (e) {
+    console.warn('Errore pulizia workout state:', e);
+  }
+};
+
+// ============================================================================
+// COMPONENTE PRINCIPALE
+// ============================================================================
+export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavigateToSchede, userId }) => {
   const [activeDay, setActiveDay] = useState('G1');
   const schemaDays = schedaAttiva ? Array.from({ length: schedaAttiva.daysCount }, (_, i) => `G${i + 1}`) : [];
   const [localRoutine, setLocalRoutine] = useState([]);
@@ -17,9 +54,21 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const [workoutStartTime, setWorkoutStartTime] = useState(null);
   const [elapsedWorkoutSeconds, setElapsedWorkoutSeconds] = useState(0);
 
+  // Stato per la schermata dettaglio full-screen
+  const [detailDay, setDetailDay] = useState(null);
+
+  // Stato per il recupero tra esercizi
+  const [pendingNextExercise, setPendingNextExercise] = useState(false);
+
+  // Tonnage accumulato durante l'allenamento
+  const [totalTonnage, setTotalTonnage] = useState(0);
+
+  // Flag per evitare il reset della routine durante il ripristino
+  const [isRestoring, setIsRestoring] = useState(false);
+
   // Reset activeDay quando cambia schedaAttiva
   useEffect(() => {
-    if (schedaAttiva) {
+    if (schedaAttiva && !isRestoring) {
       setActiveDay('G1');
       setIsWorkoutStarted(false);
     }
@@ -27,6 +76,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
 
   // Inizializzazione routine quando cambia schedaAttiva o activeDay
   useEffect(() => {
+    if (isRestoring) return; // Non resettare durante il ripristino
     if (schedaAttiva?.routine?.[activeDay]) {
       setLocalRoutine(JSON.parse(JSON.stringify(schedaAttiva.routine[activeDay])));
       setExerciseIndex(0);
@@ -34,20 +84,60 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       setLocalRoutine([]);
       setExerciseIndex(0);
     }
-  }, [schedaAttiva, activeDay]);
+  }, [schedaAttiva, activeDay, isRestoring]);
 
-  // Timer della durata totale dell'allenamento
+  // =========================================================================
+  // RIPRISTINO ALLENAMENTO DA LOCALSTORAGE (al mount)
+  // =========================================================================
   useEffect(() => {
-    let timer = null;
-    if (isWorkoutStarted) {
-      timer = setInterval(() => {
-        setElapsedWorkoutSeconds(prev => prev + 1);
-      }, 1000);
-    } else {
-      setElapsedWorkoutSeconds(0);
+    const saved = loadWorkoutState();
+    if (saved && saved.isWorkoutStarted && schedaAttiva) {
+      // Verifica che la scheda sia ancora la stessa
+      if (saved.schedaId === schedaAttiva.id) {
+        setIsRestoring(true);
+        setActiveDay(saved.activeDay);
+        setLocalRoutine(saved.localRoutine);
+        setExerciseIndex(saved.exerciseIndex);
+        setCurrentSet(saved.currentSet);
+        setCurrentWeight(saved.currentWeight);
+        setCurrentReps(saved.currentReps);
+        setTotalTonnage(saved.totalTonnage || 0);
+        setPendingNextExercise(saved.pendingNextExercise || false);
+        
+        // Ricalcola il tempo trascorso
+        const timeSinceSave = Math.floor((Date.now() - saved.savedAt) / 1000);
+        setElapsedWorkoutSeconds(saved.elapsedWorkoutSeconds + timeSinceSave);
+        setWorkoutStartTime(saved.workoutStartTime);
+        
+        // Ripristina il timer di recupero
+        if (saved.isRestActive && saved.restTime > 0) {
+          const restElapsed = Math.floor((Date.now() - saved.savedAt) / 1000);
+          const remainingRest = Math.max(0, saved.restTime - restElapsed);
+          if (remainingRest > 0) {
+            setRestTime(remainingRest);
+            setIsRestActive(true);
+          } else {
+            // Il recupero è finito mentre l'app era chiusa
+            setIsRestActive(false);
+            if (saved.pendingNextExercise) {
+              // Avanza all'esercizio successivo
+              setExerciseIndex(saved.exerciseIndex + 1);
+              setPendingNextExercise(false);
+              setCurrentSet(1);
+            }
+          }
+        }
+        
+        setIsWorkoutStarted(true);
+        
+        // Rimuovi il flag di ripristino dopo un tick
+        setTimeout(() => setIsRestoring(false), 100);
+        console.log('✅ Allenamento ripristinato da localStorage');
+      } else {
+        clearWorkoutState();
+      }
     }
-    return () => clearInterval(timer);
-  }, [isWorkoutStarted]);
+  }, [schedaAttiva?.id]);
 
   const currentExercise = localRoutine[exerciseIndex];
   const [currentWeight, setCurrentWeight] = useState(0);
@@ -124,7 +214,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   };
 
   useEffect(() => {
-    if (currentExercise) {
+    if (currentExercise && !isRestoring) {
       setCurrentWeight(Number(currentExercise.weight) || 0);
       setCurrentReps(Number(currentExercise.reps) || 0);
       setCurrentSet(1);
@@ -140,21 +230,88 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       interval = setInterval(() => setRestTime(prev => prev - 1), 1000);
     } else if (restTime <= 0 && isRestActive) {
       setIsRestActive(false);
-      setRestTime(exerciseRest);
       playTimerSound();
       triggerHaptic([200, 100, 200, 100, 200]);
+      
+      // Se c'è un esercizio in attesa (recupero tra esercizi), avanza ora
+      if (pendingNextExercise) {
+        setExerciseIndex(prev => prev + 1);
+        setCurrentSet(1);
+        setPendingNextExercise(false);
+      } else {
+        setRestTime(exerciseRest);
+      }
     }
     return () => clearInterval(interval);
-  }, [isRestActive, restTime, exerciseRest]);
+  }, [isRestActive, restTime, exerciseRest, pendingNextExercise]);
+
+  // Timer della durata totale dell'allenamento
+  useEffect(() => {
+    let timer = null;
+    if (isWorkoutStarted) {
+      timer = setInterval(() => {
+        setElapsedWorkoutSeconds(prev => prev + 1);
+      }, 1000);
+    } else if (!isRestoring) {
+      setElapsedWorkoutSeconds(0);
+    }
+    return () => clearInterval(timer);
+  }, [isWorkoutStarted]);
+
+  // =========================================================================
+  // SALVATAGGIO PERIODICO STATO ALLENAMENTO SU LOCALSTORAGE
+  // =========================================================================
+  useEffect(() => {
+    if (!isWorkoutStarted || isRestoring) return;
+    
+    const saveState = () => {
+      saveWorkoutState({
+        isWorkoutStarted,
+        activeDay,
+        exerciseIndex,
+        currentSet,
+        currentWeight,
+        currentReps,
+        localRoutine,
+        workoutStartTime,
+        elapsedWorkoutSeconds,
+        isRestActive,
+        restTime,
+        pendingNextExercise,
+        totalTonnage,
+        schedaId: schedaAttiva?.id,
+        schedaName: schedaAttiva?.name
+      });
+    };
+
+    // Salva immediatamente
+    saveState();
+
+    // Salva ogni 5 secondi
+    const interval = setInterval(saveState, 5000);
+    return () => clearInterval(interval);
+  }, [isWorkoutStarted, activeDay, exerciseIndex, currentSet, currentWeight, currentReps, 
+      isRestActive, restTime, pendingNextExercise, totalTonnage, elapsedWorkoutSeconds, isRestoring]);
 
   // Avvio allenamento
-  const handleStartWorkout = () => {
+  const handleStartWorkout = (day = null) => {
+    const startDay = day || activeDay;
+    if (day) setActiveDay(startDay);
+    
+    // Inizializza la routine per il giorno selezionato
+    if (schedaAttiva?.routine?.[startDay]) {
+      setLocalRoutine(JSON.parse(JSON.stringify(schedaAttiva.routine[startDay])));
+    }
+    
     triggerHaptic(150);
     setIsWorkoutStarted(true);
     setWorkoutStartTime(Date.now());
     setExerciseIndex(0);
     setCurrentSet(1);
     setIsRestActive(false);
+    setTotalTonnage(0);
+    setPendingNextExercise(false);
+    setDetailDay(null);
   };
 
   // Annulla allenamento
@@ -162,6 +319,9 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     if (window.confirm("Vuoi davvero interrompere l'allenamento in corso?")) {
       setIsWorkoutStarted(false);
       setIsRestActive(false);
+      setPendingNextExercise(false);
+      setTotalTonnage(0);
+      clearWorkoutState();
     }
   };
 
@@ -207,11 +367,22 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     triggerHaptic([80, 40, 80]);
 
     if (isRestActive) {
-      // Se l'utente clicca mentre è in corso il recupero, lo salta e avanza
+      // Se l'utente clicca mentre è in corso il recupero, lo salta
       setIsRestActive(false);
       setRestTime(exerciseRest);
+      
+      // Se stava aspettando il passaggio al prossimo esercizio, avanza ora
+      if (pendingNextExercise) {
+        setExerciseIndex(prev => prev + 1);
+        setCurrentSet(1);
+        setPendingNextExercise(false);
+      }
       return;
     }
+
+    // Accumula tonnage per questo set
+    const setTonnage = currentWeight * currentReps;
+    setTotalTonnage(prev => prev + setTonnage);
 
     const targetSets = Number(currentExercise.sets) || 1;
     
@@ -221,21 +392,23 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       setRestTime(exerciseRest);
       setIsRestActive(true);
     } else if (exerciseIndex < localRoutine.length - 1) {
-      // Esercizio completato, avanza al prossimo esercizio
-      setExerciseIndex(prev => prev + 1);
-      setCurrentSet(1);
-      setIsRestActive(false);
+      // Esercizio completato — avvia il recupero PRIMA di passare al prossimo
+      const completedExerciseRest = exerciseRest;
+      setRestTime(completedExerciseRest);
+      setIsRestActive(true);
+      setPendingNextExercise(true);
     } else {
       // Tutti gli esercizi della giornata completati!
       triggerHaptic([300, 100, 300]);
       setIsWorkoutStarted(false);
+      clearWorkoutState();
       onWorkoutComplete({ 
         id: Date.now(), 
         date: new Date().toISOString(), 
         schedaName: schedaAttiva.name, 
         dayName: activeDay, 
         durationMinutes: Math.ceil(elapsedWorkoutSeconds / 60),
-        tonnage: 0 
+        tonnage: Math.round(totalTonnage + setTonnage)
       });
     }
   };
@@ -266,12 +439,80 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
             variant="primary" 
             size="large" 
             fullWidth 
-            onClick={onNavigateToSchede}
+            onClick={() => onNavigateToSchede()}
             className="flex items-center justify-center gap-2"
           >
             <BookOpen size={16} />
             VAI ALLE SCHEDE
           </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // SCHERMATA DETTAGLIO FULL-SCREEN (quando detailDay !== null)
+  // =========================================================================
+  if (detailDay !== null) {
+    const detailRoutine = schedaAttiva?.routine?.[detailDay] || [];
+    
+    return (
+      <div className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary pt-4 pb-32 select-none">
+        {/* Header con freccia indietro */}
+        <div className="flex items-center gap-3 px-4 mb-6">
+          <button 
+            onClick={() => setDetailDay(null)}
+            className="w-10 h-10 rounded-xl bg-surface-secondary border border-surface-tertiary flex items-center justify-center text-text-secondary hover:text-white transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div className="flex-1">
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">{schedaAttiva.name}</span>
+            <h1 className="text-xl font-black text-white">Allenamento {detailDay}</h1>
+          </div>
+        </div>
+
+        <div className="px-4 space-y-5">
+          {/* Bottone Avvia Allenamento */}
+          <Button 
+            size="large" 
+            fullWidth 
+            onClick={() => handleStartWorkout(detailDay)}
+            className="text-black bg-primary font-black py-5 text-base flex items-center justify-center gap-3 shadow-xl hover:opacity-95 transition-all w-full"
+          >
+            <Play size={20} fill="black" />
+            AVVIA ALLENAMENTO
+          </Button>
+
+          {/* Header lista esercizi con matita per modifica */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
+              Esercizi in programma ({detailRoutine.length})
+            </h2>
+            <button 
+              onClick={() => onNavigateToSchede(detailDay)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-secondary border border-surface-tertiary text-text-secondary hover:text-primary text-xs font-bold transition-colors"
+            >
+              <Pencil size={12} />
+              Modifica
+            </button>
+          </div>
+
+          {/* Lista completa esercizi */}
+          <div className="space-y-2.5">
+            {detailRoutine.map((ex, idx) => (
+              <div key={ex.instanceId || idx} className="p-3 rounded-2xl bg-surface-secondary border border-surface-tertiary flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-surface-tertiary flex items-center justify-center font-bold text-xs text-primary">#{idx + 1}</div>
+                  <div>
+                    <h3 className="font-bold text-white text-sm leading-tight">{ex.name}</h3>
+                    <p className="text-[10px] text-text-secondary mt-0.5">{ex.sets} set × {ex.reps} rip @ {ex.weight}kg</p>
+                  </div>
+                </div>
+                <span className="text-[10px] text-text-tertiary font-mono bg-surface-tertiary/50 px-2 py-1 rounded-md">{ex.rest || 90}s</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -310,12 +551,14 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-8 hide-scrollbar -mx-4 items-stretch"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {/* Spacer iniziale per centrare perfettamente G1 lasciando il 14% ai lati */}
+          {/* Spacer iniziale per centrare perfettamente G1 */}
           <div className="w-[14%] shrink-0 snap-none" />
 
           {schemaDays.map(day => {
             const isActive = day === activeDay;
             const dayRoutine = schedaAttiva?.routine?.[day] || [];
+            const previewExercises = dayRoutine.slice(0, 3);
+            const hasMore = dayRoutine.length > 3;
             
             return (
               <div 
@@ -333,7 +576,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
                       <p className="text-text-secondary text-xs">Questo giorno non ha esercizi configurati.</p>
                     </div>
                     <div className="space-y-3 pt-4">
-                      <Button variant="primary" fullWidth onClick={onNavigateToSchede} className="flex items-center justify-center gap-2 py-4">
+                      <Button variant="primary" fullWidth onClick={() => onNavigateToSchede(day)} className="flex items-center justify-center gap-2 py-4">
                         <Plus size={18} /> AGGIUNGI ESERCIZI
                       </Button>
                       <Button variant="secondary" fullWidth onClick={() => scrollToDay(schemaDays[0] || 'G1')} className="flex items-center justify-center gap-2 py-4 border border-surface-tertiary">
@@ -342,10 +585,10 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
                     </div>
                   </div>
                 ) : (
-                  /* CARD PRE-ALLENAMENTO COMPLETA */
-                  <div className="flex flex-col h-full space-y-4">
-                    <Card className="flex-1 bg-surface-secondary border-2 border-surface-tertiary p-5">
-                      <div className="flex items-center justify-between border-b border-surface-tertiary pb-3">
+                  /* CARD PRE-ALLENAMENTO COMPATTA */
+                  <div className="flex flex-col h-full space-y-3">
+                    <Card className="flex-1 bg-surface-secondary border-2 border-surface-tertiary p-4 overflow-hidden">
+                      <div className="flex items-center justify-between border-b border-surface-tertiary pb-2">
                         <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full">
                           {schedaAttiva.name}
                         </span>
@@ -354,39 +597,79 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
                         </span>
                       </div>
 
-                      <div className="mt-4 mb-4">
-                        <h1 className="text-2xl font-black text-white">Allenamento {day}</h1>
-                        <p className="text-xs text-text-secondary mt-1">
-                          Lista degli esercizi in programma.
-                        </p>
+                      <div className="mt-3 mb-3 flex items-center justify-between">
+                        <div>
+                          <h1 className="text-xl font-black text-white">Allenamento {day}</h1>
+                          <p className="text-[10px] text-text-secondary mt-0.5">
+                            Lista degli esercizi in programma.
+                          </p>
+                        </div>
+                        {/* Bottone Info per schermata dettaglio */}
+                        <button
+                          onClick={() => setDetailDay(day)}
+                          className="w-9 h-9 rounded-xl bg-surface-tertiary/80 flex items-center justify-center text-text-secondary hover:text-primary hover:bg-primary/10 transition-all shrink-0"
+                          title="Vedi dettagli"
+                        >
+                          <Info size={18} />
+                        </button>
                       </div>
 
-                      <div className="border-t border-surface-tertiary pt-3">
-                        <h2 className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3">Esercizi in programma</h2>
-                        <div className="space-y-2.5">
-                          {dayRoutine.map((ex, idx) => (
-                            <div key={ex.instanceId || idx} className="p-3 rounded-2xl bg-surface/80 border border-surface-tertiary flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-surface-tertiary flex items-center justify-center font-bold text-xs text-primary">#{idx + 1}</div>
+                      {/* Lista esercizi limitata a 3 con gradient fade */}
+                      <div className="relative">
+                        <div className="space-y-2">
+                          {previewExercises.map((ex, idx) => (
+                            <div key={ex.instanceId || idx} className="p-2.5 rounded-xl bg-surface/80 border border-surface-tertiary flex items-center justify-between">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-6 h-6 rounded-md bg-surface-tertiary flex items-center justify-center font-bold text-[10px] text-primary">#{idx + 1}</div>
                                 <div>
-                                  <h3 className="font-bold text-white text-xs leading-tight">{ex.name}</h3>
-                                  <p className="text-[10px] text-text-secondary mt-0.5">{ex.sets} set × {ex.reps} rip @ {ex.weight}kg</p>
+                                  <h3 className="font-bold text-white text-[11px] leading-tight">{ex.name}</h3>
+                                  <p className="text-[9px] text-text-secondary mt-0.5">{ex.sets}s × {ex.reps}r @ {ex.weight}kg</p>
                                 </div>
                               </div>
-                              <span className="text-[10px] text-text-tertiary font-mono bg-surface-tertiary/50 px-2 py-1 rounded-md">{ex.rest || 90}s</span>
+                              <span className="text-[9px] text-text-tertiary font-mono bg-surface-tertiary/50 px-1.5 py-0.5 rounded">{ex.rest || 90}s</span>
                             </div>
                           ))}
                         </div>
+                        
+                        {/* Gradient fade se ci sono più di 3 esercizi */}
+                        {hasMore && (
+                          <div className="relative mt-1">
+                            {/* 4° esercizio parzialmente visibile */}
+                            <div className="p-2.5 rounded-xl bg-surface/80 border border-surface-tertiary flex items-center justify-between">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-6 h-6 rounded-md bg-surface-tertiary flex items-center justify-center font-bold text-[10px] text-primary">#4</div>
+                                <div>
+                                  <h3 className="font-bold text-white text-[11px] leading-tight">{dayRoutine[3].name}</h3>
+                                  <p className="text-[9px] text-text-secondary mt-0.5">{dayRoutine[3].sets}s × {dayRoutine[3].reps}r @ {dayRoutine[3].weight}kg</p>
+                                </div>
+                              </div>
+                            </div>
+                            {/* Gradient overlay nero */}
+                            <div 
+                              className="absolute inset-0 rounded-xl pointer-events-none"
+                              style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(28,28,30,0.8) 70%, rgba(28,28,30,1) 100%)' }}
+                            />
+                          </div>
+                        )}
+
+                        {hasMore && (
+                          <button 
+                            onClick={() => setDetailDay(day)}
+                            className="w-full text-center text-[10px] text-primary font-bold mt-2 py-1 hover:underline"
+                          >
+                            Vedi tutti i {dayRoutine.length} esercizi →
+                          </button>
+                        )}
                       </div>
                     </Card>
 
                     <Button 
                       size="large" 
                       fullWidth 
-                      onClick={handleStartWorkout}
-                      className="text-black bg-primary font-black py-5 text-base flex items-center justify-center gap-3 shadow-xl hover:opacity-95 transition-all w-full"
+                      onClick={() => handleStartWorkout(day)}
+                      className="text-black bg-primary font-black py-4 text-sm flex items-center justify-center gap-3 shadow-xl hover:opacity-95 transition-all w-full"
                     >
-                      <Play size={20} fill="black" />
+                      <Play size={18} fill="black" />
                       AVVIA ALLENAMENTO
                     </Button>
                   </div>
@@ -406,6 +689,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   // FASE B: ALLENAMENTO IN CORSO (ALLENAMENTO ATTIVO)
   // =========================================================================
   const targetSets = Number(currentExercise?.sets) || 1;
+  const nextExercise = pendingNextExercise && localRoutine[exerciseIndex + 1] ? localRoutine[exerciseIndex + 1] : null;
 
   return (
     <div className="max-w-[420px] mx-auto min-h-screen bg-surface text-text-primary p-4 pb-32">
@@ -426,7 +710,11 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
 
       {/* Badge Stato Corrente: Set vs Recupero */}
       <div className="mb-4 text-center">
-        {isRestActive ? (
+        {isRestActive && pendingNextExercise ? (
+          <div className="px-4 py-1.5 rounded-full text-xs font-black bg-blue-500/20 text-blue-400 inline-flex items-center gap-2 border border-blue-500/30 animate-pulse">
+            <span>🔄</span> RECUPERO — PROSSIMO ESERCIZIO
+          </div>
+        ) : isRestActive ? (
           <div className="px-4 py-1.5 rounded-full text-xs font-black bg-amber-500/20 text-amber-400 inline-flex items-center gap-2 border border-amber-500/30 animate-pulse">
             <span>⏳</span> IN RECUPERO TRA I SET
           </div>
@@ -477,17 +765,39 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           </div>
         </Card>
 
+        {/* ANTEPRIMA PROSSIMO ESERCIZIO (durante recupero tra esercizi) */}
+        {pendingNextExercise && nextExercise && (
+          <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+            <p className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">Prossimo esercizio</p>
+            <h3 className="font-black text-white text-base">{nextExercise.name}</h3>
+            <p className="text-xs text-text-secondary mt-0.5">
+              {nextExercise.sets} set × {nextExercise.reps} rip @ {nextExercise.weight}kg
+            </p>
+          </div>
+        )}
+
         {/* TIMER RECUPERO CARD */}
         <div className={`w-full p-6 rounded-3xl border transition-all text-center ${
           isRestActive 
-            ? 'border-amber-400 bg-amber-400/10 shadow-[0_0_20px_rgba(251,191,36,0.15)]' 
+            ? pendingNextExercise
+              ? 'border-blue-400 bg-blue-400/10 shadow-[0_0_20px_rgba(96,165,250,0.15)]'
+              : 'border-amber-400 bg-amber-400/10 shadow-[0_0_20px_rgba(251,191,36,0.15)]' 
             : 'border-surface-tertiary bg-surface-secondary/50 opacity-80'
         }`}>
-          <span className={`text-5xl font-mono font-black ${isRestActive ? 'text-amber-400' : 'text-text-tertiary'}`}>
+          <span className={`text-5xl font-mono font-black ${
+            isRestActive 
+              ? pendingNextExercise ? 'text-blue-400' : 'text-amber-400' 
+              : 'text-text-tertiary'
+          }`}>
             {isRestActive ? formatTime(restTime) : formatTime(exerciseRest)}
           </span>
           <p className="text-[10px] font-black uppercase mt-2 tracking-widest text-text-secondary">
-            {isRestActive ? '⏱️ Recupero Attivo' : 'Tempo Recupero Previsto'}
+            {isRestActive 
+              ? pendingNextExercise 
+                ? '🔄 Recupero prima del prossimo esercizio' 
+                : '⏱️ Recupero Attivo'
+              : 'Tempo Recupero Previsto'
+            }
           </p>
         </div>
 
@@ -504,9 +814,12 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
               size="large" 
               fullWidth 
               onClick={handleRegisterSet} 
-              className="text-black bg-amber-400 hover:bg-amber-300 font-black py-4"
+              className={`text-black font-black py-4 ${pendingNextExercise ? 'bg-blue-400 hover:bg-blue-300' : 'bg-amber-400 hover:bg-amber-300'}`}
             >
-              ⚡ SALTA RECUPERO & VAI AL SET #{currentSet}
+              {pendingNextExercise 
+                ? `⚡ SALTA RECUPERO & VAI A ${nextExercise?.name?.substring(0, 20) || 'PROSSIMO'}`
+                : `⚡ SALTA RECUPERO & VAI AL SET #${currentSet}`
+              }
             </Button>
           ) : (
             <Button 

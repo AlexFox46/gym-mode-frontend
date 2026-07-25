@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import { Card, Button, Stepper } from '../components/UI';
 import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 
-export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, esercizi = [], userId }) => {
+export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, esercizi = [], userId, editDay, setEditDay }) => {
   const [viewState, setViewState] = useState('list');
   const [newSchedaName, setNewSchedaName] = useState('');
   const [newSchedaDays, setNewSchedaDays] = useState(2);
@@ -24,6 +24,19 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragOffsetY, setDragOffsetY] = useState(0);
   const touchStartY = useRef(null);
+
+  // Apertura diretta al giorno specifico se richiesto da AllenatiView
+  React.useEffect(() => {
+    if (editDay && schedaAttiva) {
+      setNewSchedaName(schedaAttiva.name);
+      setNewSchedaDays(schedaAttiva.daysCount);
+      setWorkoutRoutine(JSON.parse(JSON.stringify(schedaAttiva.routine || {})));
+      setActiveBuilderDay(editDay);
+      setEditingSchedaId(schedaAttiva.id);
+      setViewState('builder');
+      if (setEditDay) setEditDay(null);
+    }
+  }, [editDay, schedaAttiva]);
 
   // Estrai i muscoli e gli attrezzi unici dagli esercizi Supabase
   const muscleGroups = [...new Set(esercizi.map(ex => ex.muscle))].sort();
