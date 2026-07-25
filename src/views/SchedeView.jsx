@@ -4,10 +4,10 @@ import { Card, Button, Stepper } from '../components/UI';
 import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown, Sparkles } from 'lucide-react';
 
 const GOAL_OPTIONS = [
-  { id: 'hypertrophy', label: 'Ipertrofia', desc: 'Aumento massa muscolare (8-12 rep)' },
-  { id: 'strength', label: 'Forza Massimale', desc: 'Carichi alti e rep basse (1-5 rep)' },
-  { id: 'endurance', label: 'Resistenza / Def.', desc: 'Rep alte (15+) e recuperi brevi' },
-  { id: 'maintenance', label: 'Mantenimento', desc: 'Progressione conservativa' }
+  { id: 'hypertrophy', label: 'Ipertrofia', desc: 'Massa muscolare (8-12 rep)' },
+  { id: 'strength', label: 'Forza', desc: 'Carichi elevati (1-5 rep)' },
+  { id: 'endurance', label: 'Resistenza', desc: 'Volume elevato (15+ rep)' },
+  { id: 'maintenance', label: 'Mantenimento', desc: 'Assetto conservativo' }
 ];
 
 export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, esercizi = [], userId, editDay, setEditDay }) => {

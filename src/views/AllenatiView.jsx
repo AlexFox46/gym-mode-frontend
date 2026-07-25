@@ -841,7 +841,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
               size="large" 
               fullWidth 
               onClick={handleRegisterSet} 
-              className={`text-black font-black py-4 ${pendingNextExercise ? 'bg-blue-400 hover:bg-blue-300' : 'bg-amber-400 hover:bg-amber-300'}`}
+              className={`!text-slate-950 font-black py-4 border-none ${pendingNextExercise ? 'bg-spotter hover:bg-spotter/90 shadow-spotter-glow' : 'bg-amber-400 hover:bg-amber-300 shadow-lg'}`}
             >
               {pendingNextExercise 
                 ? `⚡ SALTA RECUPERO & VAI A ${nextExercise?.name?.substring(0, 20) || 'PROSSIMO'}`
@@ -853,7 +853,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
               size="large" 
               fullWidth 
               onClick={handleRegisterSet} 
-              className="text-black bg-primary font-black py-4 shadow-lg"
+              className="!text-slate-950 bg-primary font-black py-4 shadow-lg hover:opacity-90 border-none"
             >
               COMPLETA SET #{currentSet}
             </Button>

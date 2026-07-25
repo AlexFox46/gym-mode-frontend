@@ -75,7 +75,7 @@ export const ProgressiView = ({
       <div className="flex items-center justify-between mb-6">
         <div>
           <span className="text-[10px] font-black text-primary uppercase tracking-widest block flex items-center gap-2">
-            <Activity size={14} /> Tracciamento Costanza
+            <Activity size={14} /> Progressi
           </span>
           <h2 className="text-2xl font-black text-text-primary capitalize tracking-tight mt-1">
             {currentDate.toLocaleDateString('it-IT', { month: 'long' })}
