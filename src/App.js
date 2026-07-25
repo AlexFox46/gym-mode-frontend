@@ -4,8 +4,8 @@ import { LoginView } from './views/LoginView';
 import { AllenatiView } from './views/AllenatiView';
 import { SchedeView } from './views/SchedeView';
 import { ProgressiView } from './views/ProgressiView';
-import { ProfiloView } from './views/ProfiloView';
-import { Dumbbell, BookOpen, TrendingUp, User } from 'lucide-react';
+import { SpotterView } from './views/SpotterView';
+import { Dumbbell, BookOpen, TrendingUp, Sparkles } from 'lucide-react';
 import { 
   fetchEsercizi, 
   createProfileIfNotExists, 
@@ -168,19 +168,23 @@ function App() {
             setEditDay={setEditDay}
           />
         )}
-        {activeTab === 'progressi' && (
-          <ProgressiView storico={storicoAllenamenti} />
+        {activeTab === 'spotter' && (
+          <SpotterView 
+            schedaAttiva={schedaAttiva}
+          />
         )}
-        {activeTab === 'profilo' && (
-          <ProfiloView 
-            settings={settings} 
-            onSettingsChange={handleSettingsChange} 
+        {activeTab === 'progressi' && (
+          <ProgressiView 
+            storico={storicoAllenamenti} 
+            user={user}
+            settings={settings}
+            onSettingsChange={handleSettingsChange}
             onLogout={handleLogout}
           />
         )}
       </main>
 
-      {/* Nav Bar Inferiore con icona piena, arancione e testo bold per la voce attiva */}
+      {/* Nav Bar Inferiore con 4 voci: Allenati, Schede, Spotter, Progressi */}
       <nav className="fixed bottom-0 left-0 right-0 max-w-[420px] mx-auto bg-surface-secondary border-t border-surface-tertiary h-16 flex justify-around items-center z-40 px-2 shadow-2xl">
         <button 
           onClick={() => setActiveTab('allenati')} 
@@ -189,7 +193,7 @@ function App() {
           }`}
         >
           <Dumbbell 
-            size={24} 
+            size={22} 
             strokeWidth={activeTab === 'allenati' ? 2.5 : 1.8} 
             fill={activeTab === 'allenati' ? 'currentColor' : 'none'} 
           />
@@ -207,7 +211,7 @@ function App() {
           }`}
         >
           <BookOpen 
-            size={24} 
+            size={22} 
             strokeWidth={activeTab === 'schede' ? 2.5 : 1.8} 
             fill={activeTab === 'schede' ? 'currentColor' : 'none'} 
           />
@@ -219,13 +223,31 @@ function App() {
         </button>
 
         <button 
+          onClick={() => setActiveTab('spotter')} 
+          className={`flex flex-col items-center justify-center w-16 h-full transition-all ${
+            activeTab === 'spotter' ? 'text-spotter scale-105' : 'text-neutral-400 hover:text-neutral-200'
+          }`}
+        >
+          <Sparkles 
+            size={22} 
+            strokeWidth={activeTab === 'spotter' ? 2.5 : 1.8} 
+            className={activeTab === 'spotter' ? 'animate-pulse' : ''}
+          />
+          <span className={`font-sans text-[10px] uppercase mt-1 tracking-wider ${
+            activeTab === 'spotter' ? 'font-black text-spotter' : 'font-semibold text-neutral-400'
+          }`}>
+            Spotter
+          </span>
+        </button>
+
+        <button 
           onClick={() => setActiveTab('progressi')} 
           className={`flex flex-col items-center justify-center w-16 h-full transition-all ${
             activeTab === 'progressi' ? 'text-primary scale-105' : 'text-neutral-400 hover:text-neutral-200'
           }`}
         >
           <TrendingUp 
-            size={24} 
+            size={22} 
             strokeWidth={activeTab === 'progressi' ? 2.5 : 1.8} 
             fill={activeTab === 'progressi' ? 'currentColor' : 'none'} 
           />
@@ -233,24 +255,6 @@ function App() {
             activeTab === 'progressi' ? 'font-black text-primary' : 'font-semibold text-neutral-400'
           }`}>
             Progressi
-          </span>
-        </button>
-
-        <button 
-          onClick={() => setActiveTab('profilo')} 
-          className={`flex flex-col items-center justify-center w-16 h-full transition-all ${
-            activeTab === 'profilo' ? 'text-primary scale-105' : 'text-neutral-400 hover:text-neutral-200'
-          }`}
-        >
-          <User 
-            size={24} 
-            strokeWidth={activeTab === 'profilo' ? 2.5 : 1.8} 
-            fill={activeTab === 'profilo' ? 'currentColor' : 'none'} 
-          />
-          <span className={`font-sans text-[10px] uppercase mt-1 tracking-wider ${
-            activeTab === 'profilo' ? 'font-black text-primary' : 'font-semibold text-neutral-400'
-          }`}>
-            Profilo
           </span>
         </button>
       </nav>
