@@ -1,12 +1,20 @@
 import React, { useState, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import { Card, Button, Stepper } from '../components/UI';
-import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown, Sparkles } from 'lucide-react';
+
+const GOAL_OPTIONS = [
+  { id: 'hypertrophy', label: 'Ipertrofia', desc: 'Aumento massa muscolare (8-12 rep)' },
+  { id: 'strength', label: 'Forza Massimale', desc: 'Carichi alti e rep basse (1-5 rep)' },
+  { id: 'endurance', label: 'Resistenza / Def.', desc: 'Rep alte (15+) e recuperi brevi' },
+  { id: 'maintenance', label: 'Mantenimento', desc: 'Progressione conservativa' }
+];
 
 export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, esercizi = [], userId, editDay, setEditDay }) => {
   const [viewState, setViewState] = useState('list');
   const [newSchedaName, setNewSchedaName] = useState('');
   const [newSchedaDays, setNewSchedaDays] = useState(2);
+  const [newSchedaGoal, setNewSchedaGoal] = useState('hypertrophy');
   const [workoutRoutine, setWorkoutRoutine] = useState({});
   const [activeBuilderDay, setActiveBuilderDay] = useState('G1');
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
@@ -52,6 +60,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   const startCreation = () => { 
     setNewSchedaName(''); 
     setNewSchedaDays(2); 
+    setNewSchedaGoal('hypertrophy');
     setWorkoutRoutine({});
     setEditingSchedaId(null);
     setViewState('setup'); 
@@ -249,7 +258,8 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
         name: newSchedaName,
         days_count: Object.keys(workoutRoutine).length,
         routine: workoutRoutine,
-        is_active: false
+        is_active: false,
+        goal: newSchedaGoal
       };
 
       if (editingSchedaId) {
@@ -281,7 +291,8 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
           name: scheda.name,
           daysCount: scheda.days_count || 2,
           routine: scheda.routine || {},
-          isActive: scheda.is_active || false
+          isActive: scheda.is_active || false,
+          goal: scheda.goal || 'hypertrophy'
         }));
         setSchede(schedeFormattate);
       }
@@ -297,6 +308,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   const editScheda = (schedaToEdit) => {
     setNewSchedaName(schedaToEdit.name);
     setNewSchedaDays(schedaToEdit.daysCount);
+    setNewSchedaGoal(schedaToEdit.goal || 'hypertrophy');
     setWorkoutRoutine(JSON.parse(JSON.stringify(schedaToEdit.routine)));
     setActiveBuilderDay('G1');
     setEditingSchedaId(schedaToEdit.id);
@@ -392,44 +404,55 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
                 <p className="text-sm">Nessuna scheda creata. Inizia a costruire la tua!</p>
               </div>
             ) : (
-              schede.map((s) => (
-                <Card 
-                  key={s.id} 
-                  className={`flex justify-between items-center transition-all ${s.isActive ? 'border-2 border-primary' : 'border border-surface-tertiary'}`}
-                >
-                  <div className="flex-1">
-                    <span className="font-bold text-white">{s.name}</span>
-                    {s.isActive && (
-                      <span className="ml-2 text-[10px] font-black text-primary uppercase">✓ Attiva</span>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => editScheda(s)}
-                      className="p-3 text-text-secondary hover:text-primary active:scale-95 transition-transform"
-                      title="Modifica"
-                    >
-                      <Edit2 size={18} />
-                    </button>
-                    <button 
-                      onClick={() => deleteScheda(s.id)}
-                      className="p-3 text-text-secondary hover:text-red-500 active:scale-95 transition-transform"
-                      title="Elimina"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                    {!s.isActive && (
-                      <Button 
-                        variant="primary"
-                        size="medium"
-                        onClick={() => activateScheda(s)}
+              schede.map((s) => {
+                const currentGoalObj = GOAL_OPTIONS.find(g => g.id === (s.goal || 'hypertrophy')) || GOAL_OPTIONS[0];
+                return (
+                  <Card 
+                    key={s.id} 
+                    className={`flex justify-between items-center transition-all ${s.isActive ? 'border-2 border-primary' : 'border border-surface-tertiary'}`}
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white">{s.name}</span>
+                        {s.isActive && (
+                          <span className="text-[10px] font-black text-primary uppercase">✓ Attiva</span>
+                        )}
+                      </div>
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-spotter/10 border border-spotter/30 text-spotter text-[10px] font-bold uppercase tracking-wider shadow-spotter-subtle">
+                          <Sparkles size={10} />
+                          {currentGoalObj.label}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => editScheda(s)}
+                        className="p-3 text-text-secondary hover:text-primary active:scale-95 transition-transform"
+                        title="Modifica"
                       >
-                        Attiva
-                      </Button>
-                    )}
-                  </div>
-                </Card>
-              ))
+                        <Edit2 size={18} />
+                      </button>
+                      <button 
+                        onClick={() => deleteScheda(s.id)}
+                        className="p-3 text-text-secondary hover:text-red-500 active:scale-95 transition-transform"
+                        title="Elimina"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                      {!s.isActive && (
+                        <Button 
+                          variant="primary"
+                          size="medium"
+                          onClick={() => activateScheda(s)}
+                        >
+                          Attiva
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })
             )}
           </div>
         </>
@@ -438,14 +461,42 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
       {viewState === 'setup' && (
         <div className="space-y-6">
           <h2 className="text-2xl font-black text-white">Configurazione</h2>
-          <input 
-            type="text" 
-            value={newSchedaName} 
-            onChange={(e) => { setNewSchedaName(e.target.value); if(error) setError(''); }} 
-            className={`w-full bg-surface-secondary p-4 rounded-2xl text-white border ${error ? 'border-red-500' : 'border-surface-tertiary'}`} 
-            placeholder="Nome Scheda..." 
-          />
-          {error && <p className="text-red-500 text-[10px] font-black ml-2">{error}</p>}
+          <div>
+            <label className="text-xs font-bold text-text-secondary uppercase mb-2 block ml-1">Nome Scheda</label>
+            <input 
+              type="text" 
+              value={newSchedaName} 
+              onChange={(e) => { setNewSchedaName(e.target.value); if(error) setError(''); }} 
+              className={`w-full bg-surface-secondary p-4 rounded-2xl text-white border ${error ? 'border-red-500' : 'border-surface-tertiary'}`} 
+              placeholder="Es. Scheda Invernale Push-Pull..." 
+            />
+            {error && <p className="text-red-500 text-[10px] font-black ml-2 mt-1">{error}</p>}
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2 mb-2 ml-1">
+              <Sparkles size={14} className="text-spotter" />
+              <label className="text-xs font-black text-spotter uppercase tracking-wider">Obiettivo Spotter</label>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {GOAL_OPTIONS.map((g) => (
+                <button
+                  key={g.id}
+                  type="button"
+                  onClick={() => setNewSchedaGoal(g.id)}
+                  className={`p-3 rounded-2xl border text-left transition-all active:scale-95 ${
+                    newSchedaGoal === g.id
+                      ? 'bg-spotter/15 border-spotter text-spotter shadow-spotter-subtle'
+                      : 'bg-surface-secondary border-surface-tertiary text-text-secondary hover:border-surface-tertiary/80'
+                  }`}
+                >
+                  <div className="text-xs font-black uppercase tracking-wide mb-0.5">{g.label}</div>
+                  <div className="text-[10px] leading-tight text-text-secondary">{g.desc}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <Stepper label="Giorni" value={newSchedaDays} onChange={setNewSchedaDays} step={1} unit="giorni" />
           <Button variant="primary" fullWidth onClick={proceedToBuilder}>Avanti</Button>
         </div>
@@ -453,6 +504,39 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
 
       {viewState === 'builder' && (
         <div className="space-y-6">
+          {/* Header Builder con Selettore Obiettivo Spotter */}
+          <div className="bg-surface-secondary p-4 rounded-2xl border border-surface-tertiary space-y-3">
+            <div className="flex justify-between items-center">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-text-secondary">Scheda in modifica</span>
+                <h2 className="text-lg font-black text-white">{newSchedaName || 'Nuova Scheda'}</h2>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black text-spotter uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                <Sparkles size={12} className="animate-pulse" />
+                Obiettivo Spotter:
+              </label>
+              <div className="grid grid-cols-2 gap-1.5">
+                {GOAL_OPTIONS.map(g => (
+                  <button
+                    key={g.id}
+                    type="button"
+                    onClick={() => setNewSchedaGoal(g.id)}
+                    className={`p-2 rounded-xl border text-left text-[11px] font-bold transition-all active:scale-95 ${
+                      newSchedaGoal === g.id
+                        ? 'bg-spotter/20 border-spotter text-spotter shadow-spotter-subtle'
+                        : 'bg-surface border-surface-tertiary text-text-secondary hover:border-surface-tertiary/80'
+                    }`}
+                  >
+                    {g.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="flex gap-2 overflow-x-auto pb-2">
             {Object.keys(workoutRoutine).map(day => (
               <button 

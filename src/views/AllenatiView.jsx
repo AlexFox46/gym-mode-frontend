@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Stepper, Card } from '../components/UI';
-import { BookOpen, Repeat2, Play, CheckCircle2, XCircle, Clock, Dumbbell, ArrowLeft, Plus, Info, Pencil } from 'lucide-react';
+import { BookOpen, Repeat2, Play, CheckCircle2, XCircle, Clock, Dumbbell, ArrowLeft, Plus, Info, Pencil, Sparkles } from 'lucide-react';
 import { fetchExerciseAlternatives } from '../services/supabaseServices';
 
 // ============================================================================
@@ -45,6 +45,13 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const schemaDays = schedaAttiva ? Array.from({ length: schedaAttiva.daysCount }, (_, i) => `G${i + 1}`) : [];
   const [localRoutine, setLocalRoutine] = useState([]);
   const [exerciseIndex, setExerciseIndex] = useState(0);
+
+  // Stato per Modal Feedback Spotter a fine allenamento
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [completedWorkoutPayload, setCompletedWorkoutPayload] = useState(null);
+  const [feedbackFatigue, setFeedbackFatigue] = useState(2); // 1: Leggero, 2: Giusto, 3: Faticoso, 4: Molto faticoso
+  const [feedbackEnergy, setFeedbackEnergy] = useState(2);  // 1: Distrutto, 2: Normale, 3: Pieno di energie
+  const [feedbackHardestExerciseId, setFeedbackHardestExerciseId] = useState('');
   
   // Riferimento al contenitore per lo slide
   const scrollContainerRef = useRef(null);
@@ -402,15 +409,35 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       triggerHaptic([300, 100, 300]);
       setIsWorkoutStarted(false);
       clearWorkoutState();
-      onWorkoutComplete({ 
+
+      const basePayload = { 
         id: Date.now(), 
+        schemeId: schedaAttiva.id,
         date: new Date().toISOString(), 
         schedaName: schedaAttiva.name, 
         dayName: activeDay, 
         durationMinutes: Math.ceil(elapsedWorkoutSeconds / 60),
-        tonnage: Math.round(totalTonnage + setTonnage)
-      });
+        tonnage: Math.round(totalTonnage + setTonnage),
+        exercisesData: localRoutine
+      };
+
+      setCompletedWorkoutPayload(basePayload);
+      setShowFeedbackModal(true);
     }
+  };
+
+  const handleFinalizeWorkout = () => {
+    if (!completedWorkoutPayload) return;
+    
+    const finalPayload = {
+      ...completedWorkoutPayload,
+      fatigueLevel: feedbackFatigue,
+      energyLevel: feedbackEnergy,
+      hardestExerciseId: feedbackHardestExerciseId || null
+    };
+
+    setShowFeedbackModal(false);
+    onWorkoutComplete(finalPayload);
   };
 
   const formatTime = (totalSeconds) => {
@@ -887,6 +914,100 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
                 ))
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL FEEDBACK SPOTTER A FINE ALLENAMENTO */}
+      {showFeedbackModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-surface-secondary border border-spotter/40 rounded-3xl p-6 w-full max-w-[380px] space-y-6 shadow-spotter-glow relative overflow-hidden">
+            {/* Bagliore decorativo */}
+            <div className="absolute -top-12 -right-12 w-32 h-32 bg-spotter/20 rounded-full blur-2xl pointer-events-none" />
+
+            <div className="text-center space-y-2">
+              <div className="w-12 h-12 rounded-2xl bg-spotter/10 border border-spotter/30 flex items-center justify-center mx-auto text-spotter shadow-spotter-subtle">
+                <Sparkles size={24} className="animate-pulse" />
+              </div>
+              <h3 className="text-xl font-black text-white">Allenamento Completato!</h3>
+              <p className="text-xs text-text-secondary">Aiuta lo <strong className="text-spotter">Spotter</strong> ad analizzare la tua sessione per i prossimi suggerimenti.</p>
+            </div>
+
+            {/* Domanda 1: Fatica */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-text-primary uppercase tracking-wide block">1. Come valuti la fatica di oggi?</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { val: 1, label: 'Leggero 🟢' },
+                  { val: 2, label: 'Giusto 🟡' },
+                  { val: 3, label: 'Faticoso 🔴' },
+                  { val: 4, label: 'Estremo 🔥' }
+                ].map(opt => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setFeedbackFatigue(opt.val)}
+                    className={`py-2.5 px-3 rounded-xl border text-xs font-bold transition-all active:scale-95 ${
+                      feedbackFatigue === opt.val
+                        ? 'bg-spotter/20 border-spotter text-spotter shadow-spotter-subtle'
+                        : 'bg-surface border-surface-tertiary text-text-secondary'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Domanda 2: Energia */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-text-primary uppercase tracking-wide block">2. Come ti senti ora?</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { val: 1, label: 'Distrutto 🪫' },
+                  { val: 2, label: 'Normale 😊' },
+                  { val: 3, label: 'Carico ⚡' }
+                ].map(opt => (
+                  <button
+                    key={opt.val}
+                    type="button"
+                    onClick={() => setFeedbackEnergy(opt.val)}
+                    className={`py-2.5 px-2 rounded-xl border text-[11px] font-bold transition-all active:scale-95 ${
+                      feedbackEnergy === opt.val
+                        ? 'bg-spotter/20 border-spotter text-spotter shadow-spotter-subtle'
+                        : 'bg-surface border-surface-tertiary text-text-secondary'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Domanda 3: Esercizio più duro */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-text-primary uppercase tracking-wide block">3. Esercizio più impegnativo?</label>
+              <select
+                value={feedbackHardestExerciseId}
+                onChange={(e) => setFeedbackHardestExerciseId(e.target.value)}
+                className="w-full bg-surface p-3 rounded-xl border border-surface-tertiary text-xs text-white focus:border-spotter outline-none"
+              >
+                <option value="">-- Nessuno in particolare --</option>
+                {localRoutine.map(ex => (
+                  <option key={ex.instanceId || ex.id} value={ex.id}>{ex.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Bottone di salvataggio */}
+            <button
+              type="button"
+              onClick={handleFinalizeWorkout}
+              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-spotter to-spotter-dark text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-spotter-glow hover:opacity-95 active:scale-95 transition-all"
+            >
+              <Sparkles size={16} />
+              Salva e Registra Allenamento
+            </button>
           </div>
         </div>
       )}

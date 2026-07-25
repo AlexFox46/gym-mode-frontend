@@ -79,7 +79,8 @@ export const fetchSchede = async (userId) => {
       name: scheda.name,
       daysCount: scheda.days_count || 2,
       routine: scheda.routine || {},
-      isActive: scheda.is_active || false
+      isActive: scheda.is_active || false,
+      goal: scheda.goal || 'hypertrophy'
     }));
   } catch (err) {
     console.error('Errore inatteso nel fetch delle schede:', err);
@@ -198,11 +199,16 @@ export const saveWorkoutLog = async (userId, logEntry) => {
       .from('workout_logs')
       .insert([{
         user_id: userId,
+        scheme_id: logEntry.schemeId || null,
         date: logEntry.date,
         scheda_name: logEntry.schedaName,
         day_name: logEntry.dayName,
         duration_minutes: logEntry.durationMinutes,
-        tonnage: logEntry.tonnage || 0
+        tonnage: logEntry.tonnage || 0,
+        exercises_data: logEntry.exercisesData || [],
+        fatigue_level: logEntry.fatigueLevel || null,
+        energy_level: logEntry.energyLevel || null,
+        hardest_exercise_id: logEntry.hardestExerciseId || null
       }]);
 
     if (error) {
@@ -224,7 +230,7 @@ export const fetchWorkoutLogs = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('workout_logs')
-      .select('id, date, scheda_name, day_name, duration_minutes, tonnage')
+      .select('id, scheme_id, date, scheda_name, day_name, duration_minutes, tonnage, exercises_data, fatigue_level, energy_level, hardest_exercise_id')
       .eq('user_id', userId)
       .order('date', { ascending: false });
 
@@ -235,14 +241,91 @@ export const fetchWorkoutLogs = async (userId) => {
 
     return data.map(log => ({
       id: log.id,
+      schemeId: log.scheme_id,
       date: log.date,
       schedaName: log.scheda_name,
       dayName: log.day_name,
       durationMinutes: log.duration_minutes,
-      tonnage: log.tonnage
+      tonnage: log.tonnage,
+      exercisesData: log.exercises_data || [],
+      fatigueLevel: log.fatigue_level,
+      energyLevel: log.energy_level,
+      hardestExerciseId: log.hardest_exercise_id
     }));
   } catch (err) {
     console.error('Errore inatteso nel fetch storico:', err);
     return [];
   }
 };
+
+/**
+ * Salva o aggiorna la scheda utente con l'obiettivo scelto
+ */
+export const updateSchedaGoal = async (schedaId, goal) => {
+  try {
+    const { error } = await supabase
+      .from('workout_schemes')
+      .update({ goal })
+      .eq('id', schedaId);
+
+    if (error) {
+      console.error('Errore aggiornamento obiettivo scheda:', error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Errore inatteso aggiornamento obiettivo:', err);
+    return false;
+  }
+};
+
+/**
+ * Recupera i suggerimenti dello Spotter pendenti per una determinata scheda e giorno
+ */
+export const fetchPendingSpotterSuggestions = async (userId, schemeId, dayName) => {
+  try {
+    const { data, error } = await supabase
+      .from('spotter_suggestions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('scheme_id', schemeId)
+      .eq('day_name', dayName)
+      .eq('is_applied', false)
+      .eq('is_dismissed', false)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Errore recupero suggerimenti Spotter:', error);
+      return [];
+    }
+    return data;
+  } catch (err) {
+    console.error('Errore inatteso suggerimenti Spotter:', err);
+    return [];
+  }
+};
+
+/**
+ * Aggiorna lo stato di un suggerimento Spotter (accettato / ignorato)
+ */
+export const updateSpotterSuggestionStatus = async (suggestionId, { isApplied, isDismissed }) => {
+  try {
+    const { error } = await supabase
+      .from('spotter_suggestions')
+      .update({ 
+        is_applied: isApplied ?? false,
+        is_dismissed: isDismissed ?? false 
+      })
+      .eq('id', suggestionId);
+
+    if (error) {
+      console.error('Errore aggiornamento stato suggerimento:', error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Errore inatteso aggiornamento suggerimento:', err);
+    return false;
+  }
+};
+
