@@ -1,7 +1,8 @@
 import { supabase } from '../supabaseClient';
+import { EXERCISE_LIBRARY, getEnrichedExercise } from '../data/exerciseLibrary';
 
 /**
- * Fetch tutti gli esercizi dal database Supabase
+ * Fetch tutti gli esercizi dal database Supabase ed arricchimento con metadati e attrezzature verificate
  */
 export const fetchEsercizi = async () => {
   try {
@@ -10,22 +11,35 @@ export const fetchEsercizi = async () => {
       .select('id, name, movement_pattern, primary_muscle_group, equipment, default_rest_time')
       .order('name', { ascending: true });
 
-    if (error) {
-      console.error('Errore nel fetch degli esercizi:', error);
-      return [];
+    let fetchedExercises = [];
+    if (!error && data && data.length > 0) {
+      fetchedExercises = data.map(ex => getEnrichedExercise({
+        id: ex.id,
+        name: ex.name,
+        primary_muscle_group: ex.primary_muscle_group,
+        muscle: ex.primary_muscle_group,
+        equipment: ex.equipment,
+        movement_pattern: ex.movement_pattern,
+        default_rest_time: ex.default_rest_time
+      }));
     }
 
-    return data.map(ex => ({
-      id: ex.id,
-      name: ex.name,
-      muscle: ex.primary_muscle_group,
-      equipment: ex.equipment,
-      movement_pattern: ex.movement_pattern,
-      default_rest_time: ex.default_rest_time
-    }));
+    // Unisci con la libreria master se alcuni esercizi non sono ancora presenti nel DB Supabase
+    const mergedMap = new Map();
+    EXERCISE_LIBRARY.forEach(libEx => {
+      const enriched = getEnrichedExercise(libEx);
+      mergedMap.set(enriched.name.toLowerCase(), enriched);
+    });
+
+    fetchedExercises.forEach(dbEx => {
+      const enriched = getEnrichedExercise(dbEx);
+      mergedMap.set(enriched.name.toLowerCase(), enriched);
+    });
+
+    return Array.from(mergedMap.values()).sort((a, b) => a.name.localeCompare(b.name));
   } catch (err) {
     console.error('Errore inatteso nel fetch degli esercizi:', err);
-    return [];
+    return EXERCISE_LIBRARY.map(ex => getEnrichedExercise(ex));
   }
 };
 

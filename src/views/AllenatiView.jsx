@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Stepper, Card } from '../components/UI';
 import { BookOpen, Repeat2, Play, CheckCircle2, XCircle, Clock, Dumbbell, ArrowLeft, Plus, Info, Pencil, Sparkles } from 'lucide-react';
 import { fetchExerciseAlternatives } from '../services/supabaseServices';
+import { ExerciseDetailModal } from '../components/ExerciseDetailModal';
 
 // ============================================================================
 // HELPER: Persistenza Allenamento in Corso via localStorage
@@ -45,6 +46,9 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const schemaDays = schedaAttiva ? Array.from({ length: schedaAttiva.daysCount }, (_, i) => `G${i + 1}`) : [];
   const [localRoutine, setLocalRoutine] = useState([]);
   const [exerciseIndex, setExerciseIndex] = useState(0);
+
+  // Stato per Modale Dettaglio Esercizio Tooltip (i)
+  const [detailModalExercise, setDetailModalExercise] = useState(null);
 
   // Stato per Modal Feedback Spotter a fine allenamento
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -529,14 +533,23 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           <div className="space-y-2.5">
             {detailRoutine.map((ex, idx) => (
               <div key={ex.instanceId || idx} className="p-3 rounded-2xl bg-surface-secondary border border-surface-tertiary flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-1">
                   <div className="w-8 h-8 rounded-lg bg-surface-tertiary flex items-center justify-center font-bold text-xs text-primary">#{idx + 1}</div>
                   <div>
-                    <h3 className="font-bold text-white text-sm leading-tight">{ex.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-white text-sm leading-tight">{ex.name}</h3>
+                      <button
+                        onClick={() => setDetailModalExercise(ex)}
+                        className="p-1 text-text-secondary hover:text-primary active:scale-95 transition-transform"
+                        title="Dettaglio Esercizio"
+                      >
+                        <Info size={14} />
+                      </button>
+                    </div>
                     <p className="text-[10px] text-text-secondary mt-0.5">{ex.sets} set × {ex.reps} rip @ {ex.weight}kg</p>
                   </div>
                 </div>
-                <span className="text-[10px] text-text-tertiary font-mono bg-surface-tertiary/50 px-2 py-1 rounded-md">{ex.rest || 90}s</span>
+                <span className="text-[10px] text-text-tertiary font-mono bg-surface-tertiary/50 px-2 py-1 rounded-md ml-2">{ex.rest || 90}s</span>
               </div>
             ))}
           </div>
@@ -764,15 +777,25 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
               </p>
             </div>
 
-            {/* BOTTONE SOSTITUISCI A FIANCO AL NOME ESERCIZIO */}
-            <button 
-              onClick={handleOpenAlternatives}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-surface-secondary border border-surface-tertiary text-primary text-xs font-bold hover:bg-primary/10 transition-colors flex-shrink-0"
-              title="Sostituisci esercizio"
-            >
-              <Repeat2 size={14} />
-              <span>Sostituisci</span>
-            </button>
+            {/* BOTTONI INFO E SOSTITUISCI NELL'HEADER */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button 
+                onClick={() => setDetailModalExercise(currentExercise)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-secondary border border-surface-tertiary text-text-secondary hover:text-primary text-xs font-bold transition-colors"
+                title="Dettagli ed Esercizi Simili"
+              >
+                <Info size={14} />
+                <span>Info</span>
+              </button>
+              <button 
+                onClick={handleOpenAlternatives}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-secondary border border-surface-tertiary text-primary text-xs font-bold hover:bg-primary/10 transition-colors"
+                title="Sostituisci esercizio"
+              >
+                <Repeat2 size={14} />
+                <span>Sostituisci</span>
+              </button>
+            </div>
           </div>
           
           {/* Visualizzatore Avanzamento Set */}
@@ -1010,6 +1033,16 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
             </button>
           </div>
         </div>
+      )}
+
+      {/* Modale Dettaglio Esercizio Tooltip (i) */}
+      {detailModalExercise && (
+        <ExerciseDetailModal
+          exercise={detailModalExercise}
+          onClose={() => setDetailModalExercise(null)}
+          allExercises={localRoutine}
+          onSelectSimilar={(simEx) => setDetailModalExercise(simEx)}
+        />
       )}
     </div>
   );

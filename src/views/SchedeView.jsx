@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import { Card, Button, Stepper } from '../components/UI';
-import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown, Sparkles } from 'lucide-react';
+import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown, Sparkles, Info } from 'lucide-react';
+import { ExerciseDetailModal } from '../components/ExerciseDetailModal';
+import { EQUIPMENT_TYPES } from '../data/exerciseLibrary';
 
 const GOAL_OPTIONS = [
   { id: 'hypertrophy', label: 'Ipertrofia', desc: 'Massa muscolare (8-12 rep)' },
@@ -22,6 +24,9 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   const [editingExercise, setEditingExercise] = useState(null);
   const [editingExerciseIndex, setEditingExerciseIndex] = useState(null);
   const [editingSchedaId, setEditingSchedaId] = useState(null);
+  
+  // Stato per Modale Dettaglio Esercizio (i)
+  const [detailModalExercise, setDetailModalExercise] = useState(null);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [muscleFilter, setMuscleFilter] = useState('');
@@ -46,13 +51,14 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
     }
   }, [editDay, schedaAttiva]);
 
-  // Estrai i muscoli e gli attrezzi unici dagli esercizi Supabase
-  const muscleGroups = [...new Set(esercizi.map(ex => ex.muscle))].sort();
-  const equipmentTypes = [...new Set(esercizi.map(ex => ex.equipment))].sort();
+  // Estrai i muscoli e gli attrezzi unici dagli esercizi Supabase e dalla libreria master
+  const muscleGroups = [...new Set(esercizi.map(ex => ex.primary_muscle_group || ex.muscle))].filter(Boolean).sort();
+  const equipmentTypes = [...new Set([...EQUIPMENT_TYPES, ...esercizi.map(ex => ex.equipment)])].filter(Boolean).sort();
 
   const filteredExercises = esercizi.filter(ex => {
+    const exMuscle = ex.primary_muscle_group || ex.muscle;
     const matchesSearch = ex.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesMuscle = muscleFilter ? ex.muscle === muscleFilter : true;
+    const matchesMuscle = muscleFilter ? exMuscle === muscleFilter : true;
     const matchesEquip = equipmentFilter ? ex.equipment === equipmentFilter : true;
     return matchesSearch && matchesMuscle && matchesEquip;
   });
@@ -622,18 +628,25 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
                     <p className="text-[10px] text-text-secondary">{ex.sets}×{ex.reps} @ {ex.weight}kg • {ex.rest}s</p>
                   </div>
 
-                  {/* Azioni Modifica / Elimina con touch area generosa */}
+                  {/* Azioni Info / Modifica / Elimina con touch area generosa */}
                   <div className="flex items-center gap-1">
                     <button 
+                      onClick={() => setDetailModalExercise(ex)}
+                      className="p-2 text-text-secondary hover:text-primary active:scale-95 transition-transform"
+                      title="Dettagli e Info Esercizio"
+                    >
+                      <Info size={16} />
+                    </button>
+                    <button 
                       onClick={() => editExercise(idx)}
-                      className="p-2.5 text-text-secondary hover:text-primary active:scale-95 transition-transform"
+                      className="p-2 text-text-secondary hover:text-primary active:scale-95 transition-transform"
                       title="Modifica"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button 
                       onClick={() => deleteExercise(idx)}
-                      className="p-2.5 text-text-secondary hover:text-red-500 active:scale-95 transition-transform"
+                      className="p-2 text-text-secondary hover:text-red-500 active:scale-95 transition-transform"
                       title="Elimina"
                     >
                       <Trash2 size={16} />
@@ -703,12 +716,21 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
               ) : (
                 filteredExercises.map(ex => (
                   <div 
-                    key={ex.id} 
+                    key={ex.id || ex.name} 
                     className="flex justify-between items-center bg-surface-secondary p-4 rounded-xl mb-2 border border-surface-tertiary"
                   >
-                    <div className="flex-1">
-                      <p className="font-bold text-sm text-white">{ex.name}</p>
-                      <p className="text-[10px] text-text-secondary">{ex.muscle} • {ex.equipment}</p>
+                    <div className="flex-1 pr-2">
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold text-sm text-white">{ex.name}</p>
+                        <button
+                          onClick={() => setDetailModalExercise(ex)}
+                          className="p-1 text-text-secondary hover:text-primary active:scale-95 transition-transform"
+                          title="Dettagli ed Esercizi Simili"
+                        >
+                          <Info size={16} />
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-text-secondary">{ex.primary_muscle_group || ex.muscle} • {ex.equipment}</p>
                     </div>
                     <button 
                       onClick={() => addExerciseToDay(ex)} 
@@ -736,6 +758,16 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
               </div>
               <Button variant="primary" fullWidth onClick={saveExerciseConfiguration} className="mt-6">SALVA IMPOSTAZIONI</Button>
             </div>
+          )}
+
+          {/* Modale Dettaglio Esercizio Tooltip (i) */}
+          {detailModalExercise && (
+            <ExerciseDetailModal
+              exercise={detailModalExercise}
+              onClose={() => setDetailModalExercise(null)}
+              allExercises={esercizi}
+              onSelectSimilar={(simEx) => setDetailModalExercise(simEx)}
+            />
           )}
         </div>
       )}
