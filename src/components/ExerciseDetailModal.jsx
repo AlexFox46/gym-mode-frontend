@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Dumbbell, ShieldCheck, Sparkles, Layers, Info, ChevronRight, Activity } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Dumbbell, ShieldCheck, Sparkles, Layers, Info, ChevronRight, ChevronLeft, Activity, Play, Pause } from 'lucide-react';
 import { getEnrichedExercise, getSimilarExercises, MUSCLE_COLORS } from '../data/exerciseLibrary';
 
 /**
@@ -29,18 +29,18 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
   };
 
   return (
-    <div className="relative w-full bg-neutral-950 border border-surface-tertiary rounded-3xl p-4 flex flex-col items-center justify-center overflow-hidden shadow-2xl">
+    <div className="relative w-full h-full bg-neutral-950 rounded-2xl p-3 flex flex-col items-center justify-between overflow-hidden">
       {/* Header Label */}
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-1.5 mb-1">
         <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-        <h4 className="text-xs font-black uppercase tracking-widest text-amber-400 font-mono">
+        <h4 className="text-[11px] font-black uppercase tracking-widest text-amber-400 font-mono">
           FOCUS MUSCOLARE
         </h4>
       </div>
 
       {/* SVG Canvas for Dual Body (Front + Back) Silhouettes */}
-      <div className="w-full flex justify-center py-2">
-        <svg viewBox="0 0 240 165" className="w-full max-w-[280px] h-44 drop-shadow-xl select-none">
+      <div className="w-full flex-1 flex items-center justify-center py-1">
+        <svg viewBox="0 0 240 165" className="w-full max-w-[280px] h-36 drop-shadow-2xl select-none">
           {/* ================================================================= */}
           {/* 1. VISTA ANTERIORE (FRONT VIEW - X: 20 to 100) */}
           {/* ================================================================= */}
@@ -51,7 +51,7 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
             </text>
 
             {/* Silhouette Outline Front Body */}
-            <g stroke="#374151" strokeWidth="1.2" fill="#1F2937">
+            <g stroke="#4B5563" strokeWidth="1.2" fill="#1F2937">
               {/* Head */}
               <ellipse cx="60" cy="24" rx="8" ry="10" />
               {/* Neck */}
@@ -68,7 +68,7 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
 
             {/* Petto (Chest) */}
             {(getMuscleColor('Petto')) && (
-              <g fill={getMuscleColor('Petto')} opacity={getMuscleOpacity('Petto')} filter="drop-shadow(0px 0px 4px rgba(249,115,22,0.6))">
+              <g fill={getMuscleColor('Petto')} opacity={getMuscleOpacity('Petto')} filter="drop-shadow(0px 0px 6px rgba(249,115,22,0.9))">
                 <path d="M 47 43 Q 60 46 60 55 Q 47 58 44 47 Z" />
                 <path d="M 73 43 Q 60 46 60 55 Q 73 58 76 47 Z" />
               </g>
@@ -76,7 +76,7 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
 
             {/* Spalle Anteriore (Shoulders) */}
             {(getMuscleColor('Spalle')) && (
-              <g fill={getMuscleColor('Spalle')} opacity={getMuscleOpacity('Spalle')}>
+              <g fill={getMuscleColor('Spalle')} opacity={getMuscleOpacity('Spalle')} filter="drop-shadow(0px 0px 4px rgba(245,158,11,0.8))">
                 <ellipse cx="43" cy="44" rx="5" ry="7" />
                 <ellipse cx="77" cy="44" rx="5" ry="7" />
               </g>
@@ -84,7 +84,7 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
 
             {/* Bicipiti (Biceps) */}
             {(getMuscleColor('Bicipiti')) && (
-              <g fill={getMuscleColor('Bicipiti')} opacity={getMuscleOpacity('Bicipiti')}>
+              <g fill={getMuscleColor('Bicipiti')} opacity={getMuscleOpacity('Bicipiti')} filter="drop-shadow(0px 0px 4px rgba(16,185,129,0.8))">
                 <ellipse cx="37" cy="62" rx="4" ry="7" />
                 <ellipse cx="83" cy="62" rx="4" ry="7" />
               </g>
@@ -92,14 +92,14 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
 
             {/* Addominali (Abs) */}
             {(getMuscleColor('Addominali')) && (
-              <g fill={getMuscleColor('Addominali')} opacity={getMuscleOpacity('Addominali')}>
+              <g fill={getMuscleColor('Addominali')} opacity={getMuscleOpacity('Addominali')} filter="drop-shadow(0px 0px 4px rgba(20,184,166,0.8))">
                 <rect x="52" y="57" width="16" height="22" rx="3" />
               </g>
             )}
 
             {/* Quadricipiti (Quads) */}
             {(getMuscleColor('Quadricipiti')) && (
-              <g fill={getMuscleColor('Quadricipiti')} opacity={getMuscleOpacity('Quadricipiti')}>
+              <g fill={getMuscleColor('Quadricipiti')} opacity={getMuscleOpacity('Quadricipiti')} filter="drop-shadow(0px 0px 5px rgba(236,72,153,0.8))">
                 <path d="M 49 84 Q 59 84 57 116 L 50 116 Z" />
                 <path d="M 71 84 Q 61 84 63 116 L 70 116 Z" />
               </g>
@@ -127,7 +127,7 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
             </text>
 
             {/* Silhouette Outline Back Body */}
-            <g stroke="#374151" strokeWidth="1.2" fill="#1F2937">
+            <g stroke="#4B5563" strokeWidth="1.2" fill="#1F2937">
               {/* Head */}
               <ellipse cx="180" cy="24" rx="8" ry="10" />
               {/* Neck */}
@@ -144,7 +144,7 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
 
             {/* Dorsali / Schiena (Lats) */}
             {(getMuscleColor('Dorsali')) && (
-              <g fill={getMuscleColor('Dorsali')} opacity={getMuscleOpacity('Dorsali')} filter="drop-shadow(0px 0px 4px rgba(59,130,246,0.6))">
+              <g fill={getMuscleColor('Dorsali')} opacity={getMuscleOpacity('Dorsali')} filter="drop-shadow(0px 0px 6px rgba(59,130,246,0.9))">
                 <path d="M 167 45 Q 180 48 179 70 Q 167 67 164 50 Z" />
                 <path d="M 193 45 Q 180 48 181 70 Q 193 67 196 50 Z" />
               </g>
@@ -152,7 +152,7 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
 
             {/* Tricipiti (Triceps) */}
             {(getMuscleColor('Tricipiti')) && (
-              <g fill={getMuscleColor('Tricipiti')} opacity={getMuscleOpacity('Tricipiti')}>
+              <g fill={getMuscleColor('Tricipiti')} opacity={getMuscleOpacity('Tricipiti')} filter="drop-shadow(0px 0px 4px rgba(139,92,246,0.8))">
                 <ellipse cx="157" cy="62" rx="4" ry="7" />
                 <ellipse cx="203" cy="62" rx="4" ry="7" />
               </g>
@@ -175,7 +175,7 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
 
             {/* Glutei (Glutes) */}
             {(getMuscleColor('Glutei')) && (
-              <g fill={getMuscleColor('Glutei')} opacity={getMuscleOpacity('Glutei')}>
+              <g fill={getMuscleColor('Glutei')} opacity={getMuscleOpacity('Glutei')} filter="drop-shadow(0px 0px 5px rgba(249,115,22,0.8))">
                 <ellipse cx="172" cy="89" rx="7" ry="8" />
                 <ellipse cx="188" cy="89" rx="7" ry="8" />
               </g>
@@ -201,16 +201,16 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
       </div>
 
       {/* Muscle Focus Legend / Badges */}
-      <div className="w-full pt-2 border-t border-surface-tertiary/60 flex flex-wrap items-center justify-center gap-2 text-[10px] font-black uppercase">
+      <div className="w-full pt-1.5 border-t border-surface-tertiary/60 flex flex-wrap items-center justify-center gap-1.5 text-[9px] font-black uppercase">
         {/* Primary Target Badge */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-500/20 border border-orange-500/50 text-orange-400">
-          <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+        <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-500/20 border border-orange-500/50 text-orange-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
           <span>Target: <strong>{primaryMuscle}</strong></span>
         </div>
 
         {/* Secondary Muscles Badges */}
         {secondaryMuscles.map((sec, idx) => (
-          <div key={sec} className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-surface-tertiary/80 border border-surface-tertiary text-text-secondary">
+          <div key={sec} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-tertiary/80 border border-surface-tertiary text-text-secondary">
             <span 
               className="w-1.5 h-1.5 rounded-full inline-block" 
               style={{ backgroundColor: secColors[idx % secColors.length] }} 
@@ -224,65 +224,146 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
 };
 
 /**
- * Exercise Illustration Graphic & Real 3D Image Representation
+ * Slideshow Component for Exercise 3D Demonstration + Muscle Focus Map
  */
-const ExerciseIllustration = ({ exercise }) => {
+const ExerciseMediaSlideshow = ({ exercise }) => {
+  const [activeSlide, setActiveSlide] = useState(0); // 0: Esercizio 3D, 1: Focus Muscolare
+  const [currentFrame, setCurrentFrame] = useState(0); // 0 o 1 per l'animazione dell'esercizio
+  const [isPlaying, setIsPlaying] = useState(true);
   const [imgError, setImgError] = useState(false);
-  const primaryColor = MUSCLE_COLORS[exercise.primary_muscle_group] || '#3B82F6';
-  const hasRealImage = exercise.image_url && !imgError;
+
+  const images = exercise.images && exercise.images.length > 0
+    ? exercise.images
+    : (exercise.image_url ? [exercise.image_url, exercise.image_url.replace('/0.jpg', '/1.jpg')] : []);
+
+  const hasImages = images.length > 0 && !imgError;
+
+  // Alternate frames every 1.2s when on 3D Slide
+  useEffect(() => {
+    let timer = null;
+    if (activeSlide === 0 && isPlaying && hasImages && images.length > 1) {
+      timer = setInterval(() => {
+        setCurrentFrame(prev => (prev === 0 ? 1 : 0));
+      }, 1200);
+    }
+    return () => clearInterval(timer);
+  }, [activeSlide, isPlaying, hasImages, images]);
+
+  const activeImgUrl = images[currentFrame] || images[0];
 
   return (
-    <div className="relative w-full h-56 bg-surface-tertiary/40 rounded-3xl border border-surface-tertiary flex flex-col items-center justify-center p-3 overflow-hidden shadow-inner group">
-      <div 
-        className="absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl opacity-20 pointer-events-none"
-        style={{ backgroundColor: primaryColor }}
-      />
-
-      {hasRealImage ? (
-        <div className="relative w-full h-full flex items-center justify-center bg-white/95 rounded-2xl p-2 overflow-hidden shadow-sm">
-          <img 
-            src={exercise.image_url} 
-            alt={exercise.name} 
-            onError={() => setImgError(true)}
-            className="max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
-          />
-          <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full text-[9px] font-bold text-white uppercase tracking-wider">
-            Dimostrazione 3D
-          </div>
+    <div className="relative w-full bg-surface-tertiary/40 rounded-3xl border border-surface-tertiary overflow-hidden shadow-inner flex flex-col">
+      {/* Slideshow Header Tabs */}
+      <div className="flex items-center justify-between p-2 bg-surface-secondary/90 border-b border-surface-tertiary">
+        <div className="flex items-center gap-1 bg-surface p-1 rounded-xl w-full">
+          <button
+            onClick={() => setActiveSlide(0)}
+            className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+              activeSlide === 0 
+                ? 'bg-primary text-black shadow-md' 
+                : 'text-text-secondary hover:text-white'
+            }`}
+          >
+            <Dumbbell size={14} />
+            <span>1. Esercizio 3D</span>
+          </button>
+          
+          <button
+            onClick={() => setActiveSlide(1)}
+            className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+              activeSlide === 1 
+                ? 'bg-amber-400 text-black shadow-md' 
+                : 'text-text-secondary hover:text-white'
+            }`}
+          >
+            <Activity size={14} />
+            <span>2. Focus Muscolare</span>
+          </button>
         </div>
-      ) : (
-        <>
-          {/* Dynamic Equipment Illustration Banner */}
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
-              <Dumbbell size={22} />
-            </div>
-            <div>
-              <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest block">Dimostrazione Grafica</span>
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                {exercise.name}
-              </span>
-            </div>
-          </div>
+      </div>
 
-          {/* Illustrative Geometric Representation */}
-          <div className="w-full max-w-[260px] h-20 bg-surface-tertiary/80 rounded-2xl border border-surface-tertiary/60 flex items-center justify-around px-4 relative">
-            <div className="flex flex-col items-center">
-              <span className="text-[9px] font-black uppercase text-neutral-400">Attrezzo</span>
-              <span className="text-xs font-bold text-primary px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 mt-1">
-                {exercise.equipment}
-              </span>
-            </div>
-            <div className="h-8 w-px bg-surface-tertiary" />
-            <div className="flex flex-col items-center">
-              <span className="text-[9px] font-black uppercase text-neutral-400">Pattern Movimento</span>
-              <span className="text-xs font-bold text-white px-2 py-0.5 rounded-md bg-surface-secondary border border-surface-tertiary mt-1">
-                {exercise.movement_pattern}
-              </span>
-            </div>
+      {/* Slide Body Content */}
+      <div className="relative w-full h-56 p-2 flex items-center justify-center">
+        
+        {/* SLIDE 0: ESERCIZIO 3D */}
+        {activeSlide === 0 && (
+          <div className="w-full h-full flex flex-col items-center justify-center relative">
+            {hasImages ? (
+              <div className="relative w-full h-full flex items-center justify-center bg-white/95 rounded-2xl p-2 overflow-hidden shadow-sm">
+                <img 
+                  src={activeImgUrl} 
+                  alt={exercise.name} 
+                  onError={() => setImgError(true)}
+                  className="max-h-full max-w-full object-contain drop-shadow-md transition-all duration-300"
+                />
+                
+                {/* Frame Switcher Control Overlay */}
+                {images.length > 1 && (
+                  <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center pointer-events-none">
+                    <button 
+                      onClick={() => setIsPlaying(!isPlaying)}
+                      className="pointer-events-auto bg-black/70 hover:bg-black text-white p-1.5 rounded-full backdrop-blur-md transition-colors flex items-center justify-center"
+                      title={isPlaying ? 'Pausa Animazione' : 'Avvia Animazione'}
+                    >
+                      {isPlaying ? <Pause size={12} /> : <Play size={12} />}
+                    </button>
+
+                    <div className="pointer-events-auto bg-black/70 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[9px] font-bold text-white uppercase tracking-wider flex items-center gap-1">
+                      <span>Movimento: </span>
+                      <strong className="text-primary">{currentFrame === 0 ? 'Partenza' : 'Arrivo'}</strong>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center text-center p-4">
+                <Dumbbell size={36} className="text-primary mb-2" />
+                <h4 className="text-xs font-bold text-white mb-1">{exercise.name}</h4>
+                <p className="text-[10px] text-text-secondary">Dimostrazione guidata {exercise.equipment}</p>
+              </div>
+            )}
           </div>
-        </>
-      )}
+        )}
+
+        {/* SLIDE 1: FOCUS MUSCOLARE ANATOMICO */}
+        {activeSlide === 1 && (
+          <MuscleFocusDiagram 
+            primaryMuscle={exercise.primary_muscle_group} 
+            secondaryMuscles={exercise.secondary_muscles} 
+          />
+        )}
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={() => setActiveSlide(prev => (prev === 0 ? 1 : 0))}
+          className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/10 transition-all active:scale-95 z-10"
+        >
+          <ChevronLeft size={18} />
+        </button>
+        
+        <button
+          onClick={() => setActiveSlide(prev => (prev === 0 ? 1 : 0))}
+          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/10 transition-all active:scale-95 z-10"
+        >
+          <ChevronRight size={18} />
+        </button>
+      </div>
+
+      {/* Dots Indicator */}
+      <div className="flex items-center justify-center gap-1.5 pb-2.5">
+        <button
+          onClick={() => setActiveSlide(0)}
+          className={`w-2 h-2 rounded-full transition-all ${
+            activeSlide === 0 ? 'w-5 bg-primary' : 'bg-surface-tertiary'
+          }`}
+        />
+        <button
+          onClick={() => setActiveSlide(1)}
+          className={`w-2 h-2 rounded-full transition-all ${
+            activeSlide === 1 ? 'w-5 bg-amber-400' : 'bg-surface-tertiary'
+          }`}
+        />
+      </div>
     </div>
   );
 };
@@ -323,22 +404,10 @@ export const ExerciseDetailModal = ({ exercise, onClose, allExercises = [], onSe
         {/* Modal Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           
-          {/* 1. Immagine / Grafica Dimostrativa dell'Esercizio */}
-          <ExerciseIllustration exercise={enriched} />
+          {/* 1. Slideshow: Esercizio 3D + Focus Muscolare Anatomico */}
+          <ExerciseMediaSlideshow exercise={enriched} />
 
-          {/* 2. Focus Muscolare Anatomico */}
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Activity size={15} className="text-primary" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-white">Focus Muscolare Target</h3>
-            </div>
-            <MuscleFocusDiagram 
-              primaryMuscle={enriched.primary_muscle_group} 
-              secondaryMuscles={enriched.secondary_muscles}
-            />
-          </div>
-
-          {/* 3. Descrizione dell'Esercizio */}
+          {/* 2. Descrizione dell'Esercizio */}
           <div className="bg-surface-tertiary/40 border border-surface-tertiary/70 rounded-2xl p-4 space-y-2">
             <div className="flex items-center gap-2">
               <Info size={15} className="text-primary" />
@@ -349,7 +418,7 @@ export const ExerciseDetailModal = ({ exercise, onClose, allExercises = [], onSe
             </p>
           </div>
 
-          {/* 4. Guida al Setup ed Esecuzione */}
+          {/* 3. Guida al Setup ed Esecuzione */}
           <div className="bg-surface-tertiary/40 border border-surface-tertiary/70 rounded-2xl p-4 space-y-2">
             <div className="flex items-center gap-2">
               <ShieldCheck size={15} className="text-emerald-400" />
@@ -360,7 +429,7 @@ export const ExerciseDetailModal = ({ exercise, onClose, allExercises = [], onSe
             </p>
           </div>
 
-          {/* 5. Lista Esercizi Simili / Alternativi */}
+          {/* 4. Lista Esercizi Simili / Alternativi */}
           {similarList.length > 0 && (
             <div className="pt-2 border-t border-surface-tertiary/60">
               <div className="flex items-center gap-2 mb-3">

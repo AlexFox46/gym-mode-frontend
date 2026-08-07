@@ -596,6 +596,8 @@ export function getEnrichedExercise(exerciseObjOrName) {
   const baseObj = typeof exerciseObjOrName === 'object' ? exerciseObjOrName : { name: inputName };
 
   if (matched) {
+    const img0 = matched.image_url;
+    const img1 = img0 ? img0.replace('/0.jpg', '/1.jpg') : null;
     return {
       ...baseObj,
       id: baseObj.id || matched.name.toLowerCase().replace(/\s+/g, '-'),
@@ -606,13 +608,15 @@ export function getEnrichedExercise(exerciseObjOrName) {
       secondary_muscles: matched.secondary_muscles || [],
       movement_pattern: matched.movement_pattern || 'Generico',
       default_rest_time: baseObj.default_rest_time || matched.default_rest_time || 90,
-      image_url: matched.image_url,
+      image_url: img0,
+      images: img0 ? [img0, img1] : [],
       description: matched.description,
       setup: matched.setup
     };
   }
 
   // Fallback se l'esercizio non è nel dizionario master
+  const fallbackImg = baseObj.image_url || null;
   return {
     ...baseObj,
     id: baseObj.id || normInput.replace(/\s+/g, '-'),
@@ -623,7 +627,8 @@ export function getEnrichedExercise(exerciseObjOrName) {
     secondary_muscles: baseObj.secondary_muscles || [],
     movement_pattern: baseObj.movement_pattern || 'Generico',
     default_rest_time: baseObj.default_rest_time || 90,
-    image_url: baseObj.image_url || null,
+    image_url: fallbackImg,
+    images: fallbackImg ? [fallbackImg, fallbackImg.replace('/0.jpg', '/1.jpg')] : [],
     description: baseObj.description || `Esercizio di allenamento per il gruppo muscolare ${baseObj.primary_muscle_group || baseObj.muscle || 'target'}.`,
     setup: baseObj.setup || 'Mantieni una postura stabile con la schiena dritta, controlla l’esecuzione sia nella fase concentrica che in quella eccentrica mantenendo costante la respirazione.'
   };
