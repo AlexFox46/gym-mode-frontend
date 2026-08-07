@@ -3,104 +3,221 @@ import { X, Dumbbell, ShieldCheck, Sparkles, Layers, Info, ChevronRight, Activit
 import { getEnrichedExercise, getSimilarExercises, MUSCLE_COLORS } from '../data/exerciseLibrary';
 
 /**
- * Visual SVG Diagram for Target Muscle Group Focus
+ * Visual SVG Diagram for Target Muscle Group Focus (Anterior & Posterior Full-Body Map)
  */
 const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
-  const primaryColor = MUSCLE_COLORS[primaryMuscle] || '#3B82F6';
+  const primaryColor = '#F97316'; // Bright Orange for Primary Target
+  const secColors = ['#FBBF24', '#3B82F6', '#10B981']; // Yellow, Blue, Green for Secondary
+
+  // Muscle mapping helper for SVG highlights
+  const isPrimary = (group) => primaryMuscle === group;
+  const isSecondary = (group) => secondaryMuscles.includes(group);
+
+  const getMuscleColor = (group) => {
+    if (isPrimary(group)) return primaryColor;
+    if (isSecondary(group)) {
+      const idx = secondaryMuscles.indexOf(group);
+      return secColors[idx % secColors.length];
+    }
+    return null;
+  };
+
+  const getMuscleOpacity = (group) => {
+    if (isPrimary(group)) return '0.95';
+    if (isSecondary(group)) return '0.80';
+    return '0';
+  };
 
   return (
-    <div className="relative w-full h-36 bg-surface-tertiary/40 rounded-2xl border border-surface-tertiary p-3 flex items-center justify-center overflow-hidden">
-      {/* Background ambient glow */}
-      <div 
-        className="absolute inset-0 opacity-20 blur-2xl pointer-events-none"
-        style={{ backgroundColor: primaryColor }}
-      />
+    <div className="relative w-full bg-neutral-950 border border-surface-tertiary rounded-3xl p-4 flex flex-col items-center justify-center overflow-hidden shadow-2xl">
+      {/* Header Label */}
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+        <h4 className="text-xs font-black uppercase tracking-widest text-amber-400 font-mono">
+          FOCUS MUSCOLARE
+        </h4>
+      </div>
 
-      <svg viewBox="0 0 200 120" className="w-40 h-full drop-shadow-md">
-        {/* Silhouette Busto Anatomico */}
-        <g stroke="#4B5563" strokeWidth="1.5" fill="none" opacity="0.4">
-          {/* Head & Neck */}
-          <circle cx="100" cy="18" r="10" fill="#374151" />
-          <path d="M 94 28 L 94 36 M 106 28 L 106 36" />
-          {/* Shoulders & Torso Outline */}
-          <path d="M 65 42 Q 100 36 135 42 L 128 85 L 118 115 M 72 85 L 82 115" strokeLinecap="round" />
-          {/* Arms Outline */}
-          <path d="M 65 42 Q 52 65 48 90" strokeLinecap="round" />
-          <path d="M 135 42 Q 148 65 152 90" strokeLinecap="round" />
-        </g>
+      {/* SVG Canvas for Dual Body (Front + Back) Silhouettes */}
+      <div className="w-full flex justify-center py-2">
+        <svg viewBox="0 0 240 165" className="w-full max-w-[280px] h-44 drop-shadow-xl select-none">
+          {/* ================================================================= */}
+          {/* 1. VISTA ANTERIORE (FRONT VIEW - X: 20 to 100) */}
+          {/* ================================================================= */}
+          <g>
+            {/* Front Label */}
+            <text x="60" y="12" fill="#9CA3AF" fontSize="7" fontWeight="bold" textAnchor="middle" letterSpacing="1">
+              ANTERIORE
+            </text>
 
-        {/* Highlighted Primary Muscle Groups */}
-        {primaryMuscle === 'Petto' && (
-          <g fill={primaryColor} opacity="0.85">
-            <path d="M 78 44 Q 100 48 100 58 Q 78 62 74 48 Z" />
-            <path d="M 122 44 Q 100 48 100 58 Q 122 62 126 48 Z" />
+            {/* Silhouette Outline Front Body */}
+            <g stroke="#374151" strokeWidth="1.2" fill="#1F2937">
+              {/* Head */}
+              <ellipse cx="60" cy="24" rx="8" ry="10" />
+              {/* Neck */}
+              <path d="M 56 33 L 56 38 M 64 33 L 64 38" />
+              {/* Torso & Legs Base */}
+              <path d="M 44 42 Q 60 38 76 42 L 72 82 L 68 118 L 62 155 L 58 155 L 52 118 L 48 82 Z" strokeLinejoin="round" />
+              {/* Left Arm */}
+              <path d="M 44 42 Q 34 62 30 90 L 36 92 Q 40 68 46 48 Z" />
+              {/* Right Arm */}
+              <path d="M 76 42 Q 86 62 90 90 L 84 92 Q 80 68 74 48 Z" />
+            </g>
+
+            {/* --- ANTERIOR MUSCLE HIGHLIGHTS --- */}
+
+            {/* Petto (Chest) */}
+            {(getMuscleColor('Petto')) && (
+              <g fill={getMuscleColor('Petto')} opacity={getMuscleOpacity('Petto')} filter="drop-shadow(0px 0px 4px rgba(249,115,22,0.6))">
+                <path d="M 47 43 Q 60 46 60 55 Q 47 58 44 47 Z" />
+                <path d="M 73 43 Q 60 46 60 55 Q 73 58 76 47 Z" />
+              </g>
+            )}
+
+            {/* Spalle Anteriore (Shoulders) */}
+            {(getMuscleColor('Spalle')) && (
+              <g fill={getMuscleColor('Spalle')} opacity={getMuscleOpacity('Spalle')}>
+                <ellipse cx="43" cy="44" rx="5" ry="7" />
+                <ellipse cx="77" cy="44" rx="5" ry="7" />
+              </g>
+            )}
+
+            {/* Bicipiti (Biceps) */}
+            {(getMuscleColor('Bicipiti')) && (
+              <g fill={getMuscleColor('Bicipiti')} opacity={getMuscleOpacity('Bicipiti')}>
+                <ellipse cx="37" cy="62" rx="4" ry="7" />
+                <ellipse cx="83" cy="62" rx="4" ry="7" />
+              </g>
+            )}
+
+            {/* Addominali (Abs) */}
+            {(getMuscleColor('Addominali')) && (
+              <g fill={getMuscleColor('Addominali')} opacity={getMuscleOpacity('Addominali')}>
+                <rect x="52" y="57" width="16" height="22" rx="3" />
+              </g>
+            )}
+
+            {/* Quadricipiti (Quads) */}
+            {(getMuscleColor('Quadricipiti')) && (
+              <g fill={getMuscleColor('Quadricipiti')} opacity={getMuscleOpacity('Quadricipiti')}>
+                <path d="M 49 84 Q 59 84 57 116 L 50 116 Z" />
+                <path d="M 71 84 Q 61 84 63 116 L 70 116 Z" />
+              </g>
+            )}
+
+            {/* Polpacci Anteriore (Calves) */}
+            {(getMuscleColor('Polpacci')) && (
+              <g fill={getMuscleColor('Polpacci')} opacity={getMuscleOpacity('Polpacci')}>
+                <ellipse cx="51" cy="132" rx="3.5" ry="7" />
+                <ellipse cx="69" cy="132" rx="3.5" ry="7" />
+              </g>
+            )}
           </g>
-        )}
 
-        {primaryMuscle === 'Dorsali' && (
-          <g fill={primaryColor} opacity="0.85">
-            <path d="M 72 50 Q 88 52 86 78 Q 72 75 68 56 Z" />
-            <path d="M 128 50 Q 112 52 114 78 Q 128 75 132 56 Z" />
+          {/* Divider Line */}
+          <line x1="120" y1="20" x2="120" y2="150" stroke="#374151" strokeDasharray="3 3" opacity="0.6" />
+
+          {/* ================================================================= */}
+          {/* 2. VISTA POSTERIORE (BACK VIEW - X: 140 to 220) */}
+          {/* ================================================================= */}
+          <g>
+            {/* Back Label */}
+            <text x="180" y="12" fill="#9CA3AF" fontSize="7" fontWeight="bold" textAnchor="middle" letterSpacing="1">
+              POSTERIORE
+            </text>
+
+            {/* Silhouette Outline Back Body */}
+            <g stroke="#374151" strokeWidth="1.2" fill="#1F2937">
+              {/* Head */}
+              <ellipse cx="180" cy="24" rx="8" ry="10" />
+              {/* Neck */}
+              <path d="M 176 33 L 176 38 M 184 33 L 184 38" />
+              {/* Torso & Legs Base */}
+              <path d="M 164 42 Q 180 38 196 42 L 192 82 L 188 118 L 182 155 L 178 155 L 172 118 L 168 82 Z" strokeLinejoin="round" />
+              {/* Left Arm */}
+              <path d="M 164 42 Q 154 62 150 90 L 156 92 Q 160 68 166 48 Z" />
+              {/* Right Arm */}
+              <path d="M 196 42 Q 206 62 210 90 L 204 92 Q 200 68 194 48 Z" />
+            </g>
+
+            {/* --- POSTERIOR MUSCLE HIGHLIGHTS --- */}
+
+            {/* Dorsali / Schiena (Lats) */}
+            {(getMuscleColor('Dorsali')) && (
+              <g fill={getMuscleColor('Dorsali')} opacity={getMuscleOpacity('Dorsali')} filter="drop-shadow(0px 0px 4px rgba(59,130,246,0.6))">
+                <path d="M 167 45 Q 180 48 179 70 Q 167 67 164 50 Z" />
+                <path d="M 193 45 Q 180 48 181 70 Q 193 67 196 50 Z" />
+              </g>
+            )}
+
+            {/* Tricipiti (Triceps) */}
+            {(getMuscleColor('Tricipiti')) && (
+              <g fill={getMuscleColor('Tricipiti')} opacity={getMuscleOpacity('Tricipiti')}>
+                <ellipse cx="157" cy="62" rx="4" ry="7" />
+                <ellipse cx="203" cy="62" rx="4" ry="7" />
+              </g>
+            )}
+
+            {/* Spalle Posteriore */}
+            {(getMuscleColor('Spalle')) && (
+              <g fill={getMuscleColor('Spalle')} opacity={getMuscleOpacity('Spalle')}>
+                <ellipse cx="163" cy="44" rx="5" ry="7" />
+                <ellipse cx="197" cy="44" rx="5" ry="7" />
+              </g>
+            )}
+
+            {/* Lombari (Lower Back) */}
+            {(getMuscleColor('Lombari')) && (
+              <g fill={getMuscleColor('Lombari')} opacity={getMuscleOpacity('Lombari')}>
+                <rect x="173" y="68" width="14" height="14" rx="2" />
+              </g>
+            )}
+
+            {/* Glutei (Glutes) */}
+            {(getMuscleColor('Glutei')) && (
+              <g fill={getMuscleColor('Glutei')} opacity={getMuscleOpacity('Glutei')}>
+                <ellipse cx="172" cy="89" rx="7" ry="8" />
+                <ellipse cx="188" cy="89" rx="7" ry="8" />
+              </g>
+            )}
+
+            {/* Femorali (Hamstrings) */}
+            {(getMuscleColor('Femorali')) && (
+              <g fill={getMuscleColor('Femorali')} opacity={getMuscleOpacity('Femorali')}>
+                <path d="M 169 98 Q 177 98 175 118 L 169 118 Z" />
+                <path d="M 191 98 Q 183 98 185 118 L 191 118 Z" />
+              </g>
+            )}
+
+            {/* Polpacci Posteriore (Calves) */}
+            {(getMuscleColor('Polpacci')) && (
+              <g fill={getMuscleColor('Polpacci')} opacity={getMuscleOpacity('Polpacci')}>
+                <ellipse cx="171" cy="132" rx="4" ry="8" />
+                <ellipse cx="189" cy="132" rx="4" ry="8" />
+              </g>
+            )}
           </g>
-        )}
+        </svg>
+      </div>
 
-        {primaryMuscle === 'Spalle' && (
-          <g fill={primaryColor} opacity="0.85">
-            <ellipse cx="64" cy="42" rx="7" ry="9" />
-            <ellipse cx="136" cy="42" rx="7" ry="9" />
-          </g>
-        )}
+      {/* Muscle Focus Legend / Badges */}
+      <div className="w-full pt-2 border-t border-surface-tertiary/60 flex flex-wrap items-center justify-center gap-2 text-[10px] font-black uppercase">
+        {/* Primary Target Badge */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-500/20 border border-orange-500/50 text-orange-400">
+          <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+          <span>Target: <strong>{primaryMuscle}</strong></span>
+        </div>
 
-        {primaryMuscle === 'Bicipiti' && (
-          <g fill={primaryColor} opacity="0.85">
-            <ellipse cx="56" cy="62" rx="5" ry="8" />
-            <ellipse cx="144" cy="62" rx="5" ry="8" />
-          </g>
-        )}
-
-        {primaryMuscle === 'Tricipiti' && (
-          <g fill={primaryColor} opacity="0.85">
-            <ellipse cx="50" cy="62" rx="5" ry="9" />
-            <ellipse cx="150" cy="62" rx="5" ry="9" />
-          </g>
-        )}
-
-        {(primaryMuscle === 'Quadricipiti' || primaryMuscle === 'Femorali' || primaryMuscle === 'Glutei') && (
-          <g fill={primaryColor} opacity="0.85">
-            <path d="M 78 86 Q 94 86 92 115 L 82 115 Z" />
-            <path d="M 122 86 Q 106 86 108 115 L 118 115 Z" />
-          </g>
-        )}
-
-        {primaryMuscle === 'Addominali' && (
-          <g fill={primaryColor} opacity="0.85">
-            <rect x="88" y="58" width="24" height="26" rx="4" />
-          </g>
-        )}
-
-        {primaryMuscle === 'Polpacci' && (
-          <g fill={primaryColor} opacity="0.85">
-            <ellipse cx="82" cy="110" rx="4" ry="6" />
-            <ellipse cx="118" cy="110" rx="4" ry="6" />
-          </g>
-        )}
-
-        {/* Fallback indicator */}
-        {(!['Petto', 'Dorsali', 'Spalle', 'Bicipiti', 'Tricipiti', 'Quadricipiti', 'Femorali', 'Glutei', 'Addominali', 'Polpacci'].includes(primaryMuscle)) && (
-          <circle cx="100" cy="60" r="16" fill={primaryColor} opacity="0.75" />
-        )}
-      </svg>
-
-      <div className="absolute bottom-2 left-3 right-3 flex justify-between items-center text-[10px] font-black uppercase text-text-secondary">
-        <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: primaryColor }}></span>
-          Target: <strong className="text-white ml-0.5">{primaryMuscle}</strong>
-        </span>
-        {secondaryMuscles.length > 0 && (
-          <span className="text-neutral-400">
-            Sinergici: {secondaryMuscles.join(', ')}
-          </span>
-        )}
+        {/* Secondary Muscles Badges */}
+        {secondaryMuscles.map((sec, idx) => (
+          <div key={sec} className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-surface-tertiary/80 border border-surface-tertiary text-text-secondary">
+            <span 
+              className="w-1.5 h-1.5 rounded-full inline-block" 
+              style={{ backgroundColor: secColors[idx % secColors.length] }} 
+            />
+            <span>{sec}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
