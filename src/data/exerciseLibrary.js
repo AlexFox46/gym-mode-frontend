@@ -57,6 +57,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti', 'Spalle'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 120,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg',
     description: 'Esercizio fondamentale di spinta orizzontale per lo sviluppo del gran pettorale, deltoidi anteriori e tricipiti.',
     setup: 'Sdraiati sulla panca con 5 punti di appoggio (piedi, glutei, spalle, testa). Adduci e deprimi le scapole. Impugna il bilanciere poco più largo delle spalle. Scendi controllato portando la sbarra a sfiorare lo sterno, poi spingi verso l’alto mantenendo l’arco fisiologico.'
   },
@@ -68,6 +69,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Spalle', 'Tricipiti'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press/0.jpg',
     description: 'Variante della panca piana focalizzata sui fasci clavicolari (petto alto) e deltoide anteriore.',
     setup: 'Imposta la panca a 30°-45°. Mantieni le scapole adotte e depresse. Abbassa il bilanciere fino alla parte alta del petto (sotto le clavicole) e spingi estendendo le braccia senza perdere l’assetto scapolare.'
   },
@@ -79,6 +81,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Spalle', 'Tricipiti'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Press/0.jpg',
     description: 'Ottimo esercizio per il petto alto con ampio ROM (Range of Motion) e lavoro stabilizzatore con manubri.',
     setup: 'Panca a 30°. Porta i manubri sulle ginocchia e spingiti indietro per posizionarli al petto. Spingi verso l’alto convergenti senza far toccare i manubri. Mantieni i gomiti leggermente chiusi (a circa 45° rispetto al busto).'
   },
@@ -90,6 +93,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti', 'Spalle'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg',
     description: 'Spinta per il gran pettorale con massimo allungamento e libertà di movimento articolare per le spalle.',
     setup: 'Sdraiati con un manubrio per mano. Gomiti a 45° dal busto, petto ben in fuori. Scendi flettendo i gomiti finché avverti un buon allungamento del petto, poi spingi estendendo le braccia.'
   },
@@ -101,6 +105,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Spalle'],
     movement_pattern: 'Isolamento',
     default_rest_time: 75,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg',
     description: 'Esercizio di isolamento a tensione continua per il pettorale in accorciamento e allungamento.',
     setup: 'Posiziona i carrelli dei cavi in alto o ad altezza spalle. Fai un passo in avanti mantenendo un piede avanzato per stabilità. Busto leggermente inclinato, gomiti semiflessi. Chiudi le braccia davanti a te come nell’atto di abbracciare un tronco.'
   },
@@ -112,6 +117,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti', 'Spalle'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lever_Chest_Press/0.jpg',
     description: 'Esercizio guidato di spinta su macchinario, ideale per lavorare in sicurezza e ad alto sforzo muscolare.',
     setup: 'Regola l’altezza del sedile affinché le impugnature si trovino a livello della metà del petto. Poggia la schiena, adduci le scapole e spingi le maniglie in avanti estendendo i gomiti.'
   },
@@ -123,6 +129,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti', 'Spalle'],
     movement_pattern: 'Spinta Verticale',
     default_rest_time: 120,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Triceps_Version/0.jpg',
     description: 'Esercizio multiarticolare a corpo libero ad alta intensità per pettorali bassi e tricipiti.',
     setup: 'Impugna le sbarre parallele ed estendi le braccia. Per enfatizzare il petto, inclina il busto leggermente in avanti e allarga di poco i gomiti durante la discesa. Scendi finché la spalla scende poco sotto il gomito, poi spingi.'
   },
@@ -134,6 +141,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti', 'Spalle', 'Addominali'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push-Up/0.jpg',
     description: 'Esercizio fondamentale a corpo libero per la forza ed equilibrio della catena cinetica anteriore.',
     setup: 'Mani a terra alla larghezza delle spalle, corpo in plank rigido con glutei e addome contratti. Scendi portando il petto a pochi centimetri da terra, poi spingi tornando in posizione di partenza.'
   },
@@ -145,6 +153,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti', 'Spalle'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Bench_Press/0.jpg',
     description: 'Spinta guidata su guida vincolata per concentrare la tensione sul pettorale escludendo la stabilizzazione.',
     setup: 'Posiziona la panca sotto la barra del multipower al centro dello sterno. Adduci le scapole, sblocca il bilanciere e sfiora il petto durante la fase eccentrica prima di risalire.'
   },
@@ -160,6 +169,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Bicipiti', 'Spalle', 'Addominali'],
     movement_pattern: 'Trazione Verticale',
     default_rest_time: 120,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pull-Up/0.jpg',
     description: 'Esercizio regina a corpo libero per la larghezza e lo spessore del gran dorsale e muscoli della schiena.',
     setup: 'Afferra la sbarra con presa prona poco più larga delle spalle. Inizia il movimento abbassando le scapole (depressione), poi tira il corpo verso l’alto portando il mento sopra la sbarra e i gomiti verso i fianchi.'
   },
@@ -171,6 +181,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Bicipiti', 'Spalle'],
     movement_pattern: 'Trazione Verticale',
     default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/0.jpg',
     description: 'Trazione guidata verticale essenziale per sviluppare la larghezza del dorsale e il controllo scapolare.',
     setup: 'Regola il blocco cosce. Afferra la sbarra larga. Siediti, petto in fuori e busto leggermente inclinato indietro. Tira la sbarra fino al petto portando i gomiti verso il basso e indietro.'
   },
@@ -182,6 +193,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Bicipiti', 'Spalle', 'Lombari'],
     movement_pattern: 'Trazione Orizzontale',
     default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg',
     description: 'Remata al cavo basso per stimolare spessore del dorsale, trapezi medi/inferiori e romboidi.',
     setup: 'Siediti con le ginocchia leggermente flesse. Afferra la maniglia. Mantieni la schiena dritta e il petto aperto. Tira la maniglia verso l’addome chiudendo le scapole indietro.'
   },
@@ -193,6 +205,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Bicipiti', 'Lombari'],
     movement_pattern: 'Trazione Orizzontale',
     default_rest_time: 100,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bent_Over_Barbell_Row/0.jpg',
     description: 'Fondamentale multiarticolare di trazione per costruire densità e spessore in tutta la schiena.',
     setup: 'Fletti le ginocchia e inclina il busto in avanti a 45° mantenendo la schiena neutra. Afferra il bilanciere e tiralo verso l’ombelico spingendo i gomiti indietro.'
   },
@@ -204,6 +217,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Bicipiti', 'Spalle'],
     movement_pattern: 'Trazione Orizzontale',
     default_rest_time: 75,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Dumbbell_Row/0.jpg',
     description: 'Remata unilaterale per correggere asimmetrie ed enfatizzare l’allungamento del gran dorsale.',
     setup: 'Poggia ginocchio e mano omologa sulla panca. Mantieni il busto parallelo al suolo. Tira il manubrio verso l’anca spingendo il gomito indietro verso il soffitto.'
   },
@@ -215,6 +229,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Glutei', 'Femorali', 'Lombari', 'Quadricipiti'],
     movement_pattern: 'Cerniera Anca',
     default_rest_time: 150,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg',
     description: 'Esercizio fondamentale di forza globale che coinvolge l’intera catena cinetica posteriore.',
     setup: 'Posizionati con i piedi a larghezza bacino e il bilanciere a contatto con le tibie. Afferra il bilanciere, compatti i dorsali, alza il petto e spingi via il pavimento estendendo anche e ginocchia in simultanea.'
   },
@@ -230,6 +245,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti', 'Addominali'],
     movement_pattern: 'Spinta Verticale',
     default_rest_time: 120,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Palms-In_Dumbbell_Press/0.jpg',
     description: 'Spinta verticale fondamentale in piedi per forza e massa dei deltoidi e stabilità del core.',
     setup: 'Bilanciere appoggiato sulla parte alta del petto, presa poco più larga delle spalle. Contrai addome e glutei. Spingi il bilanciere verticalmente sopra la testa estendendo completamente le braccia.'
   },
@@ -241,6 +257,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti'],
     movement_pattern: 'Spinta Verticale',
     default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Dumbbell_Press/0.jpg',
     description: 'Spinta da seduto per i deltoidi antero-laterali con ampio range di movimento e lavoro bilanciato.',
     setup: 'Panca a 80-90°. Porta i manubri ad altezza orecchie con i gomiti sotto i polsi. Spingi verso l’alto finché le braccia sono quasi distese sopra la testa.'
   },
@@ -252,6 +269,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Spalle'],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/0.jpg',
     description: 'Isolamento specifico per il capo laterale del deltoide per dare ampiezza alle spalle.',
     setup: 'In piedi o da seduto, busto leggermente inclinato in avanti. Solleva i manubri verso l’esterno portando i gomiti ad altezza spalle, mantenendo una leggera flessione del gomito.'
   },
@@ -263,6 +281,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Spalle'],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Lateral_Raise/0.jpg',
     description: 'Alzate laterali al cavo basso per mantenere costante la tensione muscolare in tutto il ROM.',
     setup: 'Fissa il cavo in basso. Afferra la maniglia con il braccio opposto. Solleva il braccio verso l’esterno fino all’altezza della spalla controllando la fase di discesa.'
   },
@@ -274,6 +293,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Dorsali'],
     movement_pattern: 'Trazione Orizzontale',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg',
     description: 'Esercizio fondamentale per la salute della spalla, deltoide posteriore e rotatori esterni.',
     setup: 'Cavo alto con corda. Afferra la corda con i pollici rivolti indietro. Tira verso il viso (altezza occhi) separando le estremità della corda ed extra-ruotando le omeri.'
   },
@@ -285,6 +305,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti'],
     movement_pattern: 'Spinta Verticale',
     default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lever_Shoulder_Press/0.jpg',
     description: 'Spinta verticale guidata per colpire il deltoide in massima sicurezza e stabilità.',
     setup: 'Regola l’altezza della seduta in modo che le impugnature partano all’altezza delle spalle. Spingi verso l’alto controllando il ritorno.'
   },
@@ -300,6 +321,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Addominali'],
     movement_pattern: 'Isolamento',
     default_rest_time: 75,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg',
     description: 'Classico esercizio di forza per lo sviluppo della massa dei bicipiti brachiali.',
     setup: 'In piedi, impugna il bilanciere (dritto o EZ) a larghezza spalle con palmi in avanti. Gomiti vicini ai fianchi. Fletti i gomiti portando la barra verso le spalle senza oscillare col busto.'
   },
@@ -311,6 +333,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: [],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Biceps_Curl/0.jpg',
     description: 'Esercizio versatile per bicipiti con supinazione del polso durante la fase concentrica.',
     setup: 'In piedi o seduto con un manubrio per mano lungo i fianchi. Fletti un braccio ruotando il palmo verso l’alto (supinazione) mentre sali. Alterna le braccia in modo fluido.'
   },
@@ -322,6 +345,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: [],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Hammer_Curl/0.jpg',
     description: 'Variante con presa neutra (a martello) per sviluppare il brachiale e il brachioradiale (avambraccio).',
     setup: 'Presa neutra con i palmi rivolti verso il corpo. Solleva i manubri mantenendo i pollici in avanti senza ruotare il polso.'
   },
@@ -333,6 +357,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: [],
     movement_pattern: 'Isolamento',
     default_rest_time: 75,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Alternate_Incline_Dumbbell_Curl/0.jpg',
     description: 'Mette in massimo allungamento il capo lungo del bicipite grazie all’estensione della spalla.',
     setup: 'Panca inclinata a 45°-60°. Siediti poggiando completamente la schiena e lascia cadere le braccia all’indietro. Fletti i gomiti mantenendo le spalle ferme indietro.'
   },
@@ -344,6 +369,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: [],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Preacher_Curl/0.jpg',
     description: 'Curl a tensione costante in tutto il range di movimento grazie alla resistenza della carrucola.',
     setup: 'Aggancia la barra dritta o sagomata al cavo basso. Mantieni i gomiti fermi lungo le coste e fletti le braccia fino al punto di massima contrazione.'
   },
@@ -359,6 +385,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: [],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushdown/0.jpg',
     description: 'Esercizio fondamentale di isolamento per i tricipiti con focus sulla contrazione del capo laterale.',
     setup: 'Cavo alto con corda. Busto leggermente inclinato avanti, gomiti incollati ai fianchi. Spingi la corda verso il basso aprendo le estremità a fine corsa.'
   },
@@ -370,6 +397,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: [],
     movement_pattern: 'Isolamento',
     default_rest_time: 75,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Triceps_Press/0.jpg',
     description: 'Esercizio per tricipiti in allungamento su panca, altamente efficace per la massa delle braccia.',
     setup: 'Sdraiati su panca piana con bilanciere EZ. Braccia estese verso il soffitto (inclinati di 15° indietro). Fletti i gomiti portando la sbarra verso la fronte/vertice della testa, poi distendi.'
   },
@@ -381,6 +409,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: [],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Dumbbell_Triceps_Extension/0.jpg',
     description: 'Stira e allena in modo specifico il capo lungo del tricipite in posizione di flessione dell’omero.',
     setup: 'Seduto, impugna un manubrio a due mani dietro la testa. Gomiti alti e puntati in avanti. Distendi le braccia spingendo il manubrio verso l’alto.'
   },
@@ -392,6 +421,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Spalle', 'Petto'],
     movement_pattern: 'Spinta Verticale',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg',
     description: 'Variante accessibile a corpo libero per i tricipiti eseguibile con il supporto di una panca o rialzo.',
     setup: 'Appoggia le mani sul bordo della panca alle spalle del bacino. Gambe distese o piegate davanti a te. Scendi piegando i gomiti a 90° e spingi per risalire.'
   },
@@ -407,6 +437,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Glutei', 'Femorali', 'Lombari', 'Addominali'],
     movement_pattern: 'Accosciata',
     default_rest_time: 150,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg',
     description: 'Re degli esercizi per gli arti inferiori per sviluppo muscolare, forza e stabilità sistemica.',
     setup: 'Bilanciere incastrato sui trapezi (High Bar) o deltoidi posteriori (Low Bar). Piedi a larghezza spalle leggermente extracruotati. Scendi piegando ginocchia ed anca infrangendo il parallelo prima di risalire spingendo col centro del piede.'
   },
@@ -418,6 +449,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Glutei', 'Femorali'],
     movement_pattern: 'Accosciata',
     default_rest_time: 100,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg',
     description: 'Accosciata guidata alla pressa per applicare alti carichi sui quadricipiti senza sovraccaricare la colonna.',
     setup: 'Posiziona i piedi sulla pedana a larghezza bacino. Sblocca le sicure. Scendi piegando le ginocchia verso il petto senza staccare l’osso sacro dallo schienale, poi spingi.'
   },
@@ -429,6 +461,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: [],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg',
     description: 'Esercizio di isolamento puro in accorciamento per il retto femorale e i vasti del quadricipite.',
     setup: 'Regola lo schienale per far coincidere il perno della macchina col ginocchio. Rullo sopra le caviglie. Estendi le gambe contraendo al massimo i quadricipiti prima di scendere piano.'
   },
@@ -440,6 +473,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Glutei', 'Femorali'],
     movement_pattern: 'Accosciata Unilaterale',
     default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Lunges/0.jpg',
     description: 'Esercizio dinamico unilaterale eccezionale per equilibrio, quadricipiti e glutei.',
     setup: 'Manubri lungo i fianchi. Fai un passo in avanti e scendi finché il ginocchio posteriore sfiora il suolo formando due angoli a 90°. Spingi col piede anteriore per avanzare col prossimo passo.'
   },
@@ -455,6 +489,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Glutei', 'Lombari'],
     movement_pattern: 'Cerniera Anca',
     default_rest_time: 100,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg',
     description: 'Fondamentale per la catena posteriore con focus sull’allungamento dinamico degli ischiocrurali (femorali).',
     setup: 'Parti in piedi con il bilanciere. Mantieni le ginocchia sbloccate ma fisse. Spingi il bacino all’indietro inclinando il busto fino ad avvertire forte tensione sui femorali, poi stringi i glutei per risalire.'
   },
@@ -466,6 +501,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Glutei'],
     movement_pattern: 'Isolamento',
     default_rest_time: 75,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/0.jpg',
     description: 'Flessione del ginocchio guidata da sdraiato per l’isolamento diretto dei muscoli ischiocrurali.',
     setup: 'Sdraiati a pancia in giù. Posiziona il rullo poco sotto i polpacci. Mantieni il bacino adeso al lettino e fletti le gambe portando i talloni verso i glutei.'
   },
@@ -477,6 +513,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Femorali', 'Quadricipiti'],
     movement_pattern: 'Cerniera Anca',
     default_rest_time: 120,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Glute_Bridge/0.jpg',
     description: 'Esercizio cardine per la massima ipertrofia e sviluppo di forza del gran gluteo.',
     setup: 'Appoggia le scapole sul bordo di una panca. Posiziona il bilanciere imbottito sulla piega dell’anca. Spingi sui talloni ed estendi il bacino verso l’alto finché il tronco è parallelo al suolo.'
   },
@@ -492,6 +529,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: [],
     movement_pattern: 'Flessione Tronco',
     default_rest_time: 45,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch/0.jpg',
     description: 'Esercizio base per la flessione della colonna e l’isolamento del retto dell’addome.',
     setup: 'Sdraiati sulla schiena con le ginocchia piegate. Mani dietro la nuca senza tirare il collo. Stacca le spalle da terra avvicinando lo sterno al bacino esalando aria.'
   },
@@ -503,6 +541,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Lombari', 'Spalle'],
     movement_pattern: 'Isometria Core',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg',
     description: 'Tenuta isometrica fondamentale per la stabilità ed anti-estensione della colonna vertebrale.',
     setup: 'Appoggia gli avambracci e le punte dei piedi a terra. Corpo in linea retta dalla testa ai talloni. Contrai glutei e addome senza far cedere il bacino verso il basso.'
   },
@@ -514,6 +553,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Femorali'],
     movement_pattern: 'Flessione Bacino',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg',
     description: 'Esercizio intenso in sospensione per il retto addominale e i flessori dell’anca.',
     setup: 'Appesi alla sbarra con le braccia tese. Senza dondolare, solleva le ginocchia o le gambe tese verso il petto retrovertendo il bacino.'
   },
@@ -529,6 +569,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: [],
     movement_pattern: 'Flessione Plantare',
     default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg',
     description: 'Estensione della caviglia in piedi per stimolare il gastrocnemio (gemelli del polpaccio).',
     setup: 'Posiziona gli avampiedi sul gradino e le spalle sotto i cuscinetti. Scendi in massimo allungamento con i talloni in basso, poi sali sulle punte spingendo forte.'
   }
@@ -565,6 +606,7 @@ export function getEnrichedExercise(exerciseObjOrName) {
       secondary_muscles: matched.secondary_muscles || [],
       movement_pattern: matched.movement_pattern || 'Generico',
       default_rest_time: baseObj.default_rest_time || matched.default_rest_time || 90,
+      image_url: matched.image_url,
       description: matched.description,
       setup: matched.setup
     };
@@ -581,6 +623,7 @@ export function getEnrichedExercise(exerciseObjOrName) {
     secondary_muscles: baseObj.secondary_muscles || [],
     movement_pattern: baseObj.movement_pattern || 'Generico',
     default_rest_time: baseObj.default_rest_time || 90,
+    image_url: baseObj.image_url || null,
     description: baseObj.description || `Esercizio di allenamento per il gruppo muscolare ${baseObj.primary_muscle_group || baseObj.muscle || 'target'}.`,
     setup: baseObj.setup || 'Mantieni una postura stabile con la schiena dritta, controlla l’esecuzione sia nella fase concentrica che in quella eccentrica mantenendo costante la respirazione.'
   };

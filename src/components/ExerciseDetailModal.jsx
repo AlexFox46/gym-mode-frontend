@@ -107,47 +107,65 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
 };
 
 /**
- * Exercise Illustration Graphic Representation
+ * Exercise Illustration Graphic & Real 3D Image Representation
  */
 const ExerciseIllustration = ({ exercise }) => {
+  const [imgError, setImgError] = useState(false);
   const primaryColor = MUSCLE_COLORS[exercise.primary_muscle_group] || '#3B82F6';
+  const hasRealImage = exercise.image_url && !imgError;
 
   return (
-    <div className="relative w-full h-44 bg-gradient-to-br from-surface-tertiary/60 to-surface-secondary/90 rounded-3xl border border-surface-tertiary flex flex-col items-center justify-center p-4 overflow-hidden shadow-inner">
+    <div className="relative w-full h-56 bg-surface-tertiary/40 rounded-3xl border border-surface-tertiary flex flex-col items-center justify-center p-3 overflow-hidden shadow-inner group">
       <div 
-        className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl opacity-30 pointer-events-none"
+        className="absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl opacity-20 pointer-events-none"
         style={{ backgroundColor: primaryColor }}
       />
-      
-      {/* Dynamic Equipment Illustration Banner */}
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
-          <Dumbbell size={22} />
-        </div>
-        <div>
-          <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest block">Dimostrazione Grafica</span>
-          <span className="text-xs font-bold text-white flex items-center gap-1.5">
-            {exercise.name}
-          </span>
-        </div>
-      </div>
 
-      {/* Illustrative Geometric Representation */}
-      <div className="w-full max-w-[260px] h-20 bg-surface-tertiary/80 rounded-2xl border border-surface-tertiary/60 flex items-center justify-around px-4 relative">
-        <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black uppercase text-neutral-400">Attrezzo</span>
-          <span className="text-xs font-bold text-primary px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 mt-1">
-            {exercise.equipment}
-          </span>
+      {hasRealImage ? (
+        <div className="relative w-full h-full flex items-center justify-center bg-white/95 rounded-2xl p-2 overflow-hidden shadow-sm">
+          <img 
+            src={exercise.image_url} 
+            alt={exercise.name} 
+            onError={() => setImgError(true)}
+            className="max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full text-[9px] font-bold text-white uppercase tracking-wider">
+            Dimostrazione 3D
+          </div>
         </div>
-        <div className="h-8 w-px bg-surface-tertiary" />
-        <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black uppercase text-neutral-400">Pattern Movimento</span>
-          <span className="text-xs font-bold text-white px-2 py-0.5 rounded-md bg-surface-secondary border border-surface-tertiary mt-1">
-            {exercise.movement_pattern}
-          </span>
-        </div>
-      </div>
+      ) : (
+        <>
+          {/* Dynamic Equipment Illustration Banner */}
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
+              <Dumbbell size={22} />
+            </div>
+            <div>
+              <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest block">Dimostrazione Grafica</span>
+              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                {exercise.name}
+              </span>
+            </div>
+          </div>
+
+          {/* Illustrative Geometric Representation */}
+          <div className="w-full max-w-[260px] h-20 bg-surface-tertiary/80 rounded-2xl border border-surface-tertiary/60 flex items-center justify-around px-4 relative">
+            <div className="flex flex-col items-center">
+              <span className="text-[9px] font-black uppercase text-neutral-400">Attrezzo</span>
+              <span className="text-xs font-bold text-primary px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 mt-1">
+                {exercise.equipment}
+              </span>
+            </div>
+            <div className="h-8 w-px bg-surface-tertiary" />
+            <div className="flex flex-col items-center">
+              <span className="text-[9px] font-black uppercase text-neutral-400">Pattern Movimento</span>
+              <span className="text-xs font-bold text-white px-2 py-0.5 rounded-md bg-surface-secondary border border-surface-tertiary mt-1">
+                {exercise.movement_pattern}
+              </span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
