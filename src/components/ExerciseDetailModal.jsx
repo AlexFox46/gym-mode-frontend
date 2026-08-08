@@ -356,10 +356,21 @@ const ExerciseMediaSlideshow = ({ exercise }) => {
                 )}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center text-center p-4">
-                <Dumbbell size={36} className="text-primary mb-2" />
+              <div className="flex flex-col items-center justify-center text-center p-4 bg-surface-secondary/80 rounded-2xl border border-surface-tertiary w-full h-full">
+                <div className="w-12 h-12 rounded-2xl bg-surface-tertiary/60 flex items-center justify-center text-amber-400 mb-2 border border-surface-tertiary">
+                  <Dumbbell size={24} />
+                </div>
                 <h4 className="text-xs font-bold text-white mb-1">{exercise.name}</h4>
-                <p className="text-[10px] text-text-secondary">Dimostrazione guidata {exercise.equipment}</p>
+                <span className="px-2.5 py-0.5 rounded-full bg-surface-tertiary text-[10px] text-text-secondary font-mono mb-2">
+                  Dimostrazione 3D non disponibile
+                </span>
+                <button
+                  onClick={() => setActiveSlide(1)}
+                  className="text-[10px] font-bold text-amber-400 hover:underline flex items-center gap-1 mt-1"
+                >
+                  <Activity size={12} />
+                  <span>Vedi Focus Muscolare Anatomico →</span>
+                </button>
               </div>
             )}
           </div>

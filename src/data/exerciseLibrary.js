@@ -562,6 +562,18 @@ export const EXERCISE_LIBRARY = [
   // POLPACCI
   // ---------------------------------------------------------------------------
   {
+    name: 'Ab Sling Fallout',
+    aliases: ['ab sling', 'ab fallout', 'sling fallout'],
+    equipment: 'Corpo Libero',
+    primary_muscle_group: 'Addominali',
+    secondary_muscles: ['Lombari', 'Spalle'],
+    movement_pattern: 'Isometria / Estensione Core',
+    default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunches/0.jpg',
+    description: 'Esercizio avanzato per la stabilità del core e la resistenza dell’addome alla distensione.',
+    setup: 'Aggancia le cinghie o gli slings. Mantieni il corpo in posizione di plank rigida. Scendi in estensione controllando il bacino e richiudi contraendo l’addome.'
+  },
+  {
     name: 'Calf Raise in Piedi',
     aliases: ['standing calf raise', 'polpacci in piedi'],
     equipment: 'Macchinario',
@@ -571,7 +583,7 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg',
     description: 'Estensione della caviglia in piedi per stimolare il gastrocnemio (gemelli del polpaccio).',
-    setup: 'Posiziona gli avampiedi sul gradino e le spalle sotto i cuscinetti. Scendi in massimo allungamento con i talloni in basso, poi sali sulle punte spingendo forte.'
+    setup: 'Posiziona gli avampiedi sul gradino e le shoulders sotto i cuscinetti. Scendi in massimo allungamento con i talloni in basso, poi sali sulle punte spingendo forte.'
   }
 ];
 
@@ -598,22 +610,8 @@ export function normalizeMuscleGroup(rawMuscle) {
   return 'Petto';
 }
 
-const MUSCLE_DEFAULT_3D_IMAGES = {
-  'Petto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg',
-  'Dorsali': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/0.jpg',
-  'Spalle': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Shoulder_Press/0.jpg',
-  'Bicipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg',
-  'Tricipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
-  'Quadricipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg',
-  'Femorali': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/0.jpg',
-  'Glutei': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Glute_Bridge/0.jpg',
-  'Addominali': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunches/0.jpg',
-  'Polpacci': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg',
-  'Lombari': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg'
-};
-
 /**
- * Trova o arricchisce i metadati di un esercizio tramite il nome o alias
+ * Trova o arricchisce i metadati di un esercizio tramite il nome o alias (Matching Rigoroso)
  */
 export function getEnrichedExercise(exerciseObjOrName) {
   const inputName = typeof exerciseObjOrName === 'string' 
@@ -625,12 +623,10 @@ export function getEnrichedExercise(exerciseObjOrName) {
     ? (exerciseObjOrName.primary_muscle_group || exerciseObjOrName.muscle || '') 
     : '';
 
-  // 1. Cerca corrispondenza esatta o per parole chiave nella libreria
+  // 1. Cerca corrispondenza RIGOROSA per nome esatto o per alias nella libreria master
   const matched = EXERCISE_LIBRARY.find(item => 
     item.name.toLowerCase() === normInput ||
-    (item.aliases && item.aliases.some(a => a.toLowerCase() === normInput)) ||
-    normInput.includes(item.name.toLowerCase()) ||
-    item.name.toLowerCase().includes(normInput)
+    (item.aliases && item.aliases.some(a => a.toLowerCase() === normInput))
   );
 
   const baseObj = typeof exerciseObjOrName === 'object' ? exerciseObjOrName : { name: inputName };
@@ -655,9 +651,10 @@ export function getEnrichedExercise(exerciseObjOrName) {
     };
   }
 
-  // Normalizza il gruppo muscolare per esercizi da database/custom (es. "Retto Addominale" -> "Addominali")
+  // 2. Fallback per esercizi custom non presenti nella libreria master:
+  // Preserva il gruppo muscolare reale e imposta l'immagine a null anziché assegnare un esercizio errato!
   const normMuscle = normalizeMuscleGroup(rawGroup || normInput);
-  const fallbackImg = baseObj.image_url || MUSCLE_DEFAULT_3D_IMAGES[normMuscle];
+  const fallbackImg = baseObj.image_url || null;
   const fallbackImg1 = fallbackImg ? fallbackImg.replace('/0.jpg', '/1.jpg') : null;
 
   return {
@@ -672,8 +669,8 @@ export function getEnrichedExercise(exerciseObjOrName) {
     default_rest_time: baseObj.default_rest_time || 90,
     image_url: fallbackImg,
     images: fallbackImg ? [fallbackImg, fallbackImg1] : [],
-    description: baseObj.description || `Esercizio specifico focalizzato sullo sviluppo e stimolazione del gruppo muscolare ${normMuscle}.`,
-    setup: baseObj.setup || 'Mantieni una postura stabile con la schiena dritta. Adduci le scapole se necessario, esegui il movimento in modo fluido e controlla sia la fase concentrica che quella di ritorno eccentrico.'
+    description: baseObj.description || `Esercizio specifico focalizzato sullo sviluppo del gruppo muscolare ${normMuscle}.`,
+    setup: baseObj.setup || 'Mantieni una postura stabile con la schiena dritta. Esegui il movimento in modo fluido e controlla sia la fase concentrica che quella eccentrica.'
   };
 }
 
