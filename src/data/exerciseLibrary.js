@@ -1,11 +1,11 @@
 /**
- * LIBRERIA MASTER ESERCIZI GYMMODE - Con RepDB Strict 3-Way Lookup Engine
+ * LIBRERIA MASTER ESERCIZI GYMMODE - 100% RepDB Verificata, Deduplicata ed Estesa
  */
 
 export const EXERCISE_LIBRARY = [
   {
     name: 'Panca Piana',
-    aliases: ["panca piana bilanciere", "bench press", "flat bench press", "barbell bench press"],
+    aliases: ["panca piana bilanciere", "bench press", "flat bench press", "barbell bench press", "panca piana"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Tricipiti", "Spalle"],
@@ -13,11 +13,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 120,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-press-start.webp',
     description: "Esercizio fondamentale di spinta orizzontale per lo sviluppo del gran pettorale, deltoidi anteriori e tricipiti.",
-    setup: "Sdraiati sulla panca con 5 punti di appoggio (piedi, glutei, spalle, testa). Adduci e deprimi le scapole. Impugna il bilanciere poco più largo delle spalle. Scendi controllato portando la sbarra a sfiorare lo sterno, poi spingi verso l’alto mantenendo l’arco fisiologico."
+    setup: "Sdraiati sulla panca con 5 punti di appoggio (piedi, glutei, spalle, testa). Adduci e deprimi le scapole. Impugna il bilanciere poco più largo delle spalle. Scendi controllato portando la sbarra a sfiorare lo sterno, poi spingi verso l'alto mantenendo l'arco fisiologico."
   },
   {
     name: 'Panca Inclinata Bilanciere',
-    aliases: ["panca inclinata", "incline bench press", "panca inclinata bilanciere"],
+    aliases: ["panca inclinata", "incline bench press", "panca inclinata bilanciere", "incline barbell bench press"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Spalle", "Tricipiti"],
@@ -25,11 +25,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-bench-press-start.webp',
     description: "Variante della panca piana focalizzata sui fasci clavicolari (petto alto) e deltoide anteriore.",
-    setup: "Imposta la panca a 30°-45°. Mantieni le scapole adotte e depresse. Abbassa il bilanciere fino alla parte alta del petto (sotto le clavicole) e spingi estendendo le braccia senza perdere l’assetto scapolare."
+    setup: "Imposta la panca a 30°-45°. Mantieni le scapole adotte e depresse. Abbassa il bilanciere fino alla parte alta del petto (sotto le clavicole) e spingi estendendo le braccia senza perdere l'assetto scapolare."
   },
   {
     name: 'Panca Reclinata Bilanciere',
-    aliases: ["panca declinata bilanciere", "decline barbell bench press", "panca declinata"],
+    aliases: ["panca declinata bilanciere", "decline barbell bench press", "panca declinata", "decline bench press"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Tricipiti", "Spalle"],
@@ -41,7 +41,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Spinte Panca Inclinata Manubri',
-    aliases: ["spinte manubri inclinata", "incline dumbbell press", "spinte panca 30 manubri"],
+    aliases: ["spinte manubri inclinata", "incline dumbbell press", "spinte panca 30 manubri", "spinte inclinata manubri", "incline press manubri"],
     equipment: 'Manubri',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Spalle", "Tricipiti"],
@@ -49,11 +49,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-db-press-start.webp',
     description: "Ottimo esercizio per il petto alto con ampio ROM (Range of Motion) e lavoro stabilizzatore con manubri.",
-    setup: "Panca a 30°. Porta i manubri sulle ginocchia e spingiti indietro per posizionarli al petto. Spingi verso l’alto convergenti senza far toccare i manubri. Mantieni i gomiti leggermente chiusi (a circa 45° rispetto al busto)."
+    setup: "Panca a 30°. Porta i manubri sulle ginocchia e spingiti indietro per posizionarli al petto. Spingi verso l'alto convergenti senza far toccare i manubri. Mantieni i gomiti leggermente chiusi (a circa 45° rispetto al busto)."
   },
   {
     name: 'Spinte Panca Piana Manubri',
-    aliases: ["spinte manubri piana", "dumbbell bench press", "spinte piana manubri"],
+    aliases: ["spinte manubri piana", "dumbbell bench press", "spinte piana manubri", "spinte manubri", "db bench press"],
     equipment: 'Manubri',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Tricipiti", "Spalle"],
@@ -65,7 +65,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Croci ai Cavi',
-    aliases: ["croci cavi alti", "cable flyes", "cable crossover", "croci ai cavi alti"],
+    aliases: ["croci cavi alti", "cable flyes", "cable crossover", "croci ai cavi alti", "croci cavi"],
     equipment: 'Cavi',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Spalle"],
@@ -73,11 +73,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 75,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-fly-start.webp',
     description: "Esercizio di isolamento a tensione continua per il pettorale in accorciamento e allungamento.",
-    setup: "Posiziona i carrelli dei cavi in alto o ad altezza spalle. Fai un passo in avanti mantenendo un piede avanzato per stabilità. Busto leggermente inclinato, gomiti semiflessi. Chiudi le braccia davanti a te come nell’atto di abbracciare un tronco."
+    setup: "Posiziona i carrelli dei cavi in alto o ad altezza spalle. Fai un passo in avanti mantenendo un piede avanzato per stabilità. Busto leggermente inclinato, gomiti semiflessi. Chiudi le braccia davanti a te come nell'atto di abbracciare un tronco."
   },
   {
     name: 'Croci Manubri Panca Piana',
-    aliases: ["croci manubri", "dumbbell flyes", "flat dumbbell fly", "croci su panca piana"],
+    aliases: ["croci manubri", "dumbbell flyes", "flat dumbbell fly", "croci su panca piana", "croci manubri piana"],
     equipment: 'Manubri',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Spalle"],
@@ -89,7 +89,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Chest Press',
-    aliases: ["chest press machine", "macchina petto", "chest press cavi"],
+    aliases: ["chest press machine", "macchina petto", "chest press cavi", "chest press macchinario"],
     equipment: 'Macchinario',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Tricipiti", "Spalle"],
@@ -97,11 +97,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-chest-press-start.webp',
     description: "Spinta guidata per il pettorale, ideale per lavorare in sicurezza con carichi elevati o a cedimento.",
-    setup: "Regola l’altezza del sedile affinché le impugnature si trovino all’altezza della parte media del petto. Appoggia bene la schiena allo schienale, deprimi le scapole e spingi le impugnature in avanti in modo controllato."
+    setup: "Regola l'altezza del sedile affinché le impugnature si trovino all'altezza della parte media del petto. Appoggia bene la schiena allo schienale, deprimi le scapole e spingi le impugnature in avanti in modo controllato."
   },
   {
     name: 'Dip alle Parallele',
-    aliases: ["dips", "dip petto", "parallel bar dips", "chest dips"],
+    aliases: ["dips", "dip petto", "parallel bar dips", "chest dips", "dip parallele"],
     equipment: 'Corpo Libero',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Tricipiti", "Spalle"],
@@ -113,7 +113,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Push-Up / Piegamenti',
-    aliases: ["flessioni", "pushups", "piegamenti sulle braccia", "push up"],
+    aliases: ["flessioni", "pushups", "piegamenti sulle braccia", "push up", "piegamenti"],
     equipment: 'Corpo Libero',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Tricipiti", "Addominali", "Spalle"],
@@ -125,7 +125,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Panca Piana Multipower',
-    aliases: ["panca piana smith machine", "smith bench press", "multipower bench press"],
+    aliases: ["panca piana smith machine", "smith bench press", "multipower bench press", "panca multipower"],
     equipment: 'Multipower',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Tricipiti", "Spalle"],
@@ -137,19 +137,19 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Pullover con Manubrio',
-    aliases: ["pullover manubrio", "dumbbell pullover", "pullover petto dorsali"],
+    aliases: ["pullover manubrio", "dumbbell pullover", "pullover petto dorsali", "pullover"],
     equipment: 'Manubri',
     primary_muscle_group: 'Petto',
     secondary_muscles: ["Dorsali", "Tricipiti"],
     movement_pattern: 'Trazione Orizzontale',
     default_rest_time: 75,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/db-pullover-start.webp',
-    description: "Esercizio per l’espansione toracica che sollecita il pettorale e il gran dorsale.",
-    setup: "Sdraiati traversale sulla panca poggiando solo la parte alta delle spalle. Impugna un manubrio a due mani, abbassalo dietro la testa sfiorando l’allungamento e riportalo sopra il petto."
+    description: "Esercizio per l'espansione toracica che sollecita il pettorale e il gran dorsale.",
+    setup: "Sdraiati traversale sulla panca poggiando solo la parte alta delle spalle. Impugna un manubrio a due mani, abbassalo dietro la testa sfiorando l'allungamento e riportalo sopra il petto."
   },
   {
     name: 'Trazioni alla Sbarra',
-    aliases: ["pull up", "pullups", "trazioni pronazione", "trazioni alla sbarra pronate"],
+    aliases: ["pull up", "pullups", "trazioni pronazione", "trazioni alla sbarra pronate", "trazioni"],
     equipment: 'Corpo Libero',
     primary_muscle_group: 'Dorsali',
     secondary_muscles: ["Bicipiti", "Spalle"],
@@ -157,11 +157,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 120,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/pull-up-start.webp',
     description: "Esercizio Re del dorso per lo sviluppo del gran dorsale e della larghezza della schiena.",
-    setup: "Afferra la sbarra con presa pronata (palmi in avanti) poco più larga delle spalle. Parti da braccia estese, deprimi le scapole e trazionati verso l’alto portando il mento oltre la sbarra."
+    setup: "Afferra la sbarra con presa pronata (palmi in avanti) poco più larga delle spalle. Parti da braccia estese, deprimi le scapole e trazionati verso l'alto portando il mento oltre la sbarra."
   },
   {
     name: 'Lat Machine Avanti',
-    aliases: ["lat machine", "lat pulldown", "trazioni lat machine", "lat machine presa larga"],
+    aliases: ["lat machine", "lat pulldown", "trazioni lat machine", "lat machine presa larga", "lat avanti"],
     equipment: 'Cavi',
     primary_muscle_group: 'Dorsali',
     secondary_muscles: ["Bicipiti", "Spalle"],
@@ -169,11 +169,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/lat-pulldown-start.webp',
     description: "Fondamentale esercizio di trazione verticale ai cavi per lo sviluppo in larghezza del gran dorsale.",
-    setup: "Regola i rulli fermagambe. Impugna la sbarra con presa pronata larga. Busto leggermente inclinato all’indietro (15°), petto ben in fuori. Tira la sbarra verso la parte alta del petto guidando con i gomiti verso il basso."
+    setup: "Regola i rulli fermagambe. Impugna la sbarra con presa pronata larga. Busto leggermente inclinato all'indietro (15°), petto ben in fuori. Tira la sbarra verso la parte alta del petto guidando con i gomiti verso il basso."
   },
   {
     name: 'Pulley Basso',
-    aliases: ["pulley", "seated cable row", "rematore al cavo basso", "pulley cavo basso"],
+    aliases: ["pulley", "seated cable row", "rematore al cavo basso", "pulley cavo basso", "pulley presa stretta"],
     equipment: 'Cavi',
     primary_muscle_group: 'Dorsali',
     secondary_muscles: ["Bicipiti", "Spalle", "Trapezi"],
@@ -181,11 +181,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/wide-grip-seated-cable-row-start.webp',
     description: "Esercizio di trazione orizzontale a tensione continua per lo spessore del dorsale e muscoli romboidi.",
-    setup: "Siediti sulla macchina con le ginocchia leggermente flesse e piedi ben piantati sulle pedane. Impugna il manipolo, mantieni la schiena con le curvature fisiologiche e tira l’impugnatura verso l’ombelico chiudendo le scapole."
+    setup: "Siediti sulla macchina con le ginocchia leggermente flesse e piedi ben piantati sulle pedane. Impugna il manipolo, mantieni la schiena con le curvature fisiologiche e tira l'impugnatura verso l'ombelico chiudendo le scapole."
   },
   {
     name: 'Rematore con Bilanciere',
-    aliases: ["rematore bilanciere", "bent over barbell row", "barbell row"],
+    aliases: ["rematore bilanciere", "bent over barbell row", "barbell row", "rematore"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Dorsali',
     secondary_muscles: ["Bicipiti", "Spalle", "Trapezi"],
@@ -193,11 +193,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-row-start.webp',
     description: "Multiarticolare fondamentale per lo spessore e la densità muscolare di tutta la schiena.",
-    setup: "Fletti il busto a circa 45°, schiena dritta e core ben saldo. Impugna il bilanciere a larghezza spalle. Tira la sbarra verso la parte bassa dell’addome guidando con i gomiti in alto e indietro."
+    setup: "Fletti il busto a circa 45°, schiena dritta e core ben saldo. Impugna il bilanciere a larghezza spalle. Tira la sbarra verso la parte bassa dell'addome guidando con i gomiti in alto e indietro."
   },
   {
     name: 'Rematore con Manubrio',
-    aliases: ["rematore un braccio manubrio", "one arm dumbbell row", "rematore manubrio"],
+    aliases: ["rematore un braccio manubrio", "one arm dumbbell row", "rematore manubrio", "rematore manubri"],
     equipment: 'Manubri',
     primary_muscle_group: 'Dorsali',
     secondary_muscles: ["Bicipiti", "Spalle"],
@@ -205,11 +205,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/single-arm-db-row-start.webp',
     description: "Esercizio unilaterale per il gran dorsale con ampio ROM e lavoro mirato per ciascun lato del corpo.",
-    setup: "Appoggia ginocchio e mano dello stesso lato su una panca piana. Con l’altra mano impugna il manubrio. Tira il manubrio verso il fianco portando il gomito verso l’alto e spremendo il dorsale in contrazione."
+    setup: "Appoggia ginocchio e mano dello stesso lato su una panca piana. Con l'altra mano impugna il manubrio. Tira il manubrio verso il fianco portando il gomito verso l'alto e spremendo il dorsale in contrazione."
   },
   {
     name: 'Rematore T-Bar',
-    aliases: ["t-bar row", "rematore a t", "tbar row"],
+    aliases: ["t-bar row", "rematore a t", "tbar row", "t bar row"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Dorsali',
     secondary_muscles: ["Bicipiti", "Spalle"],
@@ -217,11 +217,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/t-bar-row-start.webp',
     description: "Esercizio fondamentale per lo spessore della schiena e dei dorsali.",
-    setup: "Posizionati sopra la barra T-Bar, fletti il busto a 45° mantenendo la schiena dritta. Tira la barra verso l’addome adducendo bene le scapole."
+    setup: "Posizionati sopra la barra T-Bar, fletti il busto a 45° mantenendo la schiena dritta. Tira la barra verso l'addome adducendo bene le scapole."
   },
   {
     name: 'Stacco da Terra',
-    aliases: ["stacco", "deadlift", "barbell deadlift", "stacco convenzionale"],
+    aliases: ["stacco", "deadlift", "barbell deadlift", "stacco convenzionale", "trap bar deadlift", "stacco trap bar", "hex bar deadlift"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Dorsali',
     secondary_muscles: ["Femorali", "Glutei", "Trapezi", "Quadricipiti"],
@@ -233,19 +233,19 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Scrollate con Manubri (Shrugs)',
-    aliases: ["scrollate manubri", "dumbbell shrugs", "shrugs", "scrollate trapezi"],
+    aliases: ["scrollate manubri", "dumbbell shrugs", "shrugs", "scrollate trapezi", "scrollate"],
     equipment: 'Manubri',
     primary_muscle_group: 'Trapezi',
     secondary_muscles: ["Dorsali"],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/db-shrug-start.webp',
-    description: "Esercizio d’isolamento per lo sviluppo e l’ipertrofia del trapezio superiore.",
+    description: "Esercizio d'isolamento per lo sviluppo e l'ipertrofia del trapezio superiore.",
     setup: "In piedi con un manubrio per mano lungo i fianchi. Eleva le spalle verso le orecchie in modo verticale senza ruotare le articolazioni."
   },
   {
     name: 'Military Press',
-    aliases: ["lento avanti", "overhead press", "ohp", "military press bilanciere"],
+    aliases: ["lento avanti", "overhead press", "ohp", "military press bilanciere", "military"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Spalle',
     secondary_muscles: ["Tricipiti", "Petto"],
@@ -254,6 +254,18 @@ export const EXERCISE_LIBRARY = [
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ohp-start.webp',
     description: "Esercizio fondamentale di spinta verticale in piedi per le spalle e la stabilità del core.",
     setup: "Bilanciere in appoggio sulle clavicole. Impugnatura poco più larga delle spalle. Glutei e addominali ben contratti. Spingi la sbarra verticalmente sopra la testa estendendo completamente le braccia."
+  },
+  {
+    name: 'Spinte Sopra la Testa Manubri',
+    aliases: ["military press manubri", "spinte manubri spalle", "seated dumbbell press", "lento manubri", "dumbbell shoulder press", "spinte spalle manubri", "shoulder press manubri"],
+    equipment: 'Manubri',
+    primary_muscle_group: 'Spalle',
+    secondary_muscles: ["Tricipiti"],
+    movement_pattern: 'Spinta Verticale',
+    default_rest_time: 90,
+    image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/seated-db-press-start.webp',
+    description: "Spinta verticale per i deltoidi con manubri, garantisce ottimo ROM e stabilità.",
+    setup: "Seduto su panca verticale (80°-90°). Porta i manubri all'altezza delle orecchie con gomiti a 90°. Spingi verso l'alto senza far toccare i manubri in cima e scendi controllato."
   },
   {
     name: 'Arnold Press',
@@ -265,23 +277,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/arnold-press-start.webp',
     description: "Famosa variante di spinta per le spalle ideata da Arnold Schwarzenegger con rotazione del polso per stimolare tutti e tre i fasci del deltoide.",
-    setup: "Seduto con panca a 90°. Parti con i manubri all’altezza del petto e i palmi rivolti verso di te. Durante la spinta ruota i polsi verso l’esterno completando l’estensione in alto."
-  },
-  {
-    name: 'Spinte Sopra la Testa Manubri',
-    aliases: ["spinte manubri spalle", "seated dumbbell press", "lento manubri"],
-    equipment: 'Manubri',
-    primary_muscle_group: 'Spalle',
-    secondary_muscles: ["Tricipiti"],
-    movement_pattern: 'Spinta Verticale',
-    default_rest_time: 90,
-    image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/seated-db-press-start.webp',
-    description: "Spinta verticale per i deltoidi con manubri, garantisce ottimo ROM e stabilità.",
-    setup: "Seduto su panca verticale (80°-90°). Porta i manubri all’altezza delle orecchie con gomiti a 90°. Spingi verso l’alto senza far toccare i manubri in cima e scendi controllato."
+    setup: "Seduto con panca a 90°. Parti con i manubri all'altezza del petto e i palmi rivolti verso di te. Durante la spinta ruota i polsi verso l'esterno completando l'estensione in alto."
   },
   {
     name: 'Alzate Laterali Manubri',
-    aliases: ["alzate laterali", "lateral raises", "side lateral raise"],
+    aliases: ["alzate laterali", "lateral raises", "side lateral raise", "alzate laterali manubrio"],
     equipment: 'Manubri',
     primary_muscle_group: 'Spalle',
     secondary_muscles: ["Trapezi"],
@@ -289,11 +289,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/lateral-raise-start.webp',
     description: "Esercizio principe di isolamento per il deltoide laterale per dare larghezza alle spalle.",
-    setup: "In piedi con manubri lungo i fianchi. Eleva le braccia verso l’esterno fino ad arrivare all’altezza delle spalle, con gomiti leggermente flessi e pollice leggermente ruotato verso il basso."
+    setup: "In piedi con manubri lungo i fianchi. Eleva le braccia verso l'esterno fino ad arrivare all'altezza delle spalle, con gomiti leggermente flessi e pollice leggermente ruotato verso il basso."
   },
   {
     name: 'Alzate Laterali ai Cavi',
-    aliases: ["alzate laterali cavo", "cable lateral raise"],
+    aliases: ["alzate laterali cavo", "cable lateral raise", "alzate laterali al cavo"],
     equipment: 'Cavi',
     primary_muscle_group: 'Spalle',
     secondary_muscles: ["Trapezi"],
@@ -301,11 +301,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-lateral-raise-start.webp',
     description: "Alzate laterali a tensione costante per il deltoide laterale mediante cavo basso.",
-    setup: "Posizionati di fianco al cavo basso. Impugna la maniglia con il braccio opposto e solleva lateralmente fino all’altezza della spalla mantenendo il controllo."
+    setup: "Posizionati di fianco al cavo basso. Impugna la maniglia con il braccio opposto e solleva lateralmente fino all'altezza della spalla mantenendo il controllo."
   },
   {
     name: 'Alzate Frontali Manubri',
-    aliases: ["alzate frontali", "front raise", "dumbbell front raise"],
+    aliases: ["alzate frontali", "front raise", "dumbbell front raise", "alzate frontali manubrio"],
     equipment: 'Manubri',
     primary_muscle_group: 'Spalle',
     secondary_muscles: ["Petto"],
@@ -313,11 +313,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-front-raise-start.webp',
     description: "Esercizio di isolamento focalizzato sul deltoide anteriore.",
-    setup: "In piedi con manubri poggiati sulle cosce. Solleva un braccio (o entrambi) in avanti fino all’altezza degli occhi mantenendo il gomito quasi disteso."
+    setup: "In piedi con manubri poggiati sulle cosce. Solleva un braccio (o entrambi) in avanti fino all'altezza degli occhi mantenendo il gomito quasi disteso."
   },
   {
     name: 'Face Pull',
-    aliases: ["face pull cavi", "facepulls", "facepull"],
+    aliases: ["face pull cavi", "facepulls", "facepull", "face pull corda"],
     equipment: 'Cavi',
     primary_muscle_group: 'Spalle',
     secondary_muscles: ["Trapezi", "Dorsali"],
@@ -325,11 +325,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/face-pull-start.webp',
     description: "Fisiosanitario ed estetico: stimola il deltoide posteriore, i rotatori esterni e migliora la postura delle spalle.",
-    setup: "Fissa la corda al cavo alto. Impugna la corda con pollici rivolti all’indietro. Tira la corda verso il viso/fronte aprendo i gomiti all’esterno ed extraruotando le spalle."
+    setup: "Fissa la corda al cavo alto. Impugna la corda con pollici rivolti all'indietro. Tira la corda verso il viso/fronte aprendo i gomiti all'esterno ed extraruotando le spalle."
   },
   {
     name: 'Croci Inverse ai Cavi (Rear Delt)',
-    aliases: ["deltoidi posteriori cavi", "rear delt fly", "reverse cable fly"],
+    aliases: ["deltoidi posteriori cavi", "rear delt fly", "reverse cable fly", "croci inverse cavi"],
     equipment: 'Cavi',
     primary_muscle_group: 'Spalle',
     secondary_muscles: ["Dorsali"],
@@ -337,23 +337,23 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/rear-delt-fly-start.webp',
     description: "Esercizio di isolamento specifico per il deltoide posteriore e i muscoli interscapolari.",
-    setup: "Incrocia i cavi alti a braccia tese davanti a te. Apri le braccia verso l’esterno e all’indietro concentrando il lavoro sulla parte posteriore della spalla."
+    setup: "Incrocia i cavi alti a braccia tese davanti a te. Apri le braccia verso l'esterno e all'indietro concentrando il lavoro sulla parte posteriore della spalla."
   },
   {
     name: 'Shoulder Press',
-    aliases: ["shoulder press macchina", "lever shoulder press", "macchina spalle"],
+    aliases: ["shoulder press macchina", "lever shoulder press", "macchina spalle", "shoulder press macchinario"],
     equipment: 'Macchinario',
     primary_muscle_group: 'Spalle',
     secondary_muscles: ["Tricipiti"],
     movement_pattern: 'Spinta Verticale',
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-shoulder-press-start.webp',
-    description: "Spinta guidata per le spalle a macchinario per l’isolamento ed il lavoro in sicurezza.",
-    setup: "Regola il sedile. Impugna le leve all’altezza delle spalle, spingi verso l’alto controllando la discesa senza incassare il collo."
+    description: "Spinta guidata per le spalle a macchinario per l'isolamento ed il lavoro in sicurezza.",
+    setup: "Regola il sedile. Impugna le leve all'altezza delle spalle, spingi verso l'alto controllando la discesa senza incassare il collo."
   },
   {
     name: 'Curl con Bilanciere',
-    aliases: ["curl bilanciere", "barbell curl", "biceps barbell curl"],
+    aliases: ["curl bilanciere", "barbell curl", "biceps barbell curl", "curl bilanciere dritto"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Bicipiti',
     secondary_muscles: ["Avambracci"],
@@ -365,7 +365,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Curl Manubri Alternato',
-    aliases: ["curl manubri", "bicep curl", "dumbbell curl", "curl manubri alternato"],
+    aliases: ["curl manubri", "bicep curl", "dumbbell curl", "curl manubri alternato", "curl bicipiti manubri"],
     equipment: 'Manubri',
     primary_muscle_group: 'Bicipiti',
     secondary_muscles: ["Avambracci"],
@@ -373,11 +373,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bicep-curl-start.webp',
     description: "Classico curl con manubri per lavorare singolarmente sui due bicipiti con supinazione del polso.",
-    setup: "In piedi con un manubrio per mano. Solleva un manubrio alla volta ruotando il polso verso l’esterno durante la salita (supinazione), strizza il bicipite in cima e scendi controllato."
+    setup: "In piedi con un manubrio per mano. Solleva un manubrio alla volta ruotando il polso verso l'esterno durante la salita (supinazione), strizza il bicipite in cima e scendi controllato."
   },
   {
     name: 'Hammer Curl',
-    aliases: ["curl martello", "dumbbell hammer curl", "hammer curls"],
+    aliases: ["curl martello", "dumbbell hammer curl", "hammer curls", "curl a martello"],
     equipment: 'Manubri',
     primary_muscle_group: 'Bicipiti',
     secondary_muscles: ["Avambracci"],
@@ -385,11 +385,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hammer-curl-start.webp',
     description: "Curl a presa neutra per lo sviluppo del brachiale e del brachioradiale (spessore del braccio e avambraccio).",
-    setup: "Impugna i manubri con palmi rivolti l’uno verso l’altro (presa neutra a martello). Fletti i gomiti mantenendo la presa neutra per tutto il movimento."
+    setup: "Impugna i manubri con palmi rivolti l'uno verso l'altro (presa neutra a martello). Fletti i gomiti mantenendo la presa neutra per tutto il movimento."
   },
   {
     name: 'Curl Panca Inclinata',
-    aliases: ["curl manubri panca inclinata", "incline dumbbell curl"],
+    aliases: ["curl manubri panca inclinata", "incline dumbbell curl", "curl inclinata manubri"],
     equipment: 'Manubri',
     primary_muscle_group: 'Bicipiti',
     secondary_muscles: ["Avambracci"],
@@ -397,11 +397,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 75,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-db-curl-start.webp',
     description: "Esercizio in massimo allungamento per il capo lungo del bicipite brachiale.",
-    setup: "Siediti su panca inclinata a 45°-60°. Lascia cadere le braccia all’indietro verticalmente. Fletti i gomiti senza portare in avanti la spalla."
+    setup: "Siediti su panca inclinata a 45°-60°. Lascia cadere le braccia all'indietro verticalmente. Fletti i gomiti senza portare in avanti la spalla."
   },
   {
     name: 'Curl Panca Scott (Preacher Curl)',
-    aliases: ["panca scott", "preacher curl", "curl bilanciere sagomato scott"],
+    aliases: ["panca scott", "preacher curl", "curl bilanciere sagomato scott", "scott curl"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Bicipiti',
     secondary_muscles: ["Avambracci"],
@@ -409,23 +409,23 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 75,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/preacher-curl-start.webp',
     description: "Esercizio classico su panca Scott per il massimo isolamento del capo breve del bicipite brachiale.",
-    setup: "Poggia le braccia sul cuscino della panca Scott. Impugna il bilanciere EZ e fletti le avambracci verso l’alto senza staccare i gomiti dal supporto."
+    setup: "Poggia le braccia sul cuscino della panca Scott. Impugna il bilanciere EZ e fletti le avambracci verso l'alto senza staccare i gomiti dal supporto."
   },
   {
     name: 'Curl Concentrato Manubrio',
-    aliases: ["curl concentrato", "concentration curl"],
+    aliases: ["curl concentrato", "concentration curl", "curl concentrato manubrio"],
     equipment: 'Manubri',
     primary_muscle_group: 'Bicipiti',
     secondary_muscles: ["Avambracci"],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/concentration-curl-start.webp',
-    description: "Esercizio d’isolamento che elimina qualsiasi compenso del corpo per il bicipite.",
-    setup: "Seduto su panca con il gomito poggiato contro l’interno coscia. Fletti il manubrio verso la spalla strizzando il bicipite nel punto di massima contrazione."
+    description: "Esercizio d'isolamento che elimina qualsiasi compenso del corpo per il bicipite.",
+    setup: "Seduto su panca con il gomito poggiato contro l'interno coscia. Fletti il manubrio verso la spalla strizzando il bicipite nel punto di massima contrazione."
   },
   {
     name: 'Curl ai Cavi',
-    aliases: ["curl cavo basso", "cable bicep curl", "cable curl"],
+    aliases: ["curl cavo basso", "cable bicep curl", "cable curl", "curl ai cavi bassi"],
     equipment: 'Cavi',
     primary_muscle_group: 'Bicipiti',
     secondary_muscles: ["Avambracci"],
@@ -437,19 +437,19 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Pushdown Cavi con Corda',
-    aliases: ["pushdown corda", "tricep pushdown", "pushdown cavi"],
+    aliases: ["pushdown corda", "tricep pushdown", "pushdown cavi", "pushdown tricipiti corda", "pushdown"],
     equipment: 'Cavi',
     primary_muscle_group: 'Tricipiti',
     secondary_muscles: [],
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/tricep-pushdown-start.webp',
-    description: "Esercizio base ai cavi per l’isolamento del tricipite con focus sul capo laterale e medio.",
+    description: "Esercizio base ai cavi per l'isolamento del tricipite con focus sul capo laterale e medio.",
     setup: "Impugna la corda al cavo alto. Gomiti bloccati ai lati del costato. Estendi le braccia verso il basso aprendo la corda a fine corsa."
   },
   {
     name: 'French Press',
-    aliases: ["french press panca", "lying triceps extension", "skull crusher"],
+    aliases: ["french press panca", "lying triceps extension", "skull crusher", "french press bilanciere", "skullcrusher"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Tricipiti',
     secondary_muscles: [],
@@ -461,7 +461,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Estensioni Sopra la Testa Manubrio',
-    aliases: ["french press manubrio", "overhead triceps extension", "estensioni tricipiti sopra testa"],
+    aliases: ["tricep extension", "triceps extension", "tricep extension manubrio", "french press manubrio", "overhead triceps extension", "estensioni tricipiti sopra testa", "estensione tricipiti sopra la testa", "estensione tricipiti manubrio"],
     equipment: 'Manubri',
     primary_muscle_group: 'Tricipiti',
     secondary_muscles: [],
@@ -470,6 +470,18 @@ export const EXERCISE_LIBRARY = [
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/single-arm-dumbbell-overhead-tricep-extension-start.webp',
     description: "Estensione sopra la testa per sollecitare in massimo allungamento il capo lungo del tricipite.",
     setup: "Seduto o in piedi. Impugna un manubrio sopra la testa con entrambe le mani (o a un braccio). Abbassa il manubrio dietro il collo flettendo i gomiti e poi riestendi."
+  },
+  {
+    name: 'Kickback Manubrio',
+    aliases: ["kickback tricipiti", "dumbbell kickback", "kickback manubrio", "kickback"],
+    equipment: 'Manubri',
+    primary_muscle_group: 'Tricipiti',
+    secondary_muscles: [],
+    movement_pattern: 'Isolamento',
+    default_rest_time: 60,
+    image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/single-arm-dumbbell-overhead-tricep-extension-start.webp',
+    description: "Esercizio di isolamento per la contrazione di picco del tricipite.",
+    setup: "Poggia ginocchio e mano su una panca piana. Mantieni il gomito dell'altro braccio parallelo al busto ed estendi l'avambraccio all'indietro."
   },
   {
     name: 'Dip su Panca',
@@ -485,7 +497,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Squat con Bilanciere',
-    aliases: ["squat", "barbell squat", "back squat", "squat bilanciere"],
+    aliases: ["squat", "barbell squat", "back squat", "squat bilanciere", "hex bar jump squat", "jump squat", "trap bar jump squat"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Quadricipiti',
     secondary_muscles: ["Glutei", "Femorali", "Addominali"],
@@ -505,7 +517,7 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 120,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hack-squat-start.webp',
     description: "Ottimo macchinario guidato per il lavoro ad alta intensità sui quadricipiti con schiena totalmente supportata.",
-    setup: "Posizionati sullo schienale dell’Hack Squat con le spalle sotto i cuscinetti. Sblocca i fermi e scendi flettendo le ginocchia fin sotto i 90°, poi spingi per risalire."
+    setup: "Posizionati sullo schienale dell'Hack Squat con le spalle sotto i cuscinetti. Sblocca i fermi e scendi flettendo le ginocchia fin sotto i 90°, poi spingi per risalire."
   },
   {
     name: 'Front Squat Bilanciere',
@@ -521,7 +533,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Leg Press',
-    aliases: ["pressa 45", "leg press machine", "pressa per gambe"],
+    aliases: ["pressa 45", "leg press machine", "pressa per gambe", "horizontal leg press", "single leg press"],
     equipment: 'Macchinario',
     primary_muscle_group: 'Quadricipiti',
     secondary_muscles: ["Glutei", "Femorali"],
@@ -533,7 +545,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Leg Extension',
-    aliases: ["leg extension machine", "estensioni gambe"],
+    aliases: ["leg extension machine", "estensioni gambe", "leg extension"],
     equipment: 'Macchinario',
     primary_muscle_group: 'Quadricipiti',
     secondary_muscles: [],
@@ -541,7 +553,7 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/leg-extension-start.webp',
     description: "Esercizio di isolamento puro per i quadricipiti e il retto femorale.",
-    setup: "Regola il rullo sopra le caviglie. Siediti con la schiena appoggiata. Estendi le gambe verso l’alto fino a completare la distensione della ginocchio, mantieni 1 secondo di contrazione di picco e scendi controllato."
+    setup: "Regola il rullo sopra le caviglie. Siediti con la schiena appoggiata. Estendi le gambe verso l'alto fino a completare la distensione della ginocchio, mantieni 1 secondo di contrazione di picco e scendi controllato."
   },
   {
     name: 'Bulgarian Split Squat',
@@ -553,11 +565,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bulgarian-split-squat-start.webp',
     description: "Esercizio unilaterale eccezionale per lo sviluppo di quadricipiti, glutei ed equilibrio articolare.",
-    setup: "Posiziona il collo di un piede indietro su una panca. Con l’altro piede avanzato, scendi piegando la gamba anteriore fino a formare un angolo di 90°, poi risali."
+    setup: "Posiziona il collo di un piede indietro su una panca. Con l'altro piede avanzato, scendi piegando la gamba anteriore fino a formare un angolo di 90°, poi risali."
   },
   {
     name: 'Affondi Deambulanti',
-    aliases: ["affondi manubri", "walking lunges", "affondi in avanzamento"],
+    aliases: ["affondi manubri", "walking lunges", "affondi in avanzamento", "affondi"],
     equipment: 'Manubri',
     primary_muscle_group: 'Quadricipiti',
     secondary_muscles: ["Glutei", "Femorali"],
@@ -569,19 +581,19 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Stacco Rumeno',
-    aliases: ["romanian deadlift", "rdl", "stacco gambe semitese"],
+    aliases: ["romanian deadlift", "rdl", "stacco gambe semitese", "stacco rumeno bilanciere"],
     equipment: 'Bilanciere',
     primary_muscle_group: 'Femorali',
     secondary_muscles: ["Glutei", "Dorsali"],
     movement_pattern: 'Hinge (Cerniera Anca)',
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/romanian-deadlift-start.webp',
-    description: "Esercizio d’eccellenza per la catena posteriore con focus su femorali e glutei in allungamento.",
+    description: "Esercizio d'eccellenza per la catena posteriore con focus su femorali e glutei in allungamento.",
     setup: "Parti in piedi con bilanciere in mano. Fletti leggermente le ginocchia e spingi indietro il bacino facendo scorrere il bilanciere vicino alle cosce fin sotto le ginocchia, avvertendo il massimo allungamento dei femorali, poi risali."
   },
   {
     name: 'Leg Curl Sdraiato',
-    aliases: ["leg curl", "lying leg curl", "leg curl pronato"],
+    aliases: ["leg curl", "lying leg curl", "leg curl pronato", "leg curl sdraiato"],
     equipment: 'Macchinario',
     primary_muscle_group: 'Femorali',
     secondary_muscles: ["Polpacci"],
@@ -601,11 +613,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 90,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hip-thrust-start.webp',
     description: "Il miglior esercizio per la massima ipertrofia e forza del grande gluteo.",
-    setup: "Appoggia le scapole sul bordo di una panca piana con un bilanciere gommato sul bacino. Piedi a terra a larghezza spalle. Spingi con i glutei verso l’alto estendendo completamente l’anca fino ad allineare cosce e busto."
+    setup: "Appoggia le scapole sul bordo di una panca piana con un bilanciere gommato sul bacino. Piedi a terra a larghezza spalle. Spingi con i glutei verso l'alto estendendo completamente l'anca fino ad allineare cosce e busto."
   },
   {
     name: 'Crunch a Terra',
-    aliases: ["crunch addominali", "crunches", "ab crunch"],
+    aliases: ["crunch addominali", "crunches", "ab crunch", "crunch"],
     equipment: 'Corpo Libero',
     primary_muscle_group: 'Addominali',
     secondary_muscles: [],
@@ -629,7 +641,7 @@ export const EXERCISE_LIBRARY = [
   },
   {
     name: 'Leg Raise alla Sbarra',
-    aliases: ["hanging leg raise", "sollevamento gambe sbarra", "leg raise sbarra"],
+    aliases: ["hanging leg raise", "sollevamento gambe sbarra", "leg raise sbarra", "leg raise"],
     equipment: 'Corpo Libero',
     primary_muscle_group: 'Addominali',
     secondary_muscles: ["Avambracci"],
@@ -648,7 +660,7 @@ export const EXERCISE_LIBRARY = [
     movement_pattern: 'Isolamento',
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-crunch-start.webp',
-    description: "Esercizio a carico progressivo per l’ipertrofia della parete addominale (retto dell’addome).",
+    description: "Esercizio a carico progressivo per l'ipertrofia della parete addominale (retto dell'addome).",
     setup: "Inginocchiati di fronte a un cavo alto con la corda. Impugna le estremità della corda ai lati della testa e arriccia il busto verso il basso contraendo gli addominali."
   },
   {
@@ -661,11 +673,11 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 75,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ab-wheel-rollout-start.webp',
     description: "Esercizio ad altissimo ingaggio della parete addominale per la resistenza anti-estensione della colonna.",
-    setup: "Inginocchiati a terra impugnando le maniglie della ruota (o delle cinghie). Mantieni l’addome contratto ed estendi lentamente il corpo in avanti controllando la discesa."
+    setup: "Inginocchiati a terra impugnando le maniglie della ruota (o delle cinghie). Mantieni l'addome contratto ed estendi lentamente il corpo in avanti controllando la discesa."
   },
   {
     name: 'Calf Raise in Piedi',
-    aliases: ["standing calf raise", "polpacci in piedi", "calf raise bilanciere"],
+    aliases: ["standing calf raise", "polpacci in piedi", "calf raise bilanciere", "calf raise"],
     equipment: 'Macchinario',
     primary_muscle_group: 'Polpacci',
     secondary_muscles: [],
@@ -673,12 +685,12 @@ export const EXERCISE_LIBRARY = [
     default_rest_time: 60,
     image_url: 'https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/standing-calf-raise-start.webp',
     description: "Esercizio di isolamento per il gastrocnemio (polpaccio).",
-    setup: "Posiziona l’avampiede sul gradino con i talloni nel vuoto. Estendi le caviglie spingendo sulle punte dei piedi in alto, mantieni la contrazione in cima e scendi fino al massimo allungamento."
+    setup: "Posiziona l'avampiede sul gradino con i talloni nel vuoto. Estendi le caviglie spingendo sulle punte dei piedi in alto, mantieni la contrazione in cima e scendi fino al massimo allungamento."
   },
 ];
 
 /**
- * CATALOGO COMPLETO REPDB CON METADATI RIGOROSI PER ATTREZZATURA E MUSCOLI
+ * CATALOGO COMPLETO REPDB (400 Esercizi)
  */
 export const REPDB_FULL_CATALOG = [
   {
@@ -4341,10 +4353,7 @@ export function normalizeMuscleGroup(rawGroup) {
 }
 
 /**
- * Trova un esercizio RepDB SOLO SE c'è corrispondenza RIGOROSA A 3 VIE su:
- * 1. Attrezzatura (es. Cavi vs Cavi, Manubri vs Manubri)
- * 2. Gruppo Muscolare (es. Petto vs Petto)
- * 3. Nome / Azione del movimento
+ * Trova un esercizio RepDB per qualsiasi nome di esercizio sconosciuto
  */
 export function findMatchingRepDBExercise(inputName, targetEquipment, targetMuscleGroup) {
   if (!inputName || typeof inputName !== 'string') return null;
@@ -4363,12 +4372,12 @@ export function findMatchingRepDBExercise(inputName, targetEquipment, targetMusc
   let maxScore = 0;
 
   for (const item of REPDB_FULL_CATALOG) {
-    // 1. FILTRO RIGOROSO ATTREZZATURA: Se l'esercizio è ai cavi e RepDB è corpo libero o manubri -> SCARTA!
+    // 1. FILTRO ATTREZZATURA: Se l'esercizio è ai cavi e RepDB è corpo libero -> SCARTA!
     if (allowedRepdbEquip && !allowedRepdbEquip.some(eq => item.raw_equipment && item.raw_equipment.includes(eq))) {
       continue;
     }
 
-    // 2. FILTRO RIGOROSO MUSCOLO: Se l'esercizio è per Petto e RepDB è Dorsali -> SCARTA!
+    // 2. FILTRO MUSCOLO: Se l'esercizio è per Petto e RepDB è Dorsali -> SCARTA!
     if (allowedRepdbMuscles && !allowedRepdbMuscles.some(m => item.raw_body_part && item.raw_body_part.includes(m))) {
       continue;
     }
@@ -4389,7 +4398,6 @@ export function findMatchingRepDBExercise(inputName, targetEquipment, targetMusc
     }
   }
 
-  // Richiede un punteggio di confidenza minimo di 4 per evitare immagini fuorvianti
   return maxScore >= 4 ? bestMatch : null;
 }
 
@@ -4439,7 +4447,7 @@ export function getEnrichedExercise(exerciseObjOrName) {
     };
   }
 
-  // 2. Matching Dinamico RIGOROSO A 3 VIE (Nome + Attrezzatura + Muscolo)
+  // 2. Matching Dinamico RepDB
   const normMuscle = normalizeMuscleGroup(rawGroup || normInput);
   const repdbMatch = findMatchingRepDBExercise(inputName, rawEquipment, normMuscle);
 
