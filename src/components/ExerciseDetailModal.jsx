@@ -284,13 +284,16 @@ export const ExerciseDetailModal = ({ exercise, onClose, allExercises = [], onSe
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-surface-tertiary bg-surface-secondary">
+        <div className="p-4 border-t border-surface-tertiary bg-surface-secondary text-center space-y-2">
           <button
             onClick={onClose}
             className="w-full py-3 rounded-2xl bg-surface-tertiary hover:bg-surface-tertiary/80 text-white font-bold text-xs uppercase tracking-wider transition-colors"
           >
             Chiudi Dettaglio
           </button>
+          <div className="text-[10px] text-text-tertiary">
+            Illustrazioni esecuzione a cura di <a href="https://repdb.co" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">RepDB</a>
+          </div>
         </div>
 
       </div>
