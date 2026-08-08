@@ -258,3 +258,5 @@ export const bodyBack = [
     },
   },
 ];
+
+export const BODY_BACK_PATHS = bodyBack;

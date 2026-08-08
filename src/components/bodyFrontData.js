@@ -315,3 +315,5 @@ export const bodyFront = [
     },
   },
 ];
+
+export const BODY_FRONT_PATHS = bodyFront;
