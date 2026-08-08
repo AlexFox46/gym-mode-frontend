@@ -2,12 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { X, Dumbbell, ShieldCheck, Sparkles, Layers, Info, ChevronRight, ChevronLeft, Activity, Play, Pause } from 'lucide-react';
 import { getEnrichedExercise, getSimilarExercises, MUSCLE_COLORS } from '../data/exerciseLibrary';
 
+export const MUSCLE_MAP_IMAGES = {
+  'Petto': '/muscles/petto.png',
+  'Dorsali': '/muscles/dorsali.png',
+  'Spalle': '/muscles/spalle.png',
+  'Bicipiti': '/muscles/bicipiti.png',
+  'Addominali': '/muscles/addominali.png',
+  'Trapezi': '/muscles/trapezi.png',
+  'Tricipiti': '/muscles/dorsali.png'
+};
+
 /**
- * Visual SVG Diagram for Target Muscle Group Focus (Anterior & Posterior Full-Body Map)
+ * Visual SVG & Anatomical Image Diagram for Target Muscle Group Focus
  */
 const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
+  const [imgError, setImgError] = useState(false);
   const primaryColor = '#F97316'; // Bright Orange for Primary Target
   const secColors = ['#FBBF24', '#3B82F6', '#10B981']; // Yellow, Blue, Green for Secondary
+
+  const realMuscleImage = MUSCLE_MAP_IMAGES[primaryMuscle];
+  const showRealImage = realMuscleImage && !imgError;
 
   // Muscle mapping helper for SVG highlights
   const isPrimary = (group) => primaryMuscle === group;
@@ -29,18 +43,28 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
   };
 
   return (
-    <div className="relative w-full h-full bg-neutral-950 rounded-2xl p-3 flex flex-col items-center justify-between overflow-hidden">
+    <div className="relative w-full h-full bg-neutral-950 rounded-2xl p-2 flex flex-col items-center justify-between overflow-hidden">
       {/* Header Label */}
-      <div className="flex items-center gap-1.5 mb-1">
-        <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+      <div className="flex items-center gap-1.5 mb-1 z-10">
+        <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
         <h4 className="text-[11px] font-black uppercase tracking-widest text-amber-400 font-mono">
-          FOCUS MUSCOLARE
+          FOCUS MUSCOLARE - {primaryMuscle.toUpperCase()}
         </h4>
       </div>
 
-      {/* SVG Canvas for Dual Body (Front + Back) Silhouettes */}
-      <div className="w-full flex-1 flex items-center justify-center py-1">
-        <svg viewBox="0 0 240 165" className="w-full max-w-[280px] h-36 drop-shadow-2xl select-none">
+      {/* Main Visual Display: Real Anatomical Image or SVG Canvas */}
+      <div className="w-full flex-1 flex items-center justify-center relative overflow-hidden py-1">
+        {showRealImage ? (
+          <div className="relative w-full h-full flex items-center justify-center p-1">
+            <img 
+              src={realMuscleImage} 
+              alt={`Anatomia ${primaryMuscle}`} 
+              onError={() => setImgError(true)}
+              className="max-h-full max-w-full object-contain filter drop-shadow-[0_0_12px_rgba(239,68,68,0.5)] transition-transform duration-300 hover:scale-105"
+            />
+          </div>
+        ) : (
+          <svg viewBox="0 0 240 165" className="w-full max-w-[280px] h-36 drop-shadow-2xl select-none">
           {/* ================================================================= */}
           {/* 1. VISTA ANTERIORE (FRONT VIEW - X: 20 to 100) */}
           {/* ================================================================= */}
@@ -198,6 +222,7 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
             )}
           </g>
         </svg>
+        )}
       </div>
 
       {/* Muscle Focus Legend / Badges */}
