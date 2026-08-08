@@ -25,6 +25,10 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
   const primaryColor = '#F97316'; // Bright Orange for Primary Target
   const secColors = ['#FBBF24', '#3B82F6', '#10B981']; // Yellow, Blue, Green for Secondary
 
+  useEffect(() => {
+    setImgError(false);
+  }, [primaryMuscle]);
+
   const normMuscle = normalizeMuscleGroup(primaryMuscle);
   const realMuscleImage = MUSCLE_MAP_IMAGES[normMuscle] || '/muscles/addominali.png';
   const showRealImage = realMuscleImage && !imgError;
@@ -262,6 +266,11 @@ const ExerciseMediaSlideshow = ({ exercise }) => {
   const [currentFrame, setCurrentFrame] = useState(0); // 0 o 1 per l'animazione dell'esercizio
   const [isPlaying, setIsPlaying] = useState(true);
   const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+    setCurrentFrame(0);
+  }, [exercise]);
 
   const images = exercise.images && exercise.images.length > 0
     ? exercise.images

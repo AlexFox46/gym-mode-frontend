@@ -69,7 +69,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Spalle', 'Tricipiti'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 90,
-    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press/0.jpg',
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
     description: 'Variante della panca piana focalizzata sui fasci clavicolari (petto alto) e deltoide anteriore.',
     setup: 'Imposta la panca a 30°-45°. Mantieni le scapole adotte e depresse. Abbassa il bilanciere fino alla parte alta del petto (sotto le clavicole) e spingi estendendo le braccia senza perdere l’assetto scapolare.'
   },
@@ -117,7 +117,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti', 'Spalle'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 90,
-    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lever_Chest_Press/0.jpg',
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Chest_Press/0.jpg',
     description: 'Esercizio guidato di spinta su macchinario, ideale per lavorare in sicurezza e ad alto sforzo muscolare.',
     setup: 'Regola l’altezza del sedile affinché le impugnature si trovino a livello della metà del petto. Poggia la schiena, adduci le scapole e spingi le maniglie in avanti estendendo i gomiti.'
   },
@@ -141,7 +141,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti', 'Spalle', 'Addominali'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 60,
-    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push-Up/0.jpg',
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Push-Up/0.jpg',
     description: 'Esercizio fondamentale a corpo libero per la forza ed equilibrio della catena cinetica anteriore.',
     setup: 'Mani a terra alla larghezza delle spalle, corpo in plank rigido con glutei e addome contratti. Scendi portando il petto a pochi centimetri da terra, poi spingi tornando in posizione di partenza.'
   },
@@ -153,7 +153,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Tricipiti', 'Spalle'],
     movement_pattern: 'Spinta Orizzontale',
     default_rest_time: 90,
-    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Bench_Press/0.jpg',
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Smith_Press/0.jpg',
     description: 'Spinta guidata su guida vincolata per concentrare la tensione sul pettorale escludendo la stabilizzazione.',
     setup: 'Posiziona la panca sotto la barra del multipower al centro dello sterno. Adduci le scapole, sblocca il bilanciere e sfiora il petto durante la fase eccentrica prima di risalire.'
   },
@@ -169,7 +169,7 @@ export const EXERCISE_LIBRARY = [
     secondary_muscles: ['Bicipiti', 'Spalle', 'Addominali'],
     movement_pattern: 'Trazione Verticale',
     default_rest_time: 120,
-    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pull-Up/0.jpg',
+    image_url: 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Front_Lat_Pulldown/0.jpg',
     description: 'Esercizio regina a corpo libero per la larghezza e lo spessore del gran dorsale e muscoli della schiena.',
     setup: 'Afferra la sbarra con presa prona poco più larga delle spalle. Inizia il movimento abbassando le scapole (depressione), poi tira il corpo verso l’alto portando il mento sopra la sbarra e i gomiti verso i fianchi.'
   },
@@ -601,13 +601,13 @@ export function normalizeMuscleGroup(rawMuscle) {
 const MUSCLE_DEFAULT_3D_IMAGES = {
   'Petto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg',
   'Dorsali': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/0.jpg',
-  'Spalle': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Dumbbell_Press/0.jpg',
-  'Bicipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Biceps_Curl/0.jpg',
-  'Tricipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushdown/0.jpg',
+  'Spalle': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Shoulder_Press/0.jpg',
+  'Bicipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg',
+  'Tricipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg',
   'Quadricipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg',
   'Femorali': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/0.jpg',
   'Glutei': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Glute_Bridge/0.jpg',
-  'Addominali': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch/0.jpg',
+  'Addominali': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunches/0.jpg',
   'Polpacci': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg',
   'Lombari': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg'
 };
