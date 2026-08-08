@@ -3,21 +3,6 @@ import { X, Dumbbell, ShieldCheck, Sparkles, Layers, Info, ChevronRight, Chevron
 import { getEnrichedExercise, getSimilarExercises, MUSCLE_COLORS, normalizeMuscleGroup } from '../data/exerciseLibrary';
 import BodyHighlighterSVG from './BodyHighlighterSVG';
 
-export const MUSCLE_MAP_IMAGES = {
-  'Petto': '/muscles/petto.png',
-  'Dorsali': '/muscles/dorsali.png',
-  'Spalle': '/muscles/spalle.png',
-  'Bicipiti': '/muscles/bicipiti.png',
-  'Addominali': '/muscles/addominali.png',
-  'Trapezi': '/muscles/trapezi.png',
-  'Tricipiti': '/muscles/dorsali.png',
-  'Quadricipiti': '/muscles/addominali.png',
-  'Femorali': '/muscles/dorsali.png',
-  'Glutei': '/muscles/addominali.png',
-  'Polpacci': '/muscles/addominali.png',
-  'Lombari': '/muscles/dorsali.png'
-};
-
 /**
  * Visual SVG & Vector Diagram for Target Muscle Group Focus (Male & Female, Front & Back)
  */
