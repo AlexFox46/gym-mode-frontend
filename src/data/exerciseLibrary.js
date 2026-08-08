@@ -576,6 +576,43 @@ export const EXERCISE_LIBRARY = [
 ];
 
 /**
+ * Normalizza qualsiasi stringa di gruppo muscolare (es. "Retto Addominale" -> "Addominali")
+ */
+export function normalizeMuscleGroup(rawMuscle) {
+  if (!rawMuscle) return 'Addominali';
+  const m = rawMuscle.toLowerCase().trim();
+
+  if (m.includes('petto') || m.includes('chest') || m.includes('pectoral')) return 'Petto';
+  if (m.includes('dorso') || m.includes('dorsal') || m.includes('schiena') || m.includes('lat') || m.includes('back')) return 'Dorsali';
+  if (m.includes('spall') || m.includes('deltoid') || m.includes('lento') || m.includes('shoulder')) return 'Spalle';
+  if (m.includes('bicipit') || m.includes('biceps') || m.includes('curl')) return 'Bicipiti';
+  if (m.includes('tricipit') || m.includes('triceps') || m.includes('french') || m.includes('pushdown')) return 'Tricipiti';
+  if (m.includes('quadr') || m.includes('quad') || m.includes('accosciat')) return 'Quadricipiti';
+  if (m.includes('femor') || m.includes('ischio') || m.includes('hamstring')) return 'Femorali';
+  if (m.includes('glut') || m.includes('glute') || m.includes('hip')) return 'Glutei';
+  if (m.includes('addom') || m.includes('abs') || m.includes('core') || m.includes('retto') || m.includes('crunch') || m.includes('sling') || m.includes('fallout') || m.includes('plank')) return 'Addominali';
+  if (m.includes('polpacc') || m.includes('calf') || m.includes('calves')) return 'Polpacci';
+  if (m.includes('lombar') || m.includes('lower back') || m.includes('erector')) return 'Lombari';
+  if (m.includes('trapez') || m.includes('trap')) return 'Trapezi';
+
+  return 'Petto';
+}
+
+const MUSCLE_DEFAULT_3D_IMAGES = {
+  'Petto': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg',
+  'Dorsali': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/0.jpg',
+  'Spalle': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Dumbbell_Press/0.jpg',
+  'Bicipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Biceps_Curl/0.jpg',
+  'Tricipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushdown/0.jpg',
+  'Quadricipiti': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg',
+  'Femorali': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/0.jpg',
+  'Glutei': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Glute_Bridge/0.jpg',
+  'Addominali': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch/0.jpg',
+  'Polpacci': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg',
+  'Lombari': 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Deadlift/0.jpg'
+};
+
+/**
  * Trova o arricchisce i metadati di un esercizio tramite il nome o alias
  */
 export function getEnrichedExercise(exerciseObjOrName) {
@@ -584,8 +621,11 @@ export function getEnrichedExercise(exerciseObjOrName) {
     : (exerciseObjOrName?.name || '');
 
   const normInput = inputName.trim().toLowerCase();
+  const rawGroup = typeof exerciseObjOrName === 'object' 
+    ? (exerciseObjOrName.primary_muscle_group || exerciseObjOrName.muscle || '') 
+    : '';
 
-  // 1. Cerca corrispondenza esatta o per alias nella libreria
+  // 1. Cerca corrispondenza esatta o per parole chiave nella libreria
   const matched = EXERCISE_LIBRARY.find(item => 
     item.name.toLowerCase() === normInput ||
     (item.aliases && item.aliases.some(a => a.toLowerCase() === normInput)) ||
@@ -602,7 +642,7 @@ export function getEnrichedExercise(exerciseObjOrName) {
       ...baseObj,
       id: baseObj.id || matched.name.toLowerCase().replace(/\s+/g, '-'),
       name: baseObj.name || matched.name,
-      equipment: matched.equipment, // Attrezzatura corretta registrata
+      equipment: baseObj.equipment || matched.equipment, // Attrezzatura registrata
       primary_muscle_group: matched.primary_muscle_group,
       muscle: matched.primary_muscle_group,
       secondary_muscles: matched.secondary_muscles || [],
@@ -615,22 +655,25 @@ export function getEnrichedExercise(exerciseObjOrName) {
     };
   }
 
-  // Fallback se l'esercizio non è nel dizionario master
-  const fallbackImg = baseObj.image_url || null;
+  // Normalizza il gruppo muscolare per esercizi da database/custom (es. "Retto Addominale" -> "Addominali")
+  const normMuscle = normalizeMuscleGroup(rawGroup || normInput);
+  const fallbackImg = baseObj.image_url || MUSCLE_DEFAULT_3D_IMAGES[normMuscle];
+  const fallbackImg1 = fallbackImg ? fallbackImg.replace('/0.jpg', '/1.jpg') : null;
+
   return {
     ...baseObj,
     id: baseObj.id || normInput.replace(/\s+/g, '-'),
     name: baseObj.name || inputName || 'Esercizio',
     equipment: baseObj.equipment || 'Macchinario',
-    primary_muscle_group: baseObj.primary_muscle_group || baseObj.muscle || 'Petto',
-    muscle: baseObj.primary_muscle_group || baseObj.muscle || 'Petto',
+    primary_muscle_group: normMuscle,
+    muscle: normMuscle,
     secondary_muscles: baseObj.secondary_muscles || [],
-    movement_pattern: baseObj.movement_pattern || 'Generico',
+    movement_pattern: baseObj.movement_pattern || 'Esecuzione Controllata',
     default_rest_time: baseObj.default_rest_time || 90,
     image_url: fallbackImg,
-    images: fallbackImg ? [fallbackImg, fallbackImg.replace('/0.jpg', '/1.jpg')] : [],
-    description: baseObj.description || `Esercizio di allenamento per il gruppo muscolare ${baseObj.primary_muscle_group || baseObj.muscle || 'target'}.`,
-    setup: baseObj.setup || 'Mantieni una postura stabile con la schiena dritta, controlla l’esecuzione sia nella fase concentrica che in quella eccentrica mantenendo costante la respirazione.'
+    images: fallbackImg ? [fallbackImg, fallbackImg1] : [],
+    description: baseObj.description || `Esercizio specifico focalizzato sullo sviluppo e stimolazione del gruppo muscolare ${normMuscle}.`,
+    setup: baseObj.setup || 'Mantieni una postura stabile con la schiena dritta. Adduci le scapole se necessario, esegui il movimento in modo fluido e controlla sia la fase concentrica che quella di ritorno eccentrico.'
   };
 }
 

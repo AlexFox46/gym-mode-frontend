@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Dumbbell, ShieldCheck, Sparkles, Layers, Info, ChevronRight, ChevronLeft, Activity, Play, Pause } from 'lucide-react';
-import { getEnrichedExercise, getSimilarExercises, MUSCLE_COLORS } from '../data/exerciseLibrary';
+import { getEnrichedExercise, getSimilarExercises, MUSCLE_COLORS, normalizeMuscleGroup } from '../data/exerciseLibrary';
 
 export const MUSCLE_MAP_IMAGES = {
   'Petto': '/muscles/petto.png',
@@ -9,7 +9,12 @@ export const MUSCLE_MAP_IMAGES = {
   'Bicipiti': '/muscles/bicipiti.png',
   'Addominali': '/muscles/addominali.png',
   'Trapezi': '/muscles/trapezi.png',
-  'Tricipiti': '/muscles/dorsali.png'
+  'Tricipiti': '/muscles/dorsali.png',
+  'Quadricipiti': '/muscles/addominali.png',
+  'Femorali': '/muscles/dorsali.png',
+  'Glutei': '/muscles/addominali.png',
+  'Polpacci': '/muscles/addominali.png',
+  'Lombari': '/muscles/dorsali.png'
 };
 
 /**
@@ -20,7 +25,8 @@ const MuscleFocusDiagram = ({ primaryMuscle, secondaryMuscles = [] }) => {
   const primaryColor = '#F97316'; // Bright Orange for Primary Target
   const secColors = ['#FBBF24', '#3B82F6', '#10B981']; // Yellow, Blue, Green for Secondary
 
-  const realMuscleImage = MUSCLE_MAP_IMAGES[primaryMuscle];
+  const normMuscle = normalizeMuscleGroup(primaryMuscle);
+  const realMuscleImage = MUSCLE_MAP_IMAGES[normMuscle] || '/muscles/addominali.png';
   const showRealImage = realMuscleImage && !imgError;
 
   // Muscle mapping helper for SVG highlights
