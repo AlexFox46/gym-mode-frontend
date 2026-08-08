@@ -810,3 +810,49 @@ export function getSimilarExercises(currentEx, availableList = EXERCISE_LIBRARY)
     .slice(0, 4)
     .map(item => item.exercise);
 }
+
+export const EQUIPMENT_TYPES = [
+  'Bilanciere',
+  'Manubri',
+  'Corpo Libero',
+  'Cavi',
+  'Macchinario',
+  'Multipower',
+  'Kettlebell',
+  'Elastico',
+  'Bilanciere EZ'
+];
+
+export const MUSCLE_GROUPS = [
+  'Petto',
+  'Dorsali',
+  'Spalle',
+  'Bicipiti',
+  'Tricipiti',
+  'Quadricipiti',
+  'Femorali',
+  'Glutei',
+  'Addominali',
+  'Polpacci',
+  'Trapezi',
+  'Lombari',
+  'Avambracci'
+];
+
+export const MUSCLE_COLORS = {
+  'Petto': '#EF4444',
+  'Dorsali': '#3B82F6',
+  'Spalle': '#F59E0B',
+  'Bicipiti': '#10B981',
+  'Tricipiti': '#8B5CF6',
+  'Quadricipiti': '#EC4899',
+  'Femorali': '#6366F1',
+  'Glutei': '#F43F5E',
+  'Addominali': '#06B6D4',
+  'Polpacci': '#84CC16',
+  'Trapezi': '#D97706',
+  'Lombari': '#64748B',
+  'Avambracci': '#14B8A6',
+  'Generico': '#94A3B8'
+};
+
