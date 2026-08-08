@@ -1,5 +1,5 @@
 /**
- * LIBRERIA MASTER ESERCIZI GYMMODE - Con RepDB Dynamic Lookup Engine
+ * LIBRERIA MASTER ESERCIZI GYMMODE - Con RepDB Strict 3-Way Lookup Engine
  */
 
 export const EXERCISE_LIBRARY = [
@@ -678,7 +678,7 @@ export const EXERCISE_LIBRARY = [
 ];
 
 /**
- * CATALOGO COMPLETO REPDB (400 Esercizi per matching dinamico di qualsiasi esercizio DB)
+ * CATALOGO COMPLETO REPDB CON METADATI RIGOROSI PER ATTREZZATURA E MUSCOLI
  */
 export const REPDB_FULL_CATALOG = [
   {
@@ -686,6 +686,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Ab Wheel Rollout",
     "group": "Addominali",
     "equipment": "Corpo Libero",
+    "raw_equipment": "ab_wheel",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ab-wheel-rollout-start.webp"
   },
   {
@@ -693,6 +695,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Air Bike",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "air_bike",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/air-bike-main.webp"
   },
   {
@@ -700,6 +704,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Archer Pull Ups",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/archer-pull-ups-start.webp"
   },
   {
@@ -707,6 +713,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Archer Push Ups",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/archer-push-ups-start.webp"
   },
   {
@@ -714,6 +722,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Arnold Press",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/arnold-press-start.webp"
   },
   {
@@ -721,6 +731,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Machine Assisted Dips",
     "group": "Bicipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "dip_machine",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/assisted-dips-start.webp"
   },
   {
@@ -728,6 +740,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Assisted Pull Ups",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "assisted_pullup_machine",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/assisted-pull-ups-start.webp"
   },
   {
@@ -735,6 +749,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Back Extension",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/back-extension-start.webp"
   },
   {
@@ -742,6 +758,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Stability Ball Leg Curl",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "stability_ball",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ball-leg-curl-start.webp"
   },
   {
@@ -749,6 +767,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Ball Pike",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "stability_ball",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ball-pike-start.webp"
   },
   {
@@ -756,6 +776,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Band Assisted Pull Ups",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/band-assisted-pull-ups-start.webp"
   },
   {
@@ -763,6 +785,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Band Pull Apart",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/band-pull-apart-start.webp"
   },
   {
@@ -770,6 +794,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Adductor Stretch",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-adductor-stretch-main.webp"
   },
   {
@@ -777,6 +803,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Ankle Stretch",
     "group": "Polpacci",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-ankle-stretch-main.webp"
   },
   {
@@ -784,6 +812,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Calf Stretch",
     "group": "Polpacci",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-calf-stretch-main.webp"
   },
   {
@@ -791,6 +821,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Chest Stretch",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-chest-stretch-main.webp"
   },
   {
@@ -798,6 +830,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Clamshell",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-clamshell-start.webp"
   },
   {
@@ -805,6 +839,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Figure-4 Stretch",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-figure-4-stretch-main.webp"
   },
   {
@@ -812,6 +848,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Fire Hydrant",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-fire-hydrant-start.webp"
   },
   {
@@ -819,6 +857,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Glute Bridge",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-glute-bridge-start.webp"
   },
   {
@@ -826,6 +866,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Good Morning",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-good-morning-start.webp"
   },
   {
@@ -833,6 +875,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Hamstring Stretch",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-hamstring-stretch-main.webp"
   },
   {
@@ -840,6 +884,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Hip Thrust",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-hip-thrust-start.webp"
   },
   {
@@ -847,6 +893,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded IT-Band Stretch",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-it-band-stretch-main.webp"
   },
   {
@@ -854,6 +902,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Kneeling Hip Thrust",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-kneeling-hip-thrust-start.webp"
   },
   {
@@ -861,6 +911,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Lat Stretch",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-lat-stretch-main.webp"
   },
   {
@@ -868,6 +920,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Lateral Walk",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-lateral-walk-start.webp"
   },
   {
@@ -875,6 +929,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Rear Delt Stretch",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-rear-delt-stretch-main.webp"
   },
   {
@@ -882,6 +938,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Romanian Deadlift",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-romanian-deadlift-start.webp"
   },
   {
@@ -889,6 +947,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Seated Hip Abduction",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-seated-hip-abduction-start.webp"
   },
   {
@@ -896,6 +956,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Shoulder Stretch",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-shoulder-stretch-main.webp"
   },
   {
@@ -903,6 +965,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Squat",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-squat-start.webp"
   },
   {
@@ -910,6 +974,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Standing Curl",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-standing-curl-start.webp"
   },
   {
@@ -917,6 +983,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Standing Hip Abduction",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-standing-hip-abduction-start.webp"
   },
   {
@@ -924,6 +992,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Standing Hip Adduction",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "loop_band",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-standing-hip-adduction-start.webp"
   },
   {
@@ -931,6 +1001,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Banded Triceps Stretch",
     "group": "Bicipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "resistance_band",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/banded-triceps-stretch-main.webp"
   },
   {
@@ -938,6 +1010,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Ab Rollout",
     "group": "Addominali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-ab-rollout-start.webp"
   },
   {
@@ -945,6 +1019,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Calf Raise",
     "group": "Polpacci",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-calf-raise-start.webp"
   },
   {
@@ -952,6 +1028,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Curl",
     "group": "Bicipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-curl-start.webp"
   },
   {
@@ -959,6 +1037,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Front Raise",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-front-raise-start.webp"
   },
   {
@@ -966,6 +1046,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Glute Bridge",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-glute-bridge-start.webp"
   },
   {
@@ -973,6 +1055,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Lunge",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-reverse-lunge-start.webp"
   },
   {
@@ -980,6 +1064,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Overhead Extension",
     "group": "Bicipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-overhead-extension-start.webp"
   },
   {
@@ -987,6 +1073,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Preacher Curl",
     "group": "Bicipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-preacher-curl-start.webp"
   },
   {
@@ -994,6 +1082,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Pullover",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-pullover-start.webp"
   },
   {
@@ -1001,6 +1091,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Rear Delt Row",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-rear-delt-row-start.webp"
   },
   {
@@ -1008,6 +1100,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Reverse Lunge",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-reverse-lunge-start.webp"
   },
   {
@@ -1015,6 +1109,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bent-Over Barbell Row",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/barbell-row-start.webp"
   },
   {
@@ -1022,6 +1118,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Battle Ropes",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "battle_rope",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/battle-ropes-main.webp"
   },
   {
@@ -1029,6 +1127,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Behind the Back Barbell Shrug",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/behind-the-back-barbell-shrug-start.webp"
   },
   {
@@ -1036,6 +1136,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Behind-the-Neck Lat Pulldown",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "lat_pulldown_machine",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/behind-the-neck-lat-pulldown-start.webp"
   },
   {
@@ -1043,6 +1145,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Behind the Neck Press",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/behind-the-neck-press-start.webp"
   },
   {
@@ -1050,6 +1154,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Adductor Stretch",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "flat_bench",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-adductor-stretch-main.webp"
   },
   {
@@ -1057,6 +1163,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Ankle Stretch",
     "group": "Polpacci",
     "equipment": "Macchinario",
+    "raw_equipment": "flat_bench",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-ankle-stretch-main.webp"
   },
   {
@@ -1064,6 +1172,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Bulgarian Split Stretch",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "flat_bench",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-bulgarian-split-stretch-main.webp"
   },
   {
@@ -1071,6 +1181,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Calf Stretch",
     "group": "Polpacci",
     "equipment": "Macchinario",
+    "raw_equipment": "flat_bench",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-calf-stretch-main.webp"
   },
   {
@@ -1078,6 +1190,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Chest Stretch",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "flat_bench",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-chest-stretch-main.webp"
   },
   {
@@ -1085,6 +1199,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Child's Pose",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "flat_bench",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-childs-pose-main.webp"
   },
   {
@@ -1092,6 +1208,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Couch Stretch",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "flat_bench",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-couch-stretch-main.webp"
   },
   {
@@ -1099,6 +1217,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Dips",
     "group": "Bicipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-dips-start.webp"
   },
   {
@@ -1106,6 +1226,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Figure-4 Glute Stretch",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "flat_bench",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-figure-4-glute-stretch-main.webp"
   },
   {
@@ -1113,6 +1235,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Hamstring Stretch",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "flat_bench",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-hamstring-stretch-main.webp"
   },
   {
@@ -1120,6 +1244,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Lat Stretch",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "flat_bench",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-lat-stretch-main.webp"
   },
   {
@@ -1127,6 +1253,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Leg Pull-In",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-leg-pull-in-start.webp"
   },
   {
@@ -1134,6 +1262,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Bench Press",
     "group": "Petto",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-press-start.webp"
   },
   {
@@ -1141,6 +1271,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bench Pull",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bench-pull-start.webp"
   },
   {
@@ -1148,6 +1280,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bent Arm Barbell Pullover",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bent-arm-barbell-pullover-start.webp"
   },
   {
@@ -1155,6 +1289,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bent-Arm EZ-Bar Pullover",
     "group": "Dorsali",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bent-arm-ez-bar-pullover-start.webp"
   },
   {
@@ -1162,6 +1298,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bent-Over Dumbbell Row",
     "group": "Dorsali",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bent-over-db-row-start.webp"
   },
   {
@@ -1169,6 +1307,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bent-Over EZ-Bar Row",
     "group": "Dorsali",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bent-over-ez-bar-row-start.webp"
   },
   {
@@ -1176,6 +1316,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Bicep Curl",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bicep-curl-start.webp"
   },
   {
@@ -1183,6 +1325,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bicycle Crunch",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bicycle-crunch-start.webp"
   },
   {
@@ -1190,6 +1334,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bird Dog Hold",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bird-dog-hold-main.webp"
   },
   {
@@ -1197,6 +1343,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bodyweight Calf Raise",
     "group": "Polpacci",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bodyweight-calf-raise-start.webp"
   },
   {
@@ -1204,6 +1352,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bodyweight Good Morning",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bodyweight-good-morning-start.webp"
   },
   {
@@ -1211,6 +1361,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bodyweight Lateral Raise",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bodyweight-lateral-raise-start.webp"
   },
   {
@@ -1218,6 +1370,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bodyweight Overhead Press",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bodyweight-overhead-press-start.webp"
   },
   {
@@ -1225,6 +1379,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bodyweight Squat",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bodyweight-squat-start.webp"
   },
   {
@@ -1232,6 +1388,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Box Jump",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "plyo_box",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/box-jump-start.webp"
   },
   {
@@ -1239,6 +1397,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Box Squat",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/box-squat-start.webp"
   },
   {
@@ -1246,6 +1406,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Bulgarian Split Squat",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/bulgarian-split-squat-start.webp"
   },
   {
@@ -1253,6 +1415,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Burpees",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/burpees-main.webp"
   },
   {
@@ -1260,6 +1424,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Butterfly Stretch",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/butterfly-stretch-main.webp"
   },
   {
@@ -1267,6 +1433,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Bent-Over Row",
     "group": "Dorsali",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-bent-over-row-start.webp"
   },
   {
@@ -1274,6 +1442,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Chest Press",
     "group": "Petto",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-chest-press-start.webp"
   },
   {
@@ -1281,6 +1451,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Crunch",
     "group": "Addominali",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-crunch-start.webp"
   },
   {
@@ -1288,6 +1460,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Curl",
     "group": "Bicipiti",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-curl-start.webp"
   },
   {
@@ -1295,6 +1469,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable External Rotation",
     "group": "Spalle",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-external-rotation-start.webp"
   },
   {
@@ -1302,6 +1478,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Fly",
     "group": "Petto",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-fly-start.webp"
   },
   {
@@ -1309,6 +1487,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Front Raise",
     "group": "Spalle",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-front-raise-start.webp"
   },
   {
@@ -1316,6 +1496,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Hammer Curl",
     "group": "Bicipiti",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-hammer-curl-start.webp"
   },
   {
@@ -1323,6 +1505,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Glute Kickback",
     "group": "Quadricipiti",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-kickback-start.webp"
   },
   {
@@ -1330,6 +1514,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Lateral Raise",
     "group": "Spalle",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-lateral-raise-start.webp"
   },
   {
@@ -1337,6 +1523,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Tricep Kickback",
     "group": "Bicipiti",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-tricep-kickback-start.webp"
   },
   {
@@ -1344,6 +1532,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Upright Row",
     "group": "Spalle",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-upright-row-start.webp"
   },
   {
@@ -1351,6 +1541,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Wrist Curl",
     "group": "Avambracci",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "lower_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cable-wrist-curl-start.webp"
   },
   {
@@ -1358,6 +1550,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Captain's Chair Knee Raise",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/captains-chair-knee-raise-start.webp"
   },
   {
@@ -1365,6 +1559,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Captain's Chair Leg Raise",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/captains-chair-leg-raise-start.webp"
   },
   {
@@ -1372,6 +1568,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cheat Curl",
     "group": "Bicipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cheat-curl-start.webp"
   },
   {
@@ -1379,6 +1577,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Machine Chest Press",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "chest_press_machine",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/chest-press-machine-start.webp"
   },
   {
@@ -1386,6 +1586,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Chest-Supported Dumbbell Row",
     "group": "Dorsali",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/chest-supported-db-row-start.webp"
   },
   {
@@ -1393,6 +1595,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Chest Supported Dumbbell Shrug",
     "group": "Dorsali",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/chest-supported-dumbbell-shrug-start.webp"
   },
   {
@@ -1400,6 +1604,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Chest-Supported Kettlebell Row",
     "group": "Dorsali",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/chest-supported-kettlebell-row-start.webp"
   },
   {
@@ -1407,6 +1613,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Chin Tuck Hold",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/chin-tuck-hold-main.webp"
   },
   {
@@ -1414,6 +1622,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Chin-Ups",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/chin-ups-start.webp"
   },
   {
@@ -1421,6 +1631,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Clamshells",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/clamshells-start.webp"
   },
   {
@@ -1428,6 +1640,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Clap Push-Ups",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/clap-push-ups-start.webp"
   },
   {
@@ -1435,6 +1649,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Clean",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/clean-start.webp"
   },
   {
@@ -1442,6 +1658,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Clean and Jerk",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/clean-and-jerk-start.webp"
   },
   {
@@ -1449,6 +1667,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Close-Grip Barbell Curl",
     "group": "Bicipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/close-grip-barbell-curl-start.webp"
   },
   {
@@ -1456,6 +1676,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Close-Grip Bench Press",
     "group": "Bicipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/close-grip-bench-press-start.webp"
   },
   {
@@ -1463,6 +1685,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Close-Grip Dumbbell Bench Press",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/close-grip-db-bench-press-start.webp"
   },
   {
@@ -1470,6 +1694,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Close-Grip EZ-Bar Bench Press",
     "group": "Bicipiti",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/close-grip-ez-bar-bench-press-start.webp"
   },
   {
@@ -1477,6 +1703,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Close-Grip Incline Bench Press",
     "group": "Bicipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/close-grip-incline-bench-start.webp"
   },
   {
@@ -1484,6 +1712,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Close-Grip Pull-Ups",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/close-grip-pull-ups-start.webp"
   },
   {
@@ -1491,6 +1721,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cocoons",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cocoons-start.webp"
   },
   {
@@ -1498,6 +1730,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Concentration Curl",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/concentration-curl-start.webp"
   },
   {
@@ -1505,6 +1739,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cross-Body Crunch",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cross-body-crunch-start.webp"
   },
   {
@@ -1512,6 +1748,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cross Body Hammer Curl",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/cross-body-hammer-curl-start.webp"
   },
   {
@@ -1519,6 +1757,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Crunches",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/crunches-start.webp"
   },
   {
@@ -1526,6 +1766,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Bench Press",
     "group": "Petto",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/db-bench-press-start.webp"
   },
   {
@@ -1533,6 +1775,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Fly",
     "group": "Petto",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/db-fly-start.webp"
   },
   {
@@ -1540,6 +1784,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Lunge",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/db-lunge-start.webp"
   },
   {
@@ -1547,6 +1793,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Pullover",
     "group": "Petto",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/db-pullover-start.webp"
   },
   {
@@ -1554,6 +1802,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Reverse Curl",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/db-reverse-curl-start.webp"
   },
   {
@@ -1561,6 +1811,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Shrug",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/db-shrug-start.webp"
   },
   {
@@ -1568,6 +1820,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Skull Crusher",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/db-skull-crusher-start.webp"
   },
   {
@@ -1575,6 +1829,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dead Bug",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dead-bug-start.webp"
   },
   {
@@ -1582,6 +1838,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dead Hang",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dead-hang-main.webp"
   },
   {
@@ -1589,6 +1847,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Deadlift",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/deadlift-start.webp"
   },
   {
@@ -1596,6 +1856,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Decline Bench Press",
     "group": "Petto",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/decline-bench-press-start.webp"
   },
   {
@@ -1603,6 +1865,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Decline Barbell Bench Press",
     "group": "Petto",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/decline-bench-press-barbell-start.webp"
   },
   {
@@ -1610,6 +1874,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Decline EZ-Bar Bench Press",
     "group": "Petto",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/decline-bench-press-ez-bar-start.webp"
   },
   {
@@ -1617,6 +1883,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Decline Dumbbell Fly",
     "group": "Petto",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/decline-db-fly-start.webp"
   },
   {
@@ -1624,6 +1892,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Decline Push-Up",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/decline-push-up-start.webp"
   },
   {
@@ -1631,6 +1901,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Deficit Deadlift",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/deficit-deadlift-start.webp"
   },
   {
@@ -1638,6 +1910,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Deficit Push Ups",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/deficit-push-ups-start.webp"
   },
   {
@@ -1645,6 +1919,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Diamond Push Ups",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/diamond-push-ups-start.webp"
   },
   {
@@ -1652,6 +1928,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Chest Dips",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "dip_station",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dips-start.webp"
   },
   {
@@ -1659,6 +1937,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Double Kettlebell Bicep Curl",
     "group": "Bicipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/double-kettlebell-bicep-curl-start.webp"
   },
   {
@@ -1666,6 +1946,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Double Kettlebell Clean",
     "group": "Spalle",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/double-kettlebell-clean-start.webp"
   },
   {
@@ -1673,6 +1955,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Double Kettlebell Dead Clean",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/double-kettlebell-dead-clean-start.webp"
   },
   {
@@ -1680,6 +1964,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Double Kettlebell Dead Split Snatch",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/double-kettlebell-dead-split-snatch-start.webp"
   },
   {
@@ -1687,6 +1973,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Double Kettlebell Jerk",
     "group": "Spalle",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/double-kettlebell-jerk-start.webp"
   },
   {
@@ -1694,6 +1982,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Double Kettlebell Overhead Press",
     "group": "Spalle",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/double-kettlebell-overhead-press-start.webp"
   },
   {
@@ -1701,6 +1991,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Double Kettlebell Push Press",
     "group": "Spalle",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/double-kettlebell-push-press-start.webp"
   },
   {
@@ -1708,6 +2000,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Double Kettlebell Row",
     "group": "Dorsali",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/double-kettlebell-row-start.webp"
   },
   {
@@ -1715,6 +2009,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Double Kettlebell Split Jerk",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/double-kettlebell-split-jerk-start.webp"
   },
   {
@@ -1722,6 +2018,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Double Kettlebell Swing Snatch",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/double-kettlebell-swing-snatch-start.webp"
   },
   {
@@ -1729,6 +2027,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Drag Curl",
     "group": "Bicipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/drag-curl-start.webp"
   },
   {
@@ -1736,6 +2036,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dragon Flag",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dragon-flag-start.webp"
   },
   {
@@ -1743,6 +2045,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Bench Pull",
     "group": "Dorsali",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-bench-pull-start.webp"
   },
   {
@@ -1750,6 +2054,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Calf Raise",
     "group": "Polpacci",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-calf-raise-start.webp"
   },
   {
@@ -1757,6 +2063,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Deadlift",
     "group": "Dorsali",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-deadlift-start.webp"
   },
   {
@@ -1764,6 +2072,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Farmer's Walk",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-farmers-walk-main.webp"
   },
   {
@@ -1771,6 +2081,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Floor Press",
     "group": "Petto",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-floor-press-start.webp"
   },
   {
@@ -1778,6 +2090,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Front Raise",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-front-raise-start.webp"
   },
   {
@@ -1785,6 +2099,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Front Squat",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-front-squat-start.webp"
   },
   {
@@ -1792,6 +2108,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Hip Thrust",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-hip-thrust-start.webp"
   },
   {
@@ -1799,6 +2117,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Pistol Squat",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-pistol-squat-start.webp"
   },
   {
@@ -1806,6 +2126,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Push Press",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-push-press-start.webp"
   },
   {
@@ -1813,6 +2135,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Reverse Fly",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-reverse-fly-start.webp"
   },
   {
@@ -1820,6 +2144,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Romanian Deadlift",
     "group": "Dorsali",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-romanian-deadlift-start.webp"
   },
   {
@@ -1827,6 +2153,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Shoulder Press",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-shoulder-press-start.webp"
   },
   {
@@ -1834,6 +2162,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Side Bend",
     "group": "Addominali",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-side-bend-start.webp"
   },
   {
@@ -1841,6 +2171,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Snatch",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-snatch-start.webp"
   },
   {
@@ -1848,6 +2180,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Split Squat",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-split-squat-start.webp"
   },
   {
@@ -1855,6 +2189,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Tricep Extension",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-tricep-extension-start.webp"
   },
   {
@@ -1862,6 +2198,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Upright Row",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-upright-row-start.webp"
   },
   {
@@ -1869,6 +2207,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Windmill",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-windmill-start.webp"
   },
   {
@@ -1876,6 +2216,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Wrist Curl",
     "group": "Avambracci",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "lower_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/dumbbell-wrist-curl-start.webp"
   },
   {
@@ -1883,6 +2225,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "EZ-Bar Curl",
     "group": "Bicipiti",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ez-bar-curl-start.webp"
   },
   {
@@ -1890,6 +2234,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "EZ-Bar Front Raise",
     "group": "Spalle",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ez-bar-front-raise-start.webp"
   },
   {
@@ -1897,6 +2243,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "EZ-Bar Overhead Tricep Extension",
     "group": "Bicipiti",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ez-bar-overhead-extension-start.webp"
   },
   {
@@ -1904,6 +2252,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "EZ Bar Pullover",
     "group": "Dorsali",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ez-bar-pullover-start.webp"
   },
   {
@@ -1911,6 +2261,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "EZ-Bar Reverse Curl",
     "group": "Bicipiti",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ez-bar-reverse-curl-start.webp"
   },
   {
@@ -1918,6 +2270,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "EZ Bar Reverse Grip Row",
     "group": "Dorsali",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ez-bar-reverse-grip-row-start.webp"
   },
   {
@@ -1925,6 +2279,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "EZ-Bar Romanian Deadlift",
     "group": "Quadricipiti",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ez-bar-romanian-deadlift-start.webp"
   },
   {
@@ -1932,6 +2288,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "EZ-Bar Shrug",
     "group": "Spalle",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ez-bar-shrug-start.webp"
   },
   {
@@ -1939,6 +2297,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "EZ Bar Spider Curl",
     "group": "Bicipiti",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ez-bar-spider-curl-start.webp"
   },
   {
@@ -1946,6 +2306,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "EZ-Bar Upright Row",
     "group": "Spalle",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ez-bar-upright-row-start.webp"
   },
   {
@@ -1953,6 +2315,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Face Pull",
     "group": "Spalle",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/face-pull-start.webp"
   },
   {
@@ -1960,6 +2324,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Floor EZ-Bar Press",
     "group": "Petto",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/floor-ez-bar-press-start.webp"
   },
   {
@@ -1967,6 +2333,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Floor Kettlebell Pullover",
     "group": "Dorsali",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/floor-kettlebell-pullover-start.webp"
   },
   {
@@ -1974,6 +2342,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Floor Press",
     "group": "Petto",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/floor-press-start.webp"
   },
   {
@@ -1981,6 +2351,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Flutter Kicks",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/flutter-kicks-start.webp"
   },
   {
@@ -1988,6 +2360,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Front Lever",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/front-lever-main.webp"
   },
   {
@@ -1995,6 +2369,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Front Squat",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/front-squat-start.webp"
   },
   {
@@ -2002,6 +2378,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Glute Bridge",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/glute-bridge-start.webp"
   },
   {
@@ -2009,6 +2387,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Glute Kickback",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/glute-kickback-start.webp"
   },
   {
@@ -2016,6 +2396,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Goblet Squat",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/goblet-squat-start.webp"
   },
   {
@@ -2023,6 +2405,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Good Morning",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/good-morning-start.webp"
   },
   {
@@ -2030,6 +2414,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Hack Squat",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "hack_squat",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hack-squat-start.webp"
   },
   {
@@ -2037,6 +2423,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Hack Squat Calf Raise",
     "group": "Polpacci",
     "equipment": "Macchinario",
+    "raw_equipment": "hack_squat",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hack-squat-calf-raise-start.webp"
   },
   {
@@ -2044,6 +2432,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Hammer Curl",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hammer-curl-start.webp"
   },
   {
@@ -2051,6 +2441,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Handstand Push Ups",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/handstand-push-ups-start.webp"
   },
   {
@@ -2058,6 +2450,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Hang Clean",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hang-clean-start.webp"
   },
   {
@@ -2065,6 +2459,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Hang Power Clean",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hang-power-clean-start.webp"
   },
   {
@@ -2072,6 +2468,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Hanging Knee Raise",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hanging-knee-raise-start.webp"
   },
   {
@@ -2079,6 +2477,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Hanging Leg Raise",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hanging-leg-raise-start.webp"
   },
   {
@@ -2086,6 +2486,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Hanging Pike",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hanging-pike-start.webp"
   },
   {
@@ -2093,6 +2495,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Heel-Elevated Squat",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/heel-elevated-squat-start.webp"
   },
   {
@@ -2100,6 +2504,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Hex Bar Deadlift",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "trap_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hex-bar-deadlift-start.webp"
   },
   {
@@ -2107,6 +2513,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "High Plank",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/high-plank-main.webp"
   },
   {
@@ -2114,6 +2522,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Machine Hip Abduction",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "hip_abduction_machine",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hip-abduction-start.webp"
   },
   {
@@ -2121,6 +2531,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Hip Adduction",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "hip_adduction_machine",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hip-adduction-start.webp"
   },
   {
@@ -2128,6 +2540,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Hip Thrust",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/hip-thrust-start.webp"
   },
   {
@@ -2135,6 +2549,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Horizontal Leg Press",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "leg_press",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/horizontal-leg-press-start.webp"
   },
   {
@@ -2142,6 +2558,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Incline EZ-Bar Bench Press",
     "group": "Petto",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-bench-ez-bar-press-start.webp"
   },
   {
@@ -2149,6 +2567,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Incline Barbell Bench Press",
     "group": "Petto",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-bench-press-start.webp"
   },
   {
@@ -2156,6 +2576,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Incline Dumbbell Curl",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-db-curl-start.webp"
   },
   {
@@ -2163,6 +2585,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Incline Dumbbell Press",
     "group": "Petto",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-db-press-start.webp"
   },
   {
@@ -2170,6 +2594,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Incline Dumbbell Fly",
     "group": "Petto",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-dumbbell-fly-start.webp"
   },
   {
@@ -2177,6 +2603,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Incline Hammer Curl",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-hammer-curl-start.webp"
   },
   {
@@ -2184,6 +2612,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Incline Push-Up",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-push-ups-start.webp"
   },
   {
@@ -2191,6 +2621,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Inverted Row",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/inverted-row-start.webp"
   },
   {
@@ -2198,6 +2630,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Isometric Neck Lateral Flexion",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/isometric-neck-side-main.webp"
   },
   {
@@ -2205,6 +2639,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Jackknife Sit-Up",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/jackknife-sit-up-start.webp"
   },
   {
@@ -2212,6 +2648,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Jump Rope",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "jump_rope",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/jump-rope-main.webp"
   },
   {
@@ -2219,6 +2657,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Jump Squat",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/jump-squat-start.webp"
   },
   {
@@ -2226,6 +2666,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Jumping Jacks",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/jumping-jacks-start.webp"
   },
   {
@@ -2233,6 +2675,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Bulgarian Split Squat",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-bulgarian-split-squat-start.webp"
   },
   {
@@ -2240,6 +2684,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Close-Grip Floor Press",
     "group": "Bicipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-close-grip-floor-press-start.webp"
   },
   {
@@ -2247,6 +2693,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Deadlift",
     "group": "Dorsali",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-deadlift-start.webp"
   },
   {
@@ -2254,6 +2702,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Farmer's Walk",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-farmers-walk-main.webp"
   },
   {
@@ -2261,6 +2711,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Floor Press",
     "group": "Petto",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-floor-press-start.webp"
   },
   {
@@ -2268,6 +2720,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Goblet Lunge",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-goblet-lunge-start.webp"
   },
   {
@@ -2275,6 +2729,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Halo",
     "group": "Spalle",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-halo-start.webp"
   },
   {
@@ -2282,6 +2738,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Hammer Curl",
     "group": "Bicipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-hammer-curl-start.webp"
   },
   {
@@ -2289,6 +2747,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Hip Thrust",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-hip-thrust-start.webp"
   },
   {
@@ -2296,6 +2756,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Lunge Press",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-lunge-press-start.webp"
   },
   {
@@ -2303,6 +2765,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Offset Reverse Lunge and Press",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-offset-reverse-lunge-and-press-start.webp"
   },
   {
@@ -2310,6 +2774,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Overhead Tricep Extension",
     "group": "Bicipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-overhead-tricep-extension-start.webp"
   },
   {
@@ -2317,6 +2783,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Pistol Squat",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-pistol-squat-start.webp"
   },
   {
@@ -2324,6 +2792,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Pullover",
     "group": "Dorsali",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-pullover-start.webp"
   },
   {
@@ -2331,6 +2801,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Reverse Lunge",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-reverse-lunge-start.webp"
   },
   {
@@ -2338,6 +2810,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Rotational Lunge",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-rotational-lunge-start.webp"
   },
   {
@@ -2345,6 +2819,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Russian Twist",
     "group": "Addominali",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-russian-twist-start.webp"
   },
   {
@@ -2352,6 +2828,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Shrug",
     "group": "Dorsali",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-shrug-start.webp"
   },
   {
@@ -2359,6 +2837,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Single Leg Deadlift",
     "group": "Dorsali",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-single-leg-deadlift-start.webp"
   },
   {
@@ -2366,6 +2846,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Skull Crusher",
     "group": "Bicipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-skull-crusher-start.webp"
   },
   {
@@ -2373,6 +2855,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Sumo Deadlift",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-sumo-deadlift-start.webp"
   },
   {
@@ -2380,6 +2864,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Sumo High Pull",
     "group": "Spalle",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-sumo-high-pull-start.webp"
   },
   {
@@ -2387,6 +2873,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Swing",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-swing-start.webp"
   },
   {
@@ -2394,6 +2882,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Swing Clean",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-swing-clean-start.webp"
   },
   {
@@ -2401,6 +2891,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Turkish Get Ups",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-turkish-get-ups-start.webp"
   },
   {
@@ -2408,6 +2900,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kettlebell Windmills",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kettlebell-windmills-start.webp"
   },
   {
@@ -2415,6 +2909,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Knee Push Ups",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/knee-push-ups-start.webp"
   },
   {
@@ -2422,6 +2918,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Kneeling Cable Row",
     "group": "Dorsali",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/kneeling-cable-row-start.webp"
   },
   {
@@ -2429,6 +2927,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "L Sit",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "dip_station",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/l-sit-main.webp"
   },
   {
@@ -2436,6 +2936,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Landmine Press",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/landmine-press-start.webp"
   },
   {
@@ -2443,6 +2945,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Lat Pulldown",
     "group": "Dorsali",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/lat-pulldown-start.webp"
   },
   {
@@ -2450,6 +2954,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Lateral Raise",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/lateral-raise-start.webp"
   },
   {
@@ -2457,6 +2963,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Lying Leg Curl",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "leg_curl",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/leg-curl-start.webp"
   },
   {
@@ -2464,6 +2972,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Leg Extension",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "leg_extension",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/leg-extension-start.webp"
   },
   {
@@ -2471,6 +2981,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Leg Press",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "leg_press",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/leg-press-start.webp"
   },
   {
@@ -2478,6 +2990,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Lunge",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/lunge-start.webp"
   },
   {
@@ -2485,6 +2999,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Lying Leg Raise",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/lying-leg-raise-start.webp"
   },
   {
@@ -2492,6 +3008,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Lying Tricep Extension",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/lying-tricep-extension-start.webp"
   },
   {
@@ -2499,6 +3017,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Machine Bicep Curl",
     "group": "Bicipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "bicep_curl_machine",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/machine-bicep-curl-start.webp"
   },
   {
@@ -2506,6 +3026,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Machine Calf Raise",
     "group": "Polpacci",
     "equipment": "Macchinario",
+    "raw_equipment": "standing_calf_raise_machine",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/machine-calf-raise-start.webp"
   },
   {
@@ -2513,6 +3035,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Machine Preacher Curl",
     "group": "Bicipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "preacher_curl_machine",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/machine-preacher-curl-start.webp"
   },
   {
@@ -2520,6 +3044,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Machine Shoulder Press",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "shoulder_press_machine",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/machine-shoulder-press-start.webp"
   },
   {
@@ -2527,6 +3053,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Medicine Ball Slam",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "slam_ball",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/medicine-ball-slam-start.webp"
   },
   {
@@ -2534,6 +3062,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Mountain Climbers",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/mountain-climbers-start.webp"
   },
   {
@@ -2541,6 +3071,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Muscle Snatch",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/muscle-snatch-start.webp"
   },
   {
@@ -2548,6 +3080,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Muscle Ups",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/muscle-ups-start.webp"
   },
   {
@@ -2555,6 +3089,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Negative Pull Ups",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/negative-pull-ups-start.webp"
   },
   {
@@ -2562,6 +3098,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Neutral Grip Pull Ups",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/neutral-grip-pull-ups-start.webp"
   },
   {
@@ -2569,6 +3107,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Nordic Hamstring Curl",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "glute_ham_developer",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/nordic-hamstring-curl-start.webp"
   },
   {
@@ -2576,6 +3116,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Overhead Press",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ohp-start.webp"
   },
   {
@@ -2583,6 +3125,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One-Arm Dumbbell Push Press",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-dumbbell-push-press-start.webp"
   },
   {
@@ -2590,6 +3134,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One-Arm Dumbbell Swing",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-dumbbell-swing-start.webp"
   },
   {
@@ -2597,6 +3143,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One Arm Kettlebell Bicep Curl",
     "group": "Bicipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-kettlebell-bicep-curl-start.webp"
   },
   {
@@ -2604,6 +3152,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One-Arm Kettlebell Bottoms-Up Press",
     "group": "Spalle",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-kettlebell-bottoms-up-press-start.webp"
   },
   {
@@ -2611,6 +3161,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One Arm Kettlebell Floor Glute Bridge Press",
     "group": "Petto",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-kettlebell-floor-glute-bridge-press-start.webp"
   },
   {
@@ -2618,6 +3170,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One Arm Kettlebell Floor Press",
     "group": "Petto",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-kettlebell-floor-press-start.webp"
   },
   {
@@ -2625,6 +3179,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One Arm Kettlebell Front Squat",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-kettlebell-front-squat-start.webp"
   },
   {
@@ -2632,6 +3188,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One Arm Kettlebell Push Press",
     "group": "Spalle",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-kettlebell-push-press-start.webp"
   },
   {
@@ -2639,6 +3197,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One Arm Kettlebell Row",
     "group": "Dorsali",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-kettlebell-row-start.webp"
   },
   {
@@ -2646,6 +3206,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One Arm Kettlebell Shoulder Press",
     "group": "Spalle",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-kettlebell-shoulder-press-start.webp"
   },
   {
@@ -2653,6 +3215,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One Arm Kettlebell Swing",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-kettlebell-swing-start.webp"
   },
   {
@@ -2660,6 +3224,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One-Arm Kettlebell Tricep Kickback",
     "group": "Bicipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-kettlebell-tricep-kickback-start.webp"
   },
   {
@@ -2667,6 +3233,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One-Arm Landmine Press",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-landmine-press-start.webp"
   },
   {
@@ -2674,6 +3242,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One-Arm Lat Pulldown",
     "group": "Dorsali",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-lat-pulldown-start.webp"
   },
   {
@@ -2681,6 +3251,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One-Arm Single-Leg Dumbbell Romanian Deadlift",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-single-leg-dumbbell-romanian-deadlift-start.webp"
   },
   {
@@ -2688,6 +3260,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "One-Arm Single-Leg Kettlebell Romanian Deadlift",
     "group": "Quadricipiti",
     "equipment": "Kettlebell",
+    "raw_equipment": "kettlebell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/one-arm-single-leg-kettlebell-romanian-deadlift-start.webp"
   },
   {
@@ -2695,6 +3269,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Overhead Squat",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/overhead-squat-start.webp"
   },
   {
@@ -2702,6 +3278,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Overhead Tricep Extension",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/overhead-tricep-extension-start.webp"
   },
   {
@@ -2709,6 +3287,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Pause Deadlift",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/deadlift-start.webp"
   },
   {
@@ -2716,6 +3296,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Pause Squat",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/squat-start.webp"
   },
   {
@@ -2723,6 +3305,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Paused Bench Press",
     "group": "Petto",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/paused-bench-press-start.webp"
   },
   {
@@ -2730,6 +3314,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Paused Incline Bench Press",
     "group": "Petto",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/incline-bench-press-start.webp"
   },
   {
@@ -2737,6 +3323,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Pec Deck",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "pec_deck",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/pec-deck-start.webp"
   },
   {
@@ -2744,6 +3332,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Pendlay Row",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/pendlay-row-start.webp"
   },
   {
@@ -2751,6 +3341,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Pike Push Ups",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/pike-push-ups-start.webp"
   },
   {
@@ -2758,6 +3350,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Pistol Squat",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/pistol-squat-start.webp"
   },
   {
@@ -2765,6 +3359,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Planche",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/planche-main.webp"
   },
   {
@@ -2772,6 +3368,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Plank",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/plank-main.webp"
   },
   {
@@ -2779,6 +3377,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Plate Pinch",
     "group": "Avambracci",
     "equipment": "Macchinario",
+    "raw_equipment": "plates",
+    "raw_body_part": "lower_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/plate-pinch-start.webp"
   },
   {
@@ -2786,6 +3386,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Preacher Curl",
     "group": "Bicipiti",
     "equipment": "Bilanciere EZ",
+    "raw_equipment": "ez_bar",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/preacher-curl-start.webp"
   },
   {
@@ -2793,6 +3395,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Pseudo Planche Push Ups",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/pseudo-planche-push-ups-start.webp"
   },
   {
@@ -2800,6 +3404,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Pull-Up",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/pull-up-start.webp"
   },
   {
@@ -2807,6 +3413,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Push Jerk",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/push-jerk-start.webp"
   },
   {
@@ -2814,6 +3422,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Push Press",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/push-press-start.webp"
   },
   {
@@ -2821,6 +3431,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Push-Up",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/push-up-start.webp"
   },
   {
@@ -2828,6 +3440,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Rack Pull",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/rack-pull-start.webp"
   },
   {
@@ -2835,6 +3449,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Rear Delt Fly",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/rear-delt-fly-start.webp"
   },
   {
@@ -2842,6 +3458,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Reverse Crunches",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/reverse-crunches-start.webp"
   },
   {
@@ -2849,6 +3467,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Reverse Curl",
     "group": "Bicipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/reverse-curl-start.webp"
   },
   {
@@ -2856,6 +3476,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Reverse Grip Bent Over Row",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/reverse-grip-bent-over-row-start.webp"
   },
   {
@@ -2863,6 +3485,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Reverse Lunge",
     "group": "Quadricipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/reverse-lunge-start.webp"
   },
   {
@@ -2870,6 +3494,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Reverse Plank",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/reverse-plank-main.webp"
   },
   {
@@ -2877,6 +3503,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Ring Dead Hang",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "rings",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ring-dead-hang-main.webp"
   },
   {
@@ -2884,6 +3512,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Ring Dips",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "rings",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ring-dips-start.webp"
   },
   {
@@ -2891,6 +3521,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Ring Face Pull",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "rings",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/ring-face-pull-start.webp"
   },
   {
@@ -2898,6 +3530,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Rings Inverted Row",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "rings",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/rings-inverted-row-start.webp"
   },
   {
@@ -2905,6 +3539,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Romanian Deadlift",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/romanian-deadlift-start.webp"
   },
   {
@@ -2912,6 +3548,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Rope Climb",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "climbing_rope",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/rope-climb-main.webp"
   },
   {
@@ -2919,6 +3557,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Russian Twist",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/russian-twist-start.webp"
   },
   {
@@ -2926,6 +3566,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Scapular Pull Ups",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/scapular-pull-ups-start.webp"
   },
   {
@@ -2933,6 +3575,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Seated Barbell Overhead Press",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/seated-barbell-overhead-press-start.webp"
   },
   {
@@ -2940,6 +3584,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Seated Calf Raise",
     "group": "Polpacci",
     "equipment": "Macchinario",
+    "raw_equipment": "seated_calf_raise_machine",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/seated-calf-raise-start.webp"
   },
   {
@@ -2947,6 +3593,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Seated Dumbbell Shoulder Press",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/seated-db-press-start.webp"
   },
   {
@@ -2954,6 +3602,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Seated Dumbbell Curl",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/seated-dumbbell-curl-start.webp"
   },
   {
@@ -2961,6 +3611,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Seated Dumbbell Lateral Raise",
     "group": "Spalle",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/seated-dumbbell-lateral-raise-start.webp"
   },
   {
@@ -2968,6 +3620,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Seated Dumbbell Tricep Extension",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/seated-dumbbell-tricep-extension-start.webp"
   },
   {
@@ -2975,6 +3629,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Seated Leg Curl",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "leg_curl",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/seated-leg-curl-start.webp"
   },
   {
@@ -2982,6 +3638,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Seated Smith Machine Shoulder Press",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/seated-smith-machine-shoulder-press-start.webp"
   },
   {
@@ -2989,6 +3647,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Shrug",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/shrug-start.webp"
   },
   {
@@ -2996,6 +3656,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Side Lunge",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/side-lunge-start.webp"
   },
   {
@@ -3003,6 +3665,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Side-Lying Hip Abduction",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/side-lying-hip-abduction-start.webp"
   },
   {
@@ -3010,6 +3674,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Side Lying Hip Adduction",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/side-lying-hip-adduction-start.webp"
   },
   {
@@ -3017,6 +3683,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Side Plank",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/side-plank-main.webp"
   },
   {
@@ -3024,6 +3692,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Single-Arm Dumbbell Row",
     "group": "Dorsali",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/single-arm-db-row-start.webp"
   },
   {
@@ -3031,6 +3701,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Single-Arm Dumbbell Overhead Tricep Extension",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/single-arm-dumbbell-overhead-tricep-extension-start.webp"
   },
   {
@@ -3038,6 +3710,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Single Leg Glute Bridge",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/single-leg-glute-bridge-start.webp"
   },
   {
@@ -3045,6 +3719,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Single Leg Lying Leg Curl",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "leg_curl",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/single-leg-lying-leg-curl-start.webp"
   },
   {
@@ -3052,6 +3728,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Single Leg Romanian Deadlift",
     "group": "Dorsali",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/single-leg-romanian-deadlift-start.webp"
   },
   {
@@ -3059,6 +3737,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Sit-Ups",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/sit-ups-start.webp"
   },
   {
@@ -3066,6 +3746,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Skull Crusher",
     "group": "Bicipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/skull-crusher-start.webp"
   },
   {
@@ -3073,6 +3755,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Sled Row",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "sled",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/sled-row-start.webp"
   },
   {
@@ -3080,6 +3764,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Smith Machine Bench Press",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/smith-machine-bench-press-start.webp"
   },
   {
@@ -3087,6 +3773,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Smith Machine Bent Over Row",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/smith-machine-bent-over-row-start.webp"
   },
   {
@@ -3094,6 +3782,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Smith Machine Bulgarian Split Squat",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/smith-machine-bulgarian-split-start.webp"
   },
   {
@@ -3101,6 +3791,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Smith Machine Calf Raise",
     "group": "Polpacci",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/smith-machine-calf-raise-start.webp"
   },
   {
@@ -3108,6 +3800,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Smith Machine Incline Bench Press",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/smith-machine-incline-bench-press-start.webp"
   },
   {
@@ -3115,6 +3809,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Smith Machine Romanian Deadlift",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/smith-machine-rdl-start.webp"
   },
   {
@@ -3122,6 +3818,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Smith Machine Reverse Grip Bent Over Row",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/smith-machine-reverse-grip-bent-over-row-start.webp"
   },
   {
@@ -3129,6 +3827,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Smith Machine Shoulder Press",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/smith-machine-shoulder-press-start.webp"
   },
   {
@@ -3136,6 +3836,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Smith Machine Shrug",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/smith-machine-shrug-start.webp"
   },
   {
@@ -3143,6 +3845,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Smith Machine Squat",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "smith_machine",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/smith-machine-squat-start.webp"
   },
   {
@@ -3150,6 +3854,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Snatch",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/snatch-start.webp"
   },
   {
@@ -3157,6 +3863,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Spider Curl",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/spider-curl-start.webp"
   },
   {
@@ -3164,6 +3872,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Split Jerk",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "full_body",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/split-jerk-start.webp"
   },
   {
@@ -3171,6 +3881,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Split Squat",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/split-squat-start.webp"
   },
   {
@@ -3178,6 +3890,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Spoto Press",
     "group": "Petto",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/spoto-press-start.webp"
   },
   {
@@ -3185,6 +3899,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Back Squat",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/squat-start.webp"
   },
   {
@@ -3192,6 +3908,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Stability Ball Hip Bridge",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "stability_ball",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/stability-ball-hip-bridge-start.webp"
   },
   {
@@ -3199,6 +3917,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Stability Ball Knee Tuck",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "stability_ball",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/stability-ball-knee-tuck-start.webp"
   },
   {
@@ -3206,6 +3926,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Stability Ball Push-Up",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "stability_ball",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/stability-ball-push-up-start.webp"
   },
   {
@@ -3213,6 +3935,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Standing Calf Raise",
     "group": "Polpacci",
     "equipment": "Macchinario",
+    "raw_equipment": "standing_calf_raise_machine",
+    "raw_body_part": "lower_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/standing-calf-raise-start.webp"
   },
   {
@@ -3220,6 +3944,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Step Ups",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/step-ups-start.webp"
   },
   {
@@ -3227,6 +3953,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Stiff Leg Deadlift",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/stiff-leg-deadlift-start.webp"
   },
   {
@@ -3234,6 +3962,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Straight-Arm Pulldown",
     "group": "Dorsali",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/straight-arm-pulldown-start.webp"
   },
   {
@@ -3241,6 +3971,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Sumo Deadlift",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/sumo-deadlift-start.webp"
   },
   {
@@ -3248,6 +3980,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Sumo Squat",
     "group": "Quadricipiti",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/sumo-squat-start.webp"
   },
   {
@@ -3255,6 +3989,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Superman",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/superman-start.webp"
   },
   {
@@ -3262,6 +3998,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Svend Press",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "plates",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/svend-press-start.webp"
   },
   {
@@ -3269,6 +4007,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "T-Bar Row",
     "group": "Dorsali",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/t-bar-row-start.webp"
   },
   {
@@ -3276,6 +4016,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Thoracic Bridge",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/thoracic-bridge-main.webp"
   },
   {
@@ -3283,6 +4025,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Thruster",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/thruster-start.webp"
   },
   {
@@ -3290,6 +4034,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Toes to Bar",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/toes-to-bar-start.webp"
   },
   {
@@ -3297,6 +4043,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Dumbbell Tricep Kickback",
     "group": "Bicipiti",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/tricep-kickback-start.webp"
   },
   {
@@ -3304,6 +4052,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Cable Tricep Pushdown",
     "group": "Bicipiti",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/tricep-pushdown-start.webp"
   },
   {
@@ -3311,6 +4061,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Bicep Curl",
     "group": "Bicipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-bicep-curl-start.webp"
   },
   {
@@ -3318,6 +4070,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Chest Press",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-chest-press-start.webp"
   },
   {
@@ -3325,6 +4079,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Face Pull",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-face-pull-start.webp"
   },
   {
@@ -3332,6 +4088,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Hamstring Curl",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-hamstring-curl-start.webp"
   },
   {
@@ -3339,6 +4097,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Lunge",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-lunge-start.webp"
   },
   {
@@ -3346,6 +4106,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Pistol Squat",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-pistol-squat-start.webp"
   },
   {
@@ -3353,6 +4115,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Plank",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-plank-main.webp"
   },
   {
@@ -3360,6 +4124,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Row",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-row-start.webp"
   },
   {
@@ -3367,6 +4133,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Side Plank",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-side-plank-main.webp"
   },
   {
@@ -3374,6 +4142,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Squat",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-squat-start.webp"
   },
   {
@@ -3381,6 +4151,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Triceps Extension",
     "group": "Bicipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-tricep-extension-start.webp"
   },
   {
@@ -3388,6 +4160,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "TRX Y-Fly",
     "group": "Spalle",
     "equipment": "Macchinario",
+    "raw_equipment": "suspension_trainer",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/trx-y-fly-start.webp"
   },
   {
@@ -3395,6 +4169,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Barbell Upright Row",
     "group": "Spalle",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "shoulders",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/upright-row-start.webp"
   },
   {
@@ -3402,6 +4178,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "V-Bar Lat Pulldown",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "lat_pulldown_machine",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/v-bar-lat-pulldown-start.webp"
   },
   {
@@ -3409,6 +4187,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "V-Bar Tricep Pushdown",
     "group": "Bicipiti",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "upper_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/v-bar-tricep-pushdown-start.webp"
   },
   {
@@ -3416,6 +4196,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "V-Sit",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/v-sit-main.webp"
   },
   {
@@ -3423,6 +4205,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "V Ups",
     "group": "Addominali",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/v-ups-start.webp"
   },
   {
@@ -3430,6 +4214,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Walking Lunge",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/walking-lunge-start.webp"
   },
   {
@@ -3437,6 +4223,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Wall Push Ups",
     "group": "Petto",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/wall-push-ups-start.webp"
   },
   {
@@ -3444,6 +4232,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Wall Sit",
     "group": "Quadricipiti",
     "equipment": "Macchinario",
+    "raw_equipment": "",
+    "raw_body_part": "upper_legs",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/wall-sit-main.webp"
   },
   {
@@ -3451,6 +4241,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Weighted Wall Crunch",
     "group": "Addominali",
     "equipment": "Manubri",
+    "raw_equipment": "dumbbell",
+    "raw_body_part": "core",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/weighted-wall-crunch-start.webp"
   },
   {
@@ -3458,6 +4250,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Wide-Grip Bench Press",
     "group": "Petto",
     "equipment": "Bilanciere",
+    "raw_equipment": "barbell",
+    "raw_body_part": "chest",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/wide-grip-bench-press-start.webp"
   },
   {
@@ -3465,6 +4259,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Wide Grip Pull Ups",
     "group": "Dorsali",
     "equipment": "Macchinario",
+    "raw_equipment": "pull_up_bar",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/wide-grip-pull-ups-start.webp"
   },
   {
@@ -3472,6 +4268,8 @@ export const REPDB_FULL_CATALOG = [
     "name": "Wide Grip Seated Cable Row",
     "group": "Dorsali",
     "equipment": "Cavi",
+    "raw_equipment": "cable",
+    "raw_body_part": "back",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/wide-grip-seated-cable-row-start.webp"
   },
   {
@@ -3479,9 +4277,44 @@ export const REPDB_FULL_CATALOG = [
     "name": "Wrist Roller",
     "group": "Avambracci",
     "equipment": "Macchinario",
+    "raw_equipment": "wrist_roller",
+    "raw_body_part": "lower_arms",
     "image_url": "https://raw.githubusercontent.com/sergei-argutin/exercise-dataset/main/images/flat/wrist-roller-main.webp"
   }
 ];
+
+/**
+ * Mappatura rigorosa attrezzatura tra italiano e RepDB per evitare immagini fuorvianti
+ */
+const STRICT_EQUIPMENT_MAP = {
+  'bilanciere': ['barbell', 'ez_bar'],
+  'manubri': ['dumbbell'],
+  'cavi': ['cable'],
+  'macchinario': ['machine', 'lever'],
+  'corpo libero': ['bodyweight'],
+  'multipower': ['smith'],
+  'kettlebell': ['kettlebell'],
+  'elastico': ['band'],
+  'bilanciere ez': ['ez_bar', 'barbell']
+};
+
+/**
+ * Mappatura rigorosa muscoli tra italiano e RepDB
+ */
+const STRICT_MUSCLE_MAP = {
+  'petto': ['chest'],
+  'dorsali': ['back', 'lats', 'middle_back', 'lower_back', 'traps'],
+  'spalle': ['shoulders'],
+  'bicipiti': ['biceps', 'upper_arms'],
+  'tricipiti': ['triceps', 'upper_arms'],
+  'quadricipiti': ['quadriceps', 'upper_legs'],
+  'femorali': ['hamstrings', 'upper_legs'],
+  'glutei': ['glutes', 'upper_legs'],
+  'addominali': ['abdominals', 'core'],
+  'polpacci': ['calves', 'lower_legs'],
+  'trapezi': ['traps'],
+  'lombari': ['lower_back']
+};
 
 /**
  * Normalizza il gruppo muscolare per il matching anatomico
@@ -3508,20 +4341,39 @@ export function normalizeMuscleGroup(rawGroup) {
 }
 
 /**
- * Trova l'esercizio RepDB più simile per qualsiasi nome di esercizio sconosciuto o dal DB
+ * Trova un esercizio RepDB SOLO SE c'è corrispondenza RIGOROSA A 3 VIE su:
+ * 1. Attrezzatura (es. Cavi vs Cavi, Manubri vs Manubri)
+ * 2. Gruppo Muscolare (es. Petto vs Petto)
+ * 3. Nome / Azione del movimento
  */
-export function findMatchingRepDBExercise(inputName) {
+export function findMatchingRepDBExercise(inputName, targetEquipment, targetMuscleGroup) {
   if (!inputName || typeof inputName !== 'string') return null;
-  
+
   const normInput = inputName.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').trim();
   const keywords = normInput.split(/\s+/).filter(k => k.length > 2);
-  
   if (keywords.length === 0) return null;
+
+  const normEquip = (targetEquipment || '').toLowerCase().trim();
+  const normMuscle = (targetMuscleGroup || '').toLowerCase().trim();
+
+  const allowedRepdbEquip = STRICT_EQUIPMENT_MAP[normEquip] || null;
+  const allowedRepdbMuscles = STRICT_MUSCLE_MAP[normMuscle] || null;
 
   let bestMatch = null;
   let maxScore = 0;
 
   for (const item of REPDB_FULL_CATALOG) {
+    // 1. FILTRO RIGOROSO ATTREZZATURA: Se l'esercizio è ai cavi e RepDB è corpo libero o manubri -> SCARTA!
+    if (allowedRepdbEquip && !allowedRepdbEquip.some(eq => item.raw_equipment && item.raw_equipment.includes(eq))) {
+      continue;
+    }
+
+    // 2. FILTRO RIGOROSO MUSCOLO: Se l'esercizio è per Petto e RepDB è Dorsali -> SCARTA!
+    if (allowedRepdbMuscles && !allowedRepdbMuscles.some(m => item.raw_body_part && item.raw_body_part.includes(m))) {
+      continue;
+    }
+
+    // 3. Punteggio parole chiave del nome del movimento
     const itemNorm = (item.id + ' ' + item.name).toLowerCase().replace(/-/g, ' ');
     let score = 0;
 
@@ -3537,7 +4389,8 @@ export function findMatchingRepDBExercise(inputName) {
     }
   }
 
-  return maxScore > 0 ? bestMatch : null;
+  // Richiede un punteggio di confidenza minimo di 4 per evitare immagini fuorvianti
+  return maxScore >= 4 ? bestMatch : null;
 }
 
 /**
@@ -3553,6 +4406,9 @@ export function getEnrichedExercise(exerciseObjOrName) {
   const normInput = inputName.trim().toLowerCase();
   const rawGroup = typeof exerciseObjOrName === 'object' 
     ? (exerciseObjOrName.primary_muscle_group || exerciseObjOrName.muscle || '') 
+    : '';
+  const rawEquipment = typeof exerciseObjOrName === 'object' 
+    ? (exerciseObjOrName.equipment || '') 
     : '';
 
   // 1. Cerca corrispondenza RIGOROSA per nome esatto o per alias nella libreria master
@@ -3583,12 +4439,9 @@ export function getEnrichedExercise(exerciseObjOrName) {
     };
   }
 
-  // 2. Matching Dinamico RepDB per esercizi non presenti nella libreria master (es. Hex Bar Jump Squat, ecc.)
-  const repdbMatch = findMatchingRepDBExercise(inputName);
-  
-  const inferredMuscle = (rawGroup && normalizeMuscleGroup(rawGroup) !== 'Generico')
-    ? normalizeMuscleGroup(rawGroup)
-    : (repdbMatch ? repdbMatch.group : normalizeMuscleGroup(normInput));
+  // 2. Matching Dinamico RIGOROSO A 3 VIE (Nome + Attrezzatura + Muscolo)
+  const normMuscle = normalizeMuscleGroup(rawGroup || normInput);
+  const repdbMatch = findMatchingRepDBExercise(inputName, rawEquipment, normMuscle);
 
   const fallbackImg = baseObj.image_url || (repdbMatch ? repdbMatch.image_url : null);
   const fallbackImg1 = fallbackImg ? (fallbackImg.includes('-start.webp') ? fallbackImg.replace('-start.webp', '-peak.webp') : fallbackImg) : null;
@@ -3598,14 +4451,14 @@ export function getEnrichedExercise(exerciseObjOrName) {
     id: baseObj.id || normInput.replace(/\s+/g, '-'),
     name: baseObj.name || inputName || 'Esercizio',
     equipment: baseObj.equipment || (repdbMatch ? repdbMatch.equipment : 'Macchinario'),
-    primary_muscle_group: inferredMuscle,
-    muscle: inferredMuscle,
+    primary_muscle_group: normMuscle,
+    muscle: normMuscle,
     secondary_muscles: baseObj.secondary_muscles || [],
     movement_pattern: baseObj.movement_pattern || 'Esecuzione Controllata',
     default_rest_time: baseObj.default_rest_time || 90,
     image_url: fallbackImg,
     images: fallbackImg ? (fallbackImg1 && fallbackImg1 !== fallbackImg ? [fallbackImg, fallbackImg1] : [fallbackImg]) : [],
-    description: baseObj.description || `Esercizio specifico focalizzato sullo sviluppo del gruppo muscolare ${inferredMuscle}.`,
+    description: baseObj.description || `Esercizio specifico focalizzato sullo sviluppo del gruppo muscolare ${normMuscle}.`,
     setup: baseObj.setup || 'Mantieni una postura stabile con la schiena dritta. Esegui il movimento in modo fluido e controlla sia la fase concentrica che quella eccentrica.'
   };
 }
