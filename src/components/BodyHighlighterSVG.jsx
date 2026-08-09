@@ -98,39 +98,19 @@ export default function BodyHighlighterSVG({
   };
 
   return (
-    <div className={`w-full h-full flex flex-col items-center justify-between p-2 bg-slate-950/90 rounded-2xl border border-slate-800 backdrop-blur-md ${className}`}>
+    <div className={`w-full h-full flex flex-col items-center justify-between p-2.5 bg-slate-950/90 rounded-2xl border border-slate-800 backdrop-blur-md ${className}`}>
       
-      {/* Intestazione Mappa Anatomica */}
-      <div className="w-full flex items-center justify-between px-3 py-1 mb-1 border-b border-slate-800/80">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
-          <h4 className="text-[11px] font-black uppercase tracking-wider text-slate-200">
-            Mappa Anatomica Vettoriale 3D
-          </h4>
-        </div>
-        <div className="flex items-center gap-3 text-[10px] font-bold">
-          <span className="flex items-center gap-1 text-orange-400">
-            <span className="w-2 h-2 rounded-full bg-orange-500"></span> Primario
-          </span>
-          {secondaryMuscles.length > 0 && (
-            <span className="flex items-center gap-1 text-amber-300">
-              <span className="w-2 h-2 rounded-full bg-amber-400"></span> Secondario
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* SVG Container Affiancato: Fronte e Retro */}
-      <div className="flex-1 w-full flex items-center justify-center gap-2 sm:gap-6 py-1 overflow-hidden">
+      {/* SVG Container Affiancato: Fronte e Retro (INGRANDITO E OTTIMIZZATO) */}
+      <div className="flex-1 w-full flex items-center justify-center gap-4 sm:gap-8 py-1 overflow-hidden">
         
         {/* VISTA ANTERIORE (FRONT) */}
-        <div className="flex flex-col items-center h-full max-h-48 relative">
-          <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mb-0.5">
+        <div className="flex flex-col items-center h-full relative flex-1 max-w-[130px]">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
             Fronte
           </span>
           <svg
             viewBox="0 0 724 1448"
-            className="h-full max-h-44 w-auto object-contain drop-shadow-md"
+            className="h-full w-full object-contain drop-shadow-md"
           >
             {/* Silhouette Outline Front */}
             <path
@@ -145,16 +125,16 @@ export default function BodyHighlighterSVG({
           </svg>
         </div>
 
-        <div className="w-[1px] h-32 bg-slate-800/80"></div>
+        <div className="w-[1px] h-36 bg-slate-800/80"></div>
 
         {/* VISTA POSTERIORE (BACK) */}
-        <div className="flex flex-col items-center h-full max-h-48 relative">
-          <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mb-0.5">
+        <div className="flex flex-col items-center h-full relative flex-1 max-w-[130px]">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
             Retro
           </span>
           <svg
             viewBox="724 0 724 1448"
-            className="h-full max-h-44 w-auto object-contain drop-shadow-md"
+            className="h-full w-full object-contain drop-shadow-md"
           >
             {/* Silhouette Outline Back */}
             <path
@@ -170,12 +150,26 @@ export default function BodyHighlighterSVG({
         </div>
       </div>
 
-      {/* Etichetta del Muscolo Primario Focus */}
-      <div className="w-full mt-1 pt-1.5 border-t border-slate-800/80 flex items-center justify-center gap-2 text-center">
-        <span className="text-[10px] text-slate-400">Muscolo Target:</span>
-        <span className="text-[11px] font-black uppercase text-orange-400 bg-orange-500/10 px-2.5 py-0.5 rounded-md border border-orange-500/30 tracking-wider">
-          {primaryMuscle || 'Petto'}
-        </span>
+      {/* Footer con Muscolo Target E Legenda Accoppiata */}
+      <div className="w-full mt-1 pt-2 border-t border-slate-800/80 flex items-center justify-between px-2 text-center">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] text-slate-400 font-medium">Target:</span>
+          <span className="text-[11px] font-black uppercase text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/30 tracking-wider">
+            {primaryMuscle || 'Petto'}
+          </span>
+        </div>
+
+        {/* Legenda Muscoli */}
+        <div className="flex items-center gap-2.5 text-[10px] font-bold">
+          <span className="flex items-center gap-1 text-orange-400">
+            <span className="w-2 h-2 rounded-full bg-orange-500"></span> Primario
+          </span>
+          {secondaryMuscles.length > 0 && (
+            <span className="flex items-center gap-1 text-amber-300">
+              <span className="w-2 h-2 rounded-full bg-amber-400"></span> Secondario
+            </span>
+          )}
+        </div>
       </div>
 
     </div>

@@ -56,32 +56,30 @@ const ExerciseMediaSlideshow = ({ exercise }) => {
         <div className="flex items-center gap-1 bg-surface p-1 rounded-xl w-full">
           <button
             onClick={() => setActiveSlide(0)}
-            className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+            className={`flex-1 h-9 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center transition-all ${
               activeSlide === 0 
                 ? 'bg-primary text-black shadow-md' 
                 : 'text-text-secondary hover:text-white'
             }`}
           >
-            <Dumbbell size={14} />
-            <span>1. Esercizio 3D</span>
+            <span>ESERCIZIO</span>
           </button>
           
           <button
             onClick={() => setActiveSlide(1)}
-            className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+            className={`flex-1 h-9 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center transition-all ${
               activeSlide === 1 
-                ? 'bg-amber-400 text-black shadow-md' 
+                ? 'bg-primary text-black shadow-md' 
                 : 'text-text-secondary hover:text-white'
             }`}
           >
-            <Activity size={14} />
-            <span>2. Focus Muscolare</span>
+            <span>FOCUS MUSCOLARE</span>
           </button>
         </div>
       </div>
 
       {/* Slide Body Content */}
-      <div className="relative w-full h-56 p-2 flex items-center justify-center">
+      <div className="relative w-full h-64 p-2 flex items-center justify-center">
         
         {/* SLIDE 0: ESERCIZIO 3D */}
         {activeSlide === 0 && (
@@ -115,18 +113,17 @@ const ExerciseMediaSlideshow = ({ exercise }) => {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-center p-4 bg-surface-secondary/80 rounded-2xl border border-surface-tertiary w-full h-full">
-                <div className="w-12 h-12 rounded-2xl bg-surface-tertiary/60 flex items-center justify-center text-amber-400 mb-2 border border-surface-tertiary">
+                <div className="w-12 h-12 rounded-2xl bg-surface-tertiary/60 flex items-center justify-center text-primary mb-2 border border-surface-tertiary">
                   <Dumbbell size={24} />
                 </div>
                 <h4 className="text-xs font-bold text-white mb-1">{exercise.name}</h4>
                 <span className="px-2.5 py-0.5 rounded-full bg-surface-tertiary text-[10px] text-text-secondary font-mono mb-2">
-                  Dimostrazione 3D non disponibile
+                  Dimostrazione non disponibile
                 </span>
                 <button
                   onClick={() => setActiveSlide(1)}
-                  className="text-[10px] font-bold text-amber-400 hover:underline flex items-center gap-1 mt-1"
+                  className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1 mt-1"
                 >
-                  <Activity size={12} />
                   <span>Vedi Focus Muscolare Anatomico →</span>
                 </button>
               </div>
@@ -142,17 +139,19 @@ const ExerciseMediaSlideshow = ({ exercise }) => {
           />
         )}
 
-        {/* Navigation Arrows */}
+        {/* Navigation Arrows (spostate all'interno di qualche pixel) */}
         <button
           onClick={() => setActiveSlide(prev => (prev === 0 ? 1 : 0))}
-          className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/10 transition-all active:scale-95 z-10"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center backdrop-blur-md border border-white/10 transition-all active:scale-95 z-10 shadow-lg"
+          title="Cambia Scheda"
         >
           <ChevronLeft size={18} />
         </button>
         
         <button
           onClick={() => setActiveSlide(prev => (prev === 0 ? 1 : 0))}
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/10 transition-all active:scale-95 z-10"
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center backdrop-blur-md border border-white/10 transition-all active:scale-95 z-10 shadow-lg"
+          title="Cambia Scheda"
         >
           <ChevronRight size={18} />
         </button>
@@ -162,14 +161,14 @@ const ExerciseMediaSlideshow = ({ exercise }) => {
       <div className="flex items-center justify-center gap-1.5 pb-2.5">
         <button
           onClick={() => setActiveSlide(0)}
-          className={`w-2 h-2 rounded-full transition-all ${
-            activeSlide === 0 ? 'w-5 bg-primary' : 'bg-surface-tertiary'
+          className={`h-2 rounded-full transition-all ${
+            activeSlide === 0 ? 'w-5 bg-primary' : 'w-2 bg-surface-tertiary'
           }`}
         />
         <button
           onClick={() => setActiveSlide(1)}
-          className={`w-2 h-2 rounded-full transition-all ${
-            activeSlide === 1 ? 'w-5 bg-amber-400' : 'bg-surface-tertiary'
+          className={`h-2 rounded-full transition-all ${
+            activeSlide === 1 ? 'w-5 bg-primary' : 'w-2 bg-surface-tertiary'
           }`}
         />
       </div>
