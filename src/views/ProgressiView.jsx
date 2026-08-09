@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
 import { Card } from '../components/UI';
-import { Calendar as CalendarIcon, TrendingUp, Dumbbell, Activity, ChevronLeft, ChevronRight, User, Settings } from 'lucide-react';
-import { SettingsView } from './SettingsView';
-
-import React, { useState } from 'react';
-import { Card } from '../components/UI';
 import { Calendar as CalendarIcon, TrendingUp, Dumbbell, Activity, ChevronLeft, ChevronRight, User, Settings, Sparkles, Trophy, Award } from 'lucide-react';
 import { SettingsView } from './SettingsView';
 
