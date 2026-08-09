@@ -76,3 +76,45 @@ export const Toggle = ({ checked, onChange }) => (
     <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${checked ? 'translate-x-6' : 'translate-x-0'}`} />
   </button>
 );
+
+// Tooltip Tattile & Desktop per Feedback Immediato sugli Esercizi in Scheda
+export const Tooltip = ({ text, children, position = 'top' }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  if (!text) return children;
+
+  return (
+    <div 
+      className="relative inline-flex items-center"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <div 
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(prev => !prev);
+        }}
+      >
+        {children}
+      </div>
+
+      {isOpen && (
+        <div 
+          className={`absolute z-[100] px-3 py-1.5 rounded-xl bg-black/95 text-white text-[11px] font-bold shadow-2xl border border-white/20 backdrop-blur-md whitespace-nowrap pointer-events-none transition-all duration-200 animate-in fade-in zoom-in-95 ${
+            position === 'top' 
+              ? 'bottom-full mb-2 left-1/2 -translate-x-1/2' 
+              : 'top-full mt-2 left-1/2 -translate-x-1/2'
+          }`}
+        >
+          {text}
+          <div 
+            className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-black/95 rotate-45 border-r border-b border-white/20 ${
+              position === 'top' ? 'top-full -mt-1 border-r border-b' : 'bottom-full -mb-1 border-l border-t'
+            }`} 
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+

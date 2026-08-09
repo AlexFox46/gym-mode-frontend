@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Dumbbell, ShieldCheck, Sparkles, Layers, Info, ChevronRight, ChevronLeft, Activity, Play, Pause } from 'lucide-react';
+import { X, Dumbbell, ShieldCheck, Sparkles, Layers, Info, ChevronRight, ChevronLeft, Activity, Play, Pause, Check } from 'lucide-react';
 import { getEnrichedExercise, getSimilarExercises, MUSCLE_COLORS, normalizeMuscleGroup } from '../data/exerciseLibrary';
 import BodyHighlighterSVG from './BodyHighlighterSVG';
+import { Tooltip } from './UI';
 
 /**
  * Visual SVG & Vector Diagram for Target Muscle Group Focus (Male & Female, Front & Back)
@@ -182,6 +183,12 @@ export const ExerciseDetailModal = ({ exercise, onClose, allExercises = [], onSe
   const enriched = getEnrichedExercise(exercise);
   const similarList = getSimilarExercises(enriched, allExercises);
 
+  // Verifica se l'esercizio corrente è già in scheda / allExercises
+  const isMainInScheda = (allExercises || []).some(
+    item => (item.id && enriched.id && item.id === enriched.id) ||
+            (item.name && enriched.name && item.name.toLowerCase() === enriched.name.toLowerCase())
+  );
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md p-0 sm:p-4 animate-in fade-in duration-200">
       {/* Modal Container */}
@@ -190,13 +197,22 @@ export const ExerciseDetailModal = ({ exercise, onClose, allExercises = [], onSe
         {/* Modal Header */}
         <div className="relative p-5 pb-3 border-b border-surface-tertiary flex items-start justify-between bg-surface-secondary/80">
           <div>
-            <div className="flex items-center gap-2 mb-1.5">
+            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <span className="px-2.5 py-0.5 rounded-full bg-primary/15 border border-primary/30 text-primary text-[10px] font-black uppercase tracking-wider">
                 {enriched.equipment}
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-surface-tertiary border border-surface-tertiary text-text-secondary text-[10px] font-black uppercase tracking-wider">
                 {enriched.primary_muscle_group}
               </span>
+
+              {isMainInScheda && (
+                <Tooltip text="Questo esercizio è già incluso nella tua scheda di allenamento">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 cursor-help">
+                    <Check size={11} />
+                    <span>In Scheda</span>
+                  </span>
+                </Tooltip>
+              )}
             </div>
             <h2 className="text-xl font-black text-white tracking-tight">{enriched.name}</h2>
           </div>
@@ -246,37 +262,54 @@ export const ExerciseDetailModal = ({ exercise, onClose, allExercises = [], onSe
               </div>
 
               <div className="space-y-2">
-                {similarList.map(simEx => (
-                  <div 
-                    key={simEx.id || simEx.name}
-                    onClick={() => {
-                      if (onSelectSimilar) {
-                        onSelectSimilar(simEx);
-                      }
-                    }}
-                    className="group bg-surface-tertiary/50 hover:bg-surface-tertiary border border-surface-tertiary hover:border-primary/40 rounded-2xl p-3 flex items-center justify-between transition-all cursor-pointer"
-                  >
-                    <div>
-                      <h4 className="text-xs font-bold text-white group-hover:text-primary transition-colors mb-1">
-                        {simEx.name}
-                      </h4>
-                      <div className="flex items-center gap-1.5">
-                        {/* Tag Attrezzatura */}
-                        <span className="px-2 py-0.5 rounded-md bg-surface-secondary text-[9px] font-bold text-primary border border-primary/20">
-                          {simEx.equipment}
-                        </span>
-                        {/* Tag Gruppo Muscolare */}
-                        <span className="px-2 py-0.5 rounded-md bg-surface-secondary text-[9px] font-bold text-text-secondary border border-surface-tertiary">
-                          {simEx.primary_muscle_group}
-                        </span>
+                {similarList.map(simEx => {
+                  const isSimInScheda = (allExercises || []).some(
+                    item => (item.id && simEx.id && item.id === simEx.id) ||
+                            (item.name && simEx.name && item.name.toLowerCase() === simEx.name.toLowerCase())
+                  );
+
+                  return (
+                    <div 
+                      key={simEx.id || simEx.name}
+                      onClick={() => {
+                        if (onSelectSimilar) {
+                          onSelectSimilar(simEx);
+                        }
+                      }}
+                      className="group bg-surface-tertiary/50 hover:bg-surface-tertiary border border-surface-tertiary hover:border-primary/40 rounded-2xl p-3 flex items-center justify-between transition-all cursor-pointer"
+                    >
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="text-xs font-bold text-white group-hover:text-primary transition-colors">
+                            {simEx.name}
+                          </h4>
+                          {isSimInScheda && (
+                            <Tooltip text="Questo esercizio è già incluso nella tua scheda">
+                              <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold flex items-center gap-0.5">
+                                <Check size={10} />
+                                <span>In Scheda</span>
+                              </span>
+                            </Tooltip>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {/* Tag Attrezzatura */}
+                          <span className="px-2 py-0.5 rounded-md bg-surface-secondary text-[9px] font-bold text-primary border border-primary/20">
+                            {simEx.equipment}
+                          </span>
+                          {/* Tag Gruppo Muscolare */}
+                          <span className="px-2 py-0.5 rounded-md bg-surface-secondary text-[9px] font-bold text-text-secondary border border-surface-tertiary">
+                            {simEx.primary_muscle_group}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="w-7 h-7 rounded-xl bg-surface-secondary group-hover:bg-primary group-hover:text-black text-text-secondary flex items-center justify-center transition-colors">
+                        <ChevronRight size={14} />
                       </div>
                     </div>
-
-                    <div className="w-7 h-7 rounded-xl bg-surface-secondary group-hover:bg-primary group-hover:text-black text-text-secondary flex items-center justify-center transition-colors">
-                      <ChevronRight size={14} />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

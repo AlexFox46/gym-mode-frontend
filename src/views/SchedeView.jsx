@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import { Card, Button, Stepper } from '../components/UI';
-import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown, Sparkles, Info } from 'lucide-react';
+import { Card, Button, Stepper, Tooltip } from '../components/UI';
+import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown, Sparkles, Info, Check } from 'lucide-react';
 import { ExerciseDetailModal } from '../components/ExerciseDetailModal';
 import { EQUIPMENT_TYPES } from '../data/exerciseLibrary';
 
@@ -714,32 +714,88 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
                   <p className="text-sm">Nessun esercizio trovato</p>
                 </div>
               ) : (
-                filteredExercises.map(ex => (
-                  <div 
-                    key={ex.id || ex.name} 
-                    className="flex justify-between items-center bg-surface-secondary p-4 rounded-xl mb-2 border border-surface-tertiary"
-                  >
-                    <div className="flex-1 pr-2">
-                      <div className="flex items-center gap-2">
-                        <p className="font-bold text-sm text-white">{ex.name}</p>
-                        <button
-                          onClick={() => setDetailModalExercise(ex)}
-                          className="p-1 text-text-secondary hover:text-primary active:scale-95 transition-transform"
-                          title="Dettagli ed Esercizi Simili"
-                        >
-                          <Info size={16} />
-                        </button>
-                      </div>
-                      <p className="text-[10px] text-text-secondary">{ex.primary_muscle_group || ex.muscle} • {ex.equipment}</p>
-                    </div>
-                    <button 
-                      onClick={() => addExerciseToDay(ex)} 
-                      className="bg-primary text-white p-3 rounded-xl hover:opacity-90 active:scale-95 transition-all"
+                filteredExercises.map(ex => {
+                  // Determina in quali giornate della scheda è presente l'esercizio
+                  const daysWithEx = Object.keys(workoutRoutine || {}).filter(dayKey =>
+                    (workoutRoutine[dayKey] || []).some(
+                      item => (item.id && ex.id && item.id === ex.id) || 
+                              (item.name && ex.name && item.name.toLowerCase() === ex.name.toLowerCase())
+                    )
+                  );
+
+                  const isInCurrentDay = (workoutRoutine[activeBuilderDay] || []).some(
+                    item => (item.id && ex.id && item.id === ex.id) || 
+                            (item.name && ex.name && item.name.toLowerCase() === ex.name.toLowerCase())
+                  );
+
+                  const isInScheda = daysWithEx.length > 0;
+
+                  const tooltipText = isInCurrentDay
+                    ? `Già presente nella giornata corrente (${activeBuilderDay})`
+                    : isInScheda
+                      ? `Già presente nella tua scheda (${daysWithEx.join(', ')})`
+                      : `Aggiungi a ${activeBuilderDay}`;
+
+                  return (
+                    <div 
+                      key={ex.id || ex.name} 
+                      className={`flex justify-between items-center p-4 rounded-xl mb-2 border transition-all ${
+                        isInCurrentDay 
+                          ? 'bg-emerald-950/30 border-emerald-500/40 shadow-sm' 
+                          : isInScheda 
+                            ? 'bg-surface-secondary border-amber-500/30' 
+                            : 'bg-surface-secondary border-surface-tertiary'
+                      }`}
                     >
-                      <Plus size={20}/>
-                    </button>
-                  </div>
-                ))
+                      <div className="flex-1 pr-2">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <p className="font-bold text-sm text-white">{ex.name}</p>
+                          
+                          {/* Badge Tooltip reattivo per esercizi già in scheda */}
+                          {isInScheda && (
+                            <Tooltip text={tooltipText}>
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 border cursor-help ${
+                                isInCurrentDay
+                                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                                  : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                              }`}>
+                                <Check size={11} />
+                                <span>Già in scheda ({daysWithEx.join(', ')})</span>
+                              </span>
+                            </Tooltip>
+                          )}
+
+                          <Tooltip text="Dettagli, animazione 3D e muscoli coinvolti">
+                            <button
+                              onClick={() => setDetailModalExercise(ex)}
+                              className="p-1 text-text-secondary hover:text-primary active:scale-95 transition-transform"
+                              title="Dettagli ed Esercizi Simili"
+                            >
+                              <Info size={16} />
+                            </button>
+                          </Tooltip>
+                        </div>
+                        <p className="text-[10px] text-text-secondary">{ex.primary_muscle_group || ex.muscle} • {ex.equipment}</p>
+                      </div>
+
+                      <Tooltip text={tooltipText}>
+                        <button 
+                          onClick={() => addExerciseToDay(ex)} 
+                          className={`p-3 rounded-xl active:scale-95 transition-all flex items-center justify-center ${
+                            isInCurrentDay
+                              ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md'
+                              : isInScheda
+                                ? 'bg-amber-500 hover:bg-amber-600 text-black font-bold shadow-md'
+                                : 'bg-primary text-white hover:opacity-90'
+                          }`}
+                          title={tooltipText}
+                        >
+                          {isInCurrentDay ? <Check size={20} /> : <Plus size={20}/>}
+                        </button>
+                      </Tooltip>
+                    </div>
+                  );
+                })
               )}
             </div>
           )}
