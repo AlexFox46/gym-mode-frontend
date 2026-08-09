@@ -3,6 +3,7 @@ import { EXERCISE_LIBRARY, getEnrichedExercise } from '../data/exerciseLibrary';
 
 /**
  * Fetch tutti gli esercizi dal database Supabase ed arricchimento con metadati e attrezzature verificate
+ * Risolve ed unifica i nomi in inglese verso i nomi canonici in italiano per evitare duplicati.
  */
 export const fetchEsercizi = async () => {
   try {
@@ -21,22 +22,37 @@ export const fetchEsercizi = async () => {
         equipment: ex.equipment,
         movement_pattern: ex.movement_pattern,
         default_rest_time: ex.default_rest_time
-      }));
+      })).filter(Boolean);
     }
 
-    // Unisci con la libreria master se alcuni esercizi non sono ancora presenti nel DB Supabase
+    // Map per unificare e deduplicare per nome canonico in italiano
     const mergedMap = new Map();
+
+    // 1. Popola con gli esercizi della libreria master in italiano
     EXERCISE_LIBRARY.forEach(libEx => {
       const enriched = getEnrichedExercise(libEx);
-      mergedMap.set(enriched.name.toLowerCase(), enriched);
+      if (enriched && enriched.name) {
+        mergedMap.set(enriched.name.toLowerCase(), enriched);
+      }
     });
 
+    // 2. Unisci gli esercizi provenienti da Supabase (se un nome inglese come 'Bench Press' corrisponde ad un alias di 'Panca Piana', si converte nel nome italiano e sovrascrive/unifica senza duplicati)
     fetchedExercises.forEach(dbEx => {
       const enriched = getEnrichedExercise(dbEx);
-      mergedMap.set(enriched.name.toLowerCase(), enriched);
+      if (enriched && enriched.name) {
+        const key = enriched.name.toLowerCase();
+        // Mantiene l'oggetto arricchito con il nome italiano unico
+        if (!mergedMap.has(key)) {
+          mergedMap.set(key, enriched);
+        } else {
+          // Unifica preferendo i campi completi
+          const existing = mergedMap.get(key);
+          mergedMap.set(key, { ...existing, ...enriched, name: existing.name });
+        }
+      }
     });
 
-    return Array.from(mergedMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return Array.from(mergedMap.values()).sort((a, b) => a.name.localeCompare(b.name, 'it'));
   } catch (err) {
     console.error('Errore inatteso nel fetch degli esercizi:', err);
     return EXERCISE_LIBRARY.map(ex => getEnrichedExercise(ex));
@@ -185,16 +201,27 @@ export const fetchExerciseAlternatives = async (exerciseId, muscle, movementPatt
       return {};
     }
 
-    // Filtra l'esercizio stesso
-    const filtered = fallbackEx.filter(e => e.id !== exerciseId);
+    // Filtra l'esercizio stesso ed unifica gli alernativi in italiano senza duplicati
+    const altMap = new Map();
+    fallbackEx.forEach(e => {
+      if (e.id !== exerciseId) {
+        const enriched = getEnrichedExercise(e);
+        if (enriched && enriched.name) {
+          const key = enriched.name.toLowerCase();
+          if (!altMap.has(key)) {
+            altMap.set(key, {
+              id: enriched.id || e.id,
+              name: enriched.name,
+              muscle: enriched.primary_muscle_group || e.primary_muscle_group,
+              equipment: enriched.equipment || e.equipment
+            });
+          }
+        }
+      }
+    });
 
     const grouped = {
-      'Sostituti Suggeriti': filtered.map(ex => ({
-        id: ex.id,
-        name: ex.name,
-        muscle: ex.primary_muscle_group,
-        equipment: ex.equipment
-      }))
+      'Sostituti Suggeriti': Array.from(altMap.values())
     };
 
     return grouped;
