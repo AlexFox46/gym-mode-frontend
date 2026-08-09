@@ -554,6 +554,16 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
             ))}
           </div>
         </div>
+
+        {/* Modale Dettaglio Esercizio Tooltip (i) */}
+        {detailModalExercise && (
+          <ExerciseDetailModal
+            exercise={detailModalExercise}
+            onClose={() => setDetailModalExercise(null)}
+            allExercises={detailRoutine}
+            onSelectSimilar={(simEx) => setDetailModalExercise(simEx)}
+          />
+        )}
       </div>
     );
   }
@@ -721,6 +731,16 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           {/* Spacer finale per centrare l'ultima card */}
           <div className="w-[14%] shrink-0 snap-none" />
         </div>
+
+        {/* Modale Dettaglio Esercizio Tooltip (i) */}
+        {detailModalExercise && (
+          <ExerciseDetailModal
+            exercise={detailModalExercise}
+            onClose={() => setDetailModalExercise(null)}
+            allExercises={schedaAttiva?.routine?.[activeDay] || []}
+            onSelectSimilar={(simEx) => setDetailModalExercise(simEx)}
+          />
+        )}
       </div>
     );
   }
