@@ -3,12 +3,19 @@ import { Card } from '../components/UI';
 import { Calendar as CalendarIcon, TrendingUp, Dumbbell, Activity, ChevronLeft, ChevronRight, User, Settings } from 'lucide-react';
 import { SettingsView } from './SettingsView';
 
+import React, { useState } from 'react';
+import { Card } from '../components/UI';
+import { Calendar as CalendarIcon, TrendingUp, Dumbbell, Activity, ChevronLeft, ChevronRight, User, Settings, Sparkles, Trophy, Award } from 'lucide-react';
+import { SettingsView } from './SettingsView';
+
 export const ProgressiView = ({ 
   storico = [], 
   user, 
   settings, 
   onSettingsChange, 
-  onLogout 
+  onLogout,
+  onNavigateToSpotter,
+  pendingSuggestionsCount = 0
 }) => {
   const [subView, setSubView] = useState('main'); // 'main' | 'settings'
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -39,8 +46,38 @@ export const ProgressiView = ({
   });
 
   const sessioniMensili = logsInViewMonth.length;
-  // Convertiamo in Chili Totali (kg) anziché tonnellate
   const chiliMensili = Math.round(logsInViewMonth.reduce((acc, log) => acc + (log.tonnage || 0), 0));
+
+  // Calcolo dei Record Personali (PR) principali dallo storico
+  const personalRecordsMap = {};
+  storico.forEach(log => {
+    if (Array.isArray(log.exercisesData)) {
+      log.exercisesData.forEach(ex => {
+        const exName = ex.name || ex.exerciseName;
+        if (!exName) return;
+        
+        let maxW = 0;
+        if (Array.isArray(ex.setsData)) {
+          ex.setsData.forEach(s => {
+            const w = parseFloat(s.weight) || 0;
+            if (w > maxW) maxW = w;
+          });
+        } else if (ex.weight) {
+          maxW = parseFloat(ex.weight) || 0;
+        }
+
+        if (maxW > 0) {
+          if (!personalRecordsMap[exName] || maxW > personalRecordsMap[exName]) {
+            personalRecordsMap[exName] = maxW;
+          }
+        }
+      });
+    }
+  });
+
+  const topRecords = Object.entries(personalRecordsMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
 
   return (
     <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32 select-none">
@@ -72,10 +109,10 @@ export const ProgressiView = ({
       </Card>
 
       {/* HEADER PROGRESSI */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <span className="text-[10px] font-black text-primary uppercase tracking-widest block flex items-center gap-2">
-            <Activity size={14} /> Progressi
+            <Activity size={14} /> Progressi & Analisi
           </span>
           <h2 className="text-2xl font-black text-text-primary capitalize tracking-tight mt-1">
             {currentDate.toLocaleDateString('it-IT', { month: 'long' })}
@@ -86,9 +123,42 @@ export const ProgressiView = ({
         </div>
       </div>
 
-      {/* CALENDARIO */}
+      {/* CARD SPOTTER AI (LINK INTELLIGENTE A SPOTTER VIEW) */}
+      <Card className="mb-6 bg-gradient-to-r from-spotter/15 via-surface-secondary to-surface-secondary border border-spotter/40 p-4 space-y-3 shadow-spotter-glow relative overflow-hidden">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles size={18} className="text-spotter animate-pulse" />
+            <span className="text-xs font-black text-spotter uppercase tracking-wider">
+              Spotter AI
+            </span>
+          </div>
+          {pendingSuggestionsCount > 0 && (
+            <span className="px-2.5 py-0.5 rounded-full bg-spotter text-black text-[10px] font-black uppercase">
+              {pendingSuggestionsCount} Modifiche
+            </span>
+          )}
+        </div>
+
+        <p className="text-xs font-medium text-white leading-relaxed">
+          {pendingSuggestionsCount > 0 
+            ? "Lo Spotter ha analizzato i tuoi ultimi allenamenti e propone dei miglioramenti per la tua scheda."
+            : "Lo Spotter monitora la tua scheda attiva per suggerirti i giusti carichi e ottimizzare le tue sessioni."}
+        </p>
+
+        {onNavigateToSpotter && (
+          <button
+            onClick={onNavigateToSpotter}
+            className="w-full py-2.5 px-4 rounded-xl bg-spotter text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-spotter-subtle active:scale-95 transition-all hover:bg-spotter/90"
+          >
+            <Sparkles size={15} />
+            Vedi Suggerimenti
+          </button>
+        )}
+      </Card>
+
+      {/* CALENDARIO DELLA COSTANZA */}
       <Card className="mb-6">
-        <div className="flex items-center justify-between mb-6 border-b border-surface-tertiary pb-4">
+        <div className="flex items-center justify-between mb-4 border-b border-surface-tertiary pb-3">
           <button onClick={() => setCurrentDate(new Date(currentYear, currentMonth - 1, 1))} className="p-2 text-white hover:text-primary transition-colors">
             <ChevronLeft size={20}/>
           </button>
@@ -100,7 +170,7 @@ export const ProgressiView = ({
           </button>
         </div>
         
-        <div className="grid grid-cols-7 gap-2 text-center mb-4">
+        <div className="grid grid-cols-7 gap-2 text-center mb-3">
           {weekdays.map(d => <span key={d} className="text-[10px] font-black text-text-tertiary uppercase">{d}</span>)}
         </div>
 
@@ -111,7 +181,7 @@ export const ProgressiView = ({
             const dailyLog = logsInViewMonth.find(l => new Date(l.date).getDate() === dayNum);
             
             return (
-              <div key={dayNum} className={`h-12 flex flex-col items-center justify-center rounded-xl ${dailyLog ? 'bg-primary text-black' : 'bg-surface-secondary text-text-primary'}`}>
+              <div key={dayNum} className={`h-11 flex flex-col items-center justify-center rounded-xl transition-all ${dailyLog ? 'bg-primary text-black shadow-md' : 'bg-surface-secondary text-text-primary'}`}>
                 <span className="text-xs font-mono font-black">{dayNum}</span>
                 {dailyLog && <span className="text-[7px] font-black uppercase">{dailyLog.dayName}</span>}
               </div>
@@ -120,24 +190,50 @@ export const ProgressiView = ({
         </div>
       </Card>
 
-      {/* STATISTICHE (CONVERTITE IN KG) */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card>
+      {/* SINTESI METRICHE (SESSIONI & CHILI SOLLEVATI) */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <Card className="p-4">
           <div className="flex items-center gap-2 mb-2 text-text-secondary">
             <Dumbbell size={16} />
             <span className="text-[10px] font-black uppercase">Sessioni</span>
           </div>
-          <span className="text-4xl font-black text-white">{sessioniMensili}</span>
+          <span className="text-3xl font-black text-white">{sessioniMensili}</span>
         </Card>
         
-        <Card>
+        <Card className="p-4">
           <div className="flex items-center gap-2 mb-2 text-primary">
             <TrendingUp size={16} />
             <span className="text-[10px] font-black uppercase">Chili Sollevati</span>
           </div>
-          <span className="text-3xl font-black text-primary">{chiliMensili.toLocaleString('it-IT')} <span className="text-sm font-sans text-text-secondary">kg</span></span>
+          <span className="text-2xl font-black text-primary">{chiliMensili.toLocaleString('it-IT')} <span className="text-xs font-sans text-text-secondary">kg</span></span>
         </Card>
       </div>
+
+      {/* RECORD PERSONALI PRINCIPALI (TOP CARICHI REGISTRATI) */}
+      {topRecords.length > 0 && (
+        <Card className="bg-surface-secondary border-surface-tertiary p-4 space-y-3">
+          <div className="flex items-center justify-between border-b border-surface-tertiary pb-2">
+            <div className="flex items-center gap-2 text-white">
+              <Trophy size={16} className="text-yellow-400" />
+              <h4 className="text-xs font-black uppercase tracking-wider">Top Record di Carico</h4>
+            </div>
+            <span className="text-[10px] font-bold text-text-tertiary uppercase">Max Peso</span>
+          </div>
+
+          <div className="space-y-2">
+            {topRecords.map(([name, weight]) => (
+              <div key={name} className="flex items-center justify-between text-xs py-1">
+                <span className="font-semibold text-white truncate max-w-[200px]">{name}</span>
+                <span className="font-mono font-black text-primary bg-surface px-2.5 py-1 rounded-lg border border-surface-tertiary">
+                  {weight} kg
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
     </div>
   );
 };
+

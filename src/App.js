@@ -180,6 +180,7 @@ function App() {
             settings={settings}
             onSettingsChange={handleSettingsChange}
             onLogout={handleLogout}
+            onNavigateToSpotter={() => setActiveTab('spotter')}
           />
         )}
       </main>
