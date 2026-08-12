@@ -53,9 +53,18 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   // Stato per Modal Feedback Spotter a fine allenamento
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [completedWorkoutPayload, setCompletedWorkoutPayload] = useState(null);
-  const [feedbackFatigue, setFeedbackFatigue] = useState(2); // 1: Leggero, 2: Giusto, 3: Faticoso, 4: Molto faticoso
-  const [feedbackEnergy, setFeedbackEnergy] = useState(2);  // 1: Distrutto, 2: Normale, 3: Pieno di energie
+  const [feedbackFatigue, setFeedbackFatigue] = useState(2); // 1: Leggero, 2: Giusto, 3: Molto Duro, 4: Estremo
+  const [selectedJoints, setSelectedJoints] = useState([]); // [] = Nessun fastidio
   const [feedbackHardestExerciseId, setFeedbackHardestExerciseId] = useState('');
+  const [showExercisePicker, setShowExercisePicker] = useState(false);
+
+  const toggleJoint = (jointName) => {
+    setSelectedJoints(prev =>
+      prev.includes(jointName)
+        ? prev.filter(j => j !== jointName)
+        : [...prev, jointName]
+    );
+  };
   
   // Riferimento al contenitore per lo slide
   const scrollContainerRef = useRef(null);
@@ -412,6 +421,21 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       // Tutti gli esercizi della giornata completati!
       triggerHaptic([300, 100, 300]);
 
+      // Auto-detect dell'esercizio con tonnellaggio/impatto maggiore
+      let detectedHardest = localRoutine[0]?.id || localRoutine[0]?.name || '';
+      let maxTonnage = 0;
+      localRoutine.forEach(ex => {
+        const exSets = Number(ex.sets) || 1;
+        const exReps = Number(ex.reps) || 10;
+        const exWeight = Number(ex.weight) || 0;
+        const exTonnage = exSets * exReps * exWeight;
+        if (exTonnage >= maxTonnage) {
+          maxTonnage = exTonnage;
+          detectedHardest = ex.id || ex.name;
+        }
+      });
+      setFeedbackHardestExerciseId(detectedHardest);
+
       const basePayload = { 
         id: Date.now(), 
         schemeId: schedaAttiva.id,
@@ -434,8 +458,8 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     const finalPayload = {
       ...completedWorkoutPayload,
       fatigueLevel: feedbackFatigue,
-      energyLevel: feedbackEnergy,
-      hardestExerciseId: feedbackHardestExerciseId || null
+      jointDiscomfort: selectedJoints,
+      hardestExerciseId: feedbackHardestExerciseId || localRoutine[0]?.id || null
     };
 
     setIsWorkoutStarted(false);
@@ -961,88 +985,146 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
         </div>
       )}
 
-      {/* MODAL FEEDBACK SPOTTER A FINE ALLENAMENTO */}
+      {/* MODAL FEEDBACK SPOTTER A FINE ALLENAMENTO (ULTRA-SNELLO & FAST) */}
       {showFeedbackModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn">
-          <div className="bg-surface-secondary border border-spotter/40 rounded-3xl p-6 w-full max-w-[380px] space-y-6 shadow-spotter-glow relative overflow-hidden">
-            {/* Bagliore decorativo */}
+          <div className="bg-surface-secondary border border-spotter/40 rounded-3xl p-6 w-full max-w-[380px] space-y-5 shadow-spotter-glow relative overflow-hidden text-left">
+            {/* Bagliore decorativo Spotter */}
             <div className="absolute -top-12 -right-12 w-32 h-32 bg-spotter/20 rounded-full blur-2xl pointer-events-none" />
 
-            <div className="text-center space-y-2">
+            <div className="text-center space-y-1.5">
               <div className="w-12 h-12 rounded-2xl bg-spotter/10 border border-spotter/30 flex items-center justify-center mx-auto text-spotter shadow-spotter-subtle">
                 <Sparkles size={24} className="animate-pulse" />
               </div>
-              <h3 className="text-xl font-black text-white">Allenamento Completato!</h3>
-              <p className="text-xs text-text-secondary">Aiuta lo <strong className="text-spotter">Spotter</strong> ad analizzare la tua sessione per i prossimi suggerimenti.</p>
+              <h3 className="text-xl font-black text-white tracking-tight">Allenamento Completato! 🎉</h3>
+              <p className="text-xs text-text-secondary">
+                1-2 toccate rapide per addestrare lo <strong className="text-spotter">Spotter AI</strong>
+              </p>
             </div>
 
-            {/* Domanda 1: Fatica */}
+            {/* DOMANDA 1: Fatica Percepita (sRPE) */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-text-primary uppercase tracking-wide block">1. Come valuti la fatica di oggi?</label>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-black text-white uppercase tracking-wider block">
+                  1. Fatica Percepita (sRPE)
+                </label>
+                <span className="text-[10px] font-bold text-spotter bg-spotter/10 px-2 py-0.5 rounded-md border border-spotter/20">
+                  {feedbackFatigue === 1 && 'RPE 6 • Leggero'}
+                  {feedbackFatigue === 2 && 'RPE 7-8 • Ideale'}
+                  {feedbackFatigue === 3 && 'RPE 9 • Molto Duro'}
+                  {feedbackFatigue === 4 && 'RPE 10 • Estremo'}
+                </span>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { val: 1, label: 'Leggero 🟢' },
-                  { val: 2, label: 'Giusto 🟡' },
-                  { val: 3, label: 'Faticoso 🔴' },
-                  { val: 4, label: 'Estremo 🔥' }
+                  { val: 1, label: 'Leggero 🟢', desc: 'Sotto target' },
+                  { val: 2, label: 'Giusto 🟡', desc: 'Stimolo perfetto' },
+                  { val: 3, label: 'Molto Duro 🟠', desc: 'Fatica elevata' },
+                  { val: 4, label: 'Estremo 🔴', desc: 'Al limite' }
                 ].map(opt => (
                   <button
                     key={opt.val}
                     type="button"
-                    onClick={() => setFeedbackFatigue(opt.val)}
-                    className={`py-2.5 px-3 rounded-xl border text-xs font-bold transition-all active:scale-95 ${
+                    onClick={() => {
+                      setFeedbackFatigue(opt.val);
+                      triggerHaptic(30);
+                    }}
+                    className={`py-2.5 px-3 rounded-xl border text-left transition-all active:scale-95 flex flex-col justify-between ${
                       feedbackFatigue === opt.val
                         ? 'bg-spotter/20 border-spotter text-spotter shadow-spotter-subtle'
-                        : 'bg-surface border-surface-tertiary text-text-secondary'
+                        : 'bg-surface border-surface-tertiary text-text-secondary hover:border-surface-tertiary/80'
                     }`}
                   >
-                    {opt.label}
+                    <span className="text-xs font-black">{opt.label}</span>
+                    <span className="text-[9px] opacity-75 font-medium">{opt.desc}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Domanda 2: Energia */}
+            {/* DOMANDA 2: Fastidi o Dolori Articolari */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-text-primary uppercase tracking-wide block">2. Come ti senti ora?</label>
-              <div className="grid grid-cols-3 gap-2">
+              <label className="text-[11px] font-black text-white uppercase tracking-wider block">
+                2. Fastidi Articolari (Facoltativo)
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedJoints([]);
+                    triggerHaptic(20);
+                  }}
+                  className={`py-1.5 px-3 rounded-xl border text-xs font-bold transition-all active:scale-95 ${
+                    selectedJoints.length === 0
+                      ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 font-black shadow-sm'
+                      : 'bg-surface border-surface-tertiary text-text-secondary'
+                  }`}
+                >
+                  Nessun fastidio 👍
+                </button>
                 {[
-                  { val: 1, label: 'Distrutto 🪫' },
-                  { val: 2, label: 'Normale 😊' },
-                  { val: 3, label: 'Carico ⚡' }
-                ].map(opt => (
-                  <button
-                    key={opt.val}
-                    type="button"
-                    onClick={() => setFeedbackEnergy(opt.val)}
-                    className={`py-2.5 px-2 rounded-xl border text-[11px] font-bold transition-all active:scale-95 ${
-                      feedbackEnergy === opt.val
-                        ? 'bg-spotter/20 border-spotter text-spotter shadow-spotter-subtle'
-                        : 'bg-surface border-surface-tertiary text-text-secondary'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+                  { id: 'Spalle', label: '🦾 Spalle' },
+                  { id: 'Gomiti', label: '💪 Gomiti' },
+                  { id: 'Schiena', label: '🩻 Schiena' },
+                  { id: 'Ginocchia', label: '🦵 Ginocchia' },
+                  { id: 'Polsi', label: '🖐️ Polsi' }
+                ].map(joint => {
+                  const isSelected = selectedJoints.includes(joint.id);
+                  return (
+                    <button
+                      key={joint.id}
+                      type="button"
+                      onClick={() => {
+                        toggleJoint(joint.id);
+                        triggerHaptic(30);
+                      }}
+                      className={`py-1.5 px-2.5 rounded-xl border text-xs font-bold transition-all active:scale-95 ${
+                        isSelected
+                          ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-black shadow-sm'
+                          : 'bg-surface border-surface-tertiary text-text-secondary'
+                      }`}
+                    >
+                      {joint.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Domanda 3: Esercizio più duro */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-text-primary uppercase tracking-wide block">3. Esercizio più impegnativo?</label>
-              <select
-                value={feedbackHardestExerciseId}
-                onChange={(e) => setFeedbackHardestExerciseId(e.target.value)}
-                className="w-full bg-surface p-3 rounded-xl border border-surface-tertiary text-xs text-white focus:border-spotter outline-none"
-              >
-                <option value="">-- Nessuno in particolare --</option>
-                {localRoutine.map(ex => (
-                  <option key={ex.instanceId || ex.id} value={ex.id}>{ex.name}</option>
-                ))}
-              </select>
+            {/* RILEVAMENTO AUTOMATICO ESERCIZIO CRITICO */}
+            <div className="bg-surface p-3 rounded-2xl border border-surface-tertiary/70 space-y-1 text-left">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-spotter font-bold text-[11px]">
+                  <Sparkles size={12} />
+                  <span>Auto-Rilevamento Spotter</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowExercisePicker(!showExercisePicker)}
+                  className="text-[10px] text-text-tertiary hover:text-white underline font-semibold"
+                >
+                  {showExercisePicker ? 'Chiudi' : 'Modifica'}
+                </button>
+              </div>
+              
+              {!showExercisePicker ? (
+                <p className="text-xs font-bold text-white">
+                  Esercizio più impegnativo: <span className="text-spotter">{localRoutine.find(e => e.id === feedbackHardestExerciseId)?.name || localRoutine[0]?.name || 'Nessuno'}</span>
+                </p>
+              ) : (
+                <select
+                  value={feedbackHardestExerciseId}
+                  onChange={(e) => setFeedbackHardestExerciseId(e.target.value)}
+                  className="w-full bg-surface-secondary mt-1 p-2 rounded-xl border border-spotter/40 text-xs text-white focus:border-spotter outline-none font-medium"
+                >
+                  {localRoutine.map(ex => (
+                    <option key={ex.instanceId || ex.id} value={ex.id}>{ex.name}</option>
+                  ))}
+                </select>
+              )}
             </div>
 
-            {/* Bottone di salvataggio */}
+            {/* BOTTONE FINALE DI REGISTRAZIONE */}
             <button
               type="button"
               onClick={handleFinalizeWorkout}

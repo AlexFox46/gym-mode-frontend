@@ -236,21 +236,34 @@ export const fetchExerciseAlternatives = async (exerciseId, muscle, movementPatt
  */
 export const saveWorkoutLog = async (userId, logEntry) => {
   try {
-    const { error } = await supabase
+    const payload = {
+      user_id: userId,
+      scheme_id: logEntry.schemeId || null,
+      date: logEntry.date,
+      scheda_name: logEntry.schedaName,
+      day_name: logEntry.dayName,
+      duration_minutes: logEntry.durationMinutes,
+      tonnage: logEntry.tonnage || 0,
+      exercises_data: {
+        routine: logEntry.exercisesData || [],
+        jointDiscomfort: logEntry.jointDiscomfort || []
+      },
+      fatigue_level: logEntry.fatigueLevel || null,
+      energy_level: logEntry.energyLevel || null,
+      hardest_exercise_id: logEntry.hardestExerciseId || null,
+      joint_discomfort: logEntry.jointDiscomfort || []
+    };
+
+    let { error } = await supabase
       .from('workout_logs')
-      .insert([{
-        user_id: userId,
-        scheme_id: logEntry.schemeId || null,
-        date: logEntry.date,
-        scheda_name: logEntry.schedaName,
-        day_name: logEntry.dayName,
-        duration_minutes: logEntry.durationMinutes,
-        tonnage: logEntry.tonnage || 0,
-        exercises_data: logEntry.exercisesData || [],
-        fatigue_level: logEntry.fatigueLevel || null,
-        energy_level: logEntry.energyLevel || null,
-        hardest_exercise_id: logEntry.hardestExerciseId || null
-      }]);
+      .insert([payload]);
+
+    if (error && (error.message?.includes('joint_discomfort') || error.code === 'PGRST204')) {
+      // Fallback se la colonna specifica non esiste nello schema Supabase
+      delete payload.joint_discomfort;
+      const res = await supabase.from('workout_logs').insert([payload]);
+      error = res.error;
+    }
 
     if (error) {
       console.error('Errore nel salvataggio del log allenamento:', error);
@@ -288,7 +301,8 @@ export const fetchWorkoutLogs = async (userId) => {
       dayName: log.day_name,
       durationMinutes: log.duration_minutes,
       tonnage: log.tonnage,
-      exercisesData: log.exercises_data || [],
+      exercisesData: Array.isArray(log.exercises_data) ? log.exercises_data : (log.exercises_data?.routine || []),
+      jointDiscomfort: log.joint_discomfort || (log.exercises_data && !Array.isArray(log.exercises_data) ? log.exercises_data.jointDiscomfort : []) || [],
       fatigueLevel: log.fatigue_level,
       energyLevel: log.energy_level,
       hardestExerciseId: log.hardest_exercise_id
