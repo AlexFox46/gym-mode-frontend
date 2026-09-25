@@ -14,6 +14,7 @@ import {
   saveWorkoutLog,
   fetchWorkoutLogs
 } from './services/supabaseServices';
+import { Toast } from './components/UI';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -115,17 +116,25 @@ function App() {
     }
   };
 
+  const [toast, setToast] = useState(null);
+
   const handleWorkoutComplete = async (logEntry) => {
     setStoricoAllenamenti(prev => [...prev, logEntry]);
     // Salva su localStorage come fallback immediato
     const currentLogs = JSON.parse(localStorage.getItem('gym_workout_history') || '[]');
     localStorage.setItem('gym_workout_history', JSON.stringify([...currentLogs, logEntry]));
+    
+    setToast({ message: 'Allenamento completato! Sincronizzazione in corso...', type: 'info' });
+
     // Salva su Supabase in background
     if (user?.id) {
       const isSaved = await saveWorkoutLog(user.id, logEntry);
       // Se salvato con successo, rimuovi da localStorage
       if (isSaved) {
         localStorage.removeItem('gym_workout_history');
+        setToast({ message: 'Allenamento salvato nel Cloud con successo! 💪', type: 'success' });
+      } else {
+        setToast({ message: 'Salvato in locale (Modalità Offline) 📱', type: 'info' });
       }
     }
     setActiveTab('progressi');
@@ -148,6 +157,13 @@ function App() {
 
   return (
     <div className="app-container">
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
       <main className="flex-1 overflow-y-auto pb-24">
         {activeTab === 'allenati' && (
           <AllenatiView 

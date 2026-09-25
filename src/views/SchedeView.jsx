@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { Card, Button, Stepper, Tooltip } from '../components/UI';
-import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown, Sparkles, Info, Check } from 'lucide-react';
+import { Card, Button, Stepper, Tooltip, Input, Select, Badge, Toast, EmptyState } from '../components/UI';
+import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown, Sparkles, Info, Check, Save, RotateCcw } from 'lucide-react';
 import { ExerciseDetailModal } from '../components/ExerciseDetailModal';
 import { EQUIPMENT_TYPES } from '../data/exerciseLibrary';
 
@@ -11,6 +11,8 @@ const GOAL_OPTIONS = [
   { id: 'endurance', label: 'Resistenza', desc: 'Volume elevato (15+ rep)' },
   { id: 'maintenance', label: 'Mantenimento', desc: 'Assetto conservativo' }
 ];
+
+const DRAFT_KEY = 'gym_scheda_draft';
 
 export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, esercizi = [], userId, editDay, setEditDay }) => {
   const [viewState, setViewState] = useState('list');
@@ -25,6 +27,9 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   const [editingExerciseIndex, setEditingExerciseIndex] = useState(null);
   const [editingSchedaId, setEditingSchedaId] = useState(null);
   
+  // Feedback Toast State
+  const [toast, setToast] = useState(null);
+
   // Stato per Modale Dettaglio Esercizio (i)
   const [detailModalExercise, setDetailModalExercise] = useState(null);
   
@@ -37,6 +42,46 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [dragOffsetY, setDragOffsetY] = useState(0);
   const touchStartY = useRef(null);
+
+  // Controllo bozza al caricamento
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(DRAFT_KEY);
+    if (savedDraft && viewState === 'list' && !editingSchedaId) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        if (draft && draft.name && draft.routine) {
+          setNewSchedaName(draft.name);
+          setNewSchedaDays(draft.daysCount || 2);
+          setNewSchedaGoal(draft.goal || 'hypertrophy');
+          setWorkoutRoutine(draft.routine || {});
+          setEditingSchedaId(draft.editingSchedaId || null);
+          setActiveBuilderDay('G1');
+          setViewState('builder');
+          setToast({ message: 'Bozza ripristinata in automatico', type: 'info' });
+        }
+      } catch (e) {
+        console.error('Errore nel ripristino bozza:', e);
+      }
+    }
+  }, []);
+
+  // Auto-salvataggio Bozza Locale in Builder State
+  useEffect(() => {
+    if (viewState === 'builder' && newSchedaName.trim()) {
+      const draft = {
+        name: newSchedaName,
+        daysCount: Object.keys(workoutRoutine).length,
+        goal: newSchedaGoal,
+        routine: workoutRoutine,
+        editingSchedaId: editingSchedaId
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    }
+  }, [newSchedaName, workoutRoutine, newSchedaGoal, viewState, editingSchedaId]);
+
+  const clearDraft = () => {
+    localStorage.removeItem(DRAFT_KEY);
+  };
 
   // Apertura diretta al giorno specifico se richiesto da AllenatiView
   React.useEffect(() => {
@@ -254,7 +299,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
   // Salva scheda su Supabase
   const saveSchedule = async () => {
     if (!userId) {
-      alert('Utente non autenticato');
+      setToast({ message: 'Utente non autenticato', type: 'error' });
       return;
     }
 
@@ -275,15 +320,17 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
           .eq('id', editingSchedaId);
         
         if (error) throw error;
-        console.log('✅ Scheda aggiornata');
+        setToast({ message: 'Scheda aggiornata con successo!', type: 'success' });
       } else {
         const { error } = await supabase
           .from('workout_schemes')
           .insert([schedaData]);
         
         if (error) throw error;
-        console.log('✅ Scheda creata');
+        setToast({ message: 'Nuova scheda creata!', type: 'success' });
       }
+
+      clearDraft();
 
       const { data: allSchede, error: fetchError } = await supabase
         .from('workout_schemes')
@@ -307,7 +354,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
       setEditingSchedaId(null);
     } catch (err) {
       console.error('Errore nel salvataggio della scheda:', err);
-      alert('Errore nel salvataggio della scheda');
+      setToast({ message: 'Errore nel salvataggio della scheda', type: 'error' });
     }
   };
 
@@ -395,6 +442,15 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
 
   return (
     <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32 text-text-primary select-none touch-manipulation">
+      {/* Feedback Toast */}
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
+
       {viewState === 'list' && (
         <>
           <div className="flex items-center justify-between mb-8">
@@ -682,31 +738,50 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
                 <button onClick={() => setIsCatalogOpen(false)} className="p-2"><X size={24}/></button>
               </div>
 
-              <div className="space-y-3 mb-6">
-                <input 
-                  type="text" 
-                  placeholder="Cerca..." 
+              <div className="space-y-4 mb-6">
+                <Input 
+                  placeholder="Cerca esercizio..." 
+                  value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)} 
-                  className="w-full bg-surface-secondary p-4 rounded-xl border border-surface-tertiary text-white text-sm" 
                 />
-                
-                <select 
-                  value={muscleFilter}
-                  onChange={(e) => setMuscleFilter(e.target.value)}
-                  className="w-full bg-surface-secondary p-4 rounded-xl border border-surface-tertiary text-white text-sm"
-                >
-                  <option value="">Tutti i muscoli</option>
-                  {muscleGroups.map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
 
-                <select 
+                {/* Chips Filtro Muscolare Rapido */}
+                <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-none">
+                  <button
+                    type="button"
+                    onClick={() => setMuscleFilter('')}
+                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap ${
+                      !muscleFilter 
+                        ? 'bg-primary text-white shadow-sm' 
+                        : 'bg-surface-tertiary text-text-secondary hover:text-white'
+                    }`}
+                  >
+                    TUTTI
+                  </button>
+                  {muscleGroups.map(m => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setMuscleFilter(muscleFilter === m ? '' : m)}
+                      className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap ${
+                        muscleFilter === m 
+                          ? 'bg-primary text-white shadow-sm' 
+                          : 'bg-surface-tertiary text-text-secondary hover:text-white'
+                      }`}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+                
+                <Select 
                   value={equipmentFilter}
                   onChange={(e) => setEquipmentFilter(e.target.value)}
-                  className="w-full bg-surface-secondary p-4 rounded-xl border border-surface-tertiary text-white text-sm"
-                >
-                  <option value="">Tutti gli attrezzi</option>
-                  {equipmentTypes.map(e => <option key={e} value={e}>{e}</option>)}
-                </select>
+                  options={[
+                    { value: '', label: 'Tutti gli attrezzi' },
+                    ...equipmentTypes.map(e => ({ value: e, label: e }))
+                  ]}
+                />
               </div>
 
               {filteredExercises.length === 0 ? (

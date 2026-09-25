@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Stepper, Card } from '../components/UI';
+import { Button, Stepper, Card, Modal, Toast } from '../components/UI';
 import { BookOpen, Repeat2, Play, CheckCircle2, XCircle, Clock, Dumbbell, ArrowLeft, Plus, Info, Pencil, Sparkles } from 'lucide-react';
 import { fetchExerciseAlternatives } from '../services/supabaseServices';
 import { ExerciseDetailModal } from '../components/ExerciseDetailModal';
@@ -335,14 +335,19 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   };
 
   // Annulla allenamento
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
+  const confirmCancelWorkout = () => {
+    setIsWorkoutStarted(false);
+    setIsRestActive(false);
+    setPendingNextExercise(false);
+    setTotalTonnage(0);
+    clearWorkoutState();
+    setShowCancelModal(false);
+  };
+
   const handleCancelWorkout = () => {
-    if (window.confirm("Vuoi davvero interrompere l'allenamento in corso?")) {
-      setIsWorkoutStarted(false);
-      setIsRestActive(false);
-      setPendingNextExercise(false);
-      setTotalTonnage(0);
-      clearWorkoutState();
-    }
+    setShowCancelModal(true);
   };
 
   // Fetch alternative da Supabase con Fallback
@@ -1136,6 +1141,27 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           </div>
         </div>
       )}
+
+      {/* Modal di Conferma Annullamento Allenamento */}
+      <Modal 
+        isOpen={showCancelModal} 
+        onClose={() => setShowCancelModal(false)}
+        title="Interrompere Allenamento?"
+      >
+        <div className="space-y-4 text-center">
+          <p className="text-xs text-text-secondary leading-relaxed">
+            Sei sicuro di voler uscire? I progressi dell'allenamento corrente andranno persi.
+          </p>
+          <div className="flex gap-2 pt-2">
+            <Button variant="tertiary" fullWidth onClick={() => setShowCancelModal(false)}>
+              CONTINUA
+            </Button>
+            <Button variant="destructive" fullWidth onClick={confirmCancelWorkout}>
+              INTERROMPI
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Modale Dettaglio Esercizio Tooltip (i) */}
       {detailModalExercise && (
