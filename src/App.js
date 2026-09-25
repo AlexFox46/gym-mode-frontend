@@ -122,9 +122,11 @@ function App() {
     localStorage.setItem('gym_workout_history', JSON.stringify([...currentLogs, logEntry]));
     // Salva su Supabase in background
     if (user?.id) {
-      await saveWorkoutLog(user.id, logEntry);
+      const isSaved = await saveWorkoutLog(user.id, logEntry);
       // Se salvato con successo, rimuovi da localStorage
-      localStorage.removeItem('gym_workout_history');
+      if (isSaved) {
+        localStorage.removeItem('gym_workout_history');
+      }
     }
     setActiveTab('progressi');
   };

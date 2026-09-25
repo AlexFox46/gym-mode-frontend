@@ -84,11 +84,11 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const [totalTonnage, setTotalTonnage] = useState(0);
 
   // Flag per evitare il reset della routine durante il ripristino
-  const [isRestoring, setIsRestoring] = useState(false);
+  const isRestoringRef = useRef(false);
 
   // Reset activeDay quando cambia schedaAttiva
   useEffect(() => {
-    if (schedaAttiva && !isRestoring) {
+    if (schedaAttiva && !isRestoringRef.current) {
       setActiveDay('G1');
       setIsWorkoutStarted(false);
     }
@@ -96,7 +96,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
 
   // Inizializzazione routine quando cambia schedaAttiva o activeDay
   useEffect(() => {
-    if (isRestoring) return; // Non resettare durante il ripristino
+    if (isRestoringRef.current) return; // Non resettare durante il ripristino
     if (schedaAttiva?.routine?.[activeDay]) {
       setLocalRoutine(JSON.parse(JSON.stringify(schedaAttiva.routine[activeDay])));
       setExerciseIndex(0);
@@ -104,7 +104,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       setLocalRoutine([]);
       setExerciseIndex(0);
     }
-  }, [schedaAttiva, activeDay, isRestoring]);
+  }, [schedaAttiva, activeDay]);
 
   // =========================================================================
   // RIPRISTINO ALLENAMENTO DA LOCALSTORAGE (al mount)
@@ -114,7 +114,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     if (saved && saved.isWorkoutStarted && schedaAttiva) {
       // Verifica che la scheda sia ancora la stessa
       if (saved.schedaId === schedaAttiva.id) {
-        setIsRestoring(true);
+        isRestoringRef.current = true;
         setActiveDay(saved.activeDay);
         setLocalRoutine(saved.localRoutine);
         setExerciseIndex(saved.exerciseIndex);
@@ -150,8 +150,8 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
         
         setIsWorkoutStarted(true);
         
-        // Rimuovi il flag di ripristino dopo un tick
-        setTimeout(() => setIsRestoring(false), 100);
+        // Rimuovi il flag di ripristino dopo un po' per sicurezza
+        setTimeout(() => { isRestoringRef.current = false; }, 300);
         console.log('✅ Allenamento ripristinato da localStorage');
       } else {
         clearWorkoutState();
@@ -234,7 +234,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   };
 
   useEffect(() => {
-    if (currentExercise && !isRestoring) {
+    if (currentExercise && !isRestoringRef.current) {
       setCurrentWeight(Number(currentExercise.weight) || 0);
       setCurrentReps(Number(currentExercise.reps) || 0);
       setCurrentSet(1);
@@ -272,7 +272,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       timer = setInterval(() => {
         setElapsedWorkoutSeconds(prev => prev + 1);
       }, 1000);
-    } else if (!isRestoring) {
+    } else if (!isRestoringRef.current) {
       setElapsedWorkoutSeconds(0);
     }
     return () => clearInterval(timer);
@@ -282,7 +282,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   // SALVATAGGIO PERIODICO STATO ALLENAMENTO SU LOCALSTORAGE
   // =========================================================================
   useEffect(() => {
-    if (!isWorkoutStarted || isRestoring) return;
+    if (!isWorkoutStarted || isRestoringRef.current) return;
     
     const saveState = () => {
       saveWorkoutState({
@@ -311,7 +311,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     const interval = setInterval(saveState, 5000);
     return () => clearInterval(interval);
   }, [isWorkoutStarted, activeDay, exerciseIndex, currentSet, currentWeight, currentReps, 
-      isRestActive, restTime, pendingNextExercise, totalTonnage, elapsedWorkoutSeconds, isRestoring]);
+      isRestActive, restTime, pendingNextExercise, totalTonnage, elapsedWorkoutSeconds]);
 
   // Avvio allenamento
   const handleStartWorkout = (day = null) => {
