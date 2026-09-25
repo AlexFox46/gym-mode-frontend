@@ -335,6 +335,27 @@ export const updateSchedaGoal = async (schedaId, goal) => {
 };
 
 /**
+ * Aggiorna la routine per una determinata giornata di una scheda utente
+ */
+export const updateSchedaRoutine = async (schedaId, routine) => {
+  try {
+    const { error } = await supabase
+      .from('workout_schemes')
+      .update({ routine })
+      .eq('id', schedaId);
+
+    if (error) {
+      console.error('Errore aggiornamento routine scheda:', error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Errore inatteso aggiornamento routine:', err);
+    return false;
+  }
+};
+
+/**
  * Recupera i suggerimenti dello Spotter pendenti per una determinata scheda e giorno
  */
 export const fetchPendingSpotterSuggestions = async (userId, schemeId, dayName) => {

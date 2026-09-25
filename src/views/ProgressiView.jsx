@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
-import { Card } from '../components/UI';
-import { Calendar as CalendarIcon, TrendingUp, Dumbbell, Activity, ChevronLeft, ChevronRight, User, Settings, Sparkles, Trophy, Award } from 'lucide-react';
+import { Card, Button, Modal, Badge } from '../components/UI';
+import { Calendar as CalendarIcon, TrendingUp, Dumbbell, Activity, ChevronLeft, ChevronRight, User, Settings, Sparkles, Trophy, Clock, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { SettingsView } from './SettingsView';
+import { updateSchedaRoutine } from '../services/supabaseServices';
+
+// Helper per ottenere data YYYY-MM-DD in timezone locale
+const getLocalDateString = (dateObj) => {
+  const d = new Date(dateObj);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 export const ProgressiView = ({ 
   storico = [], 
@@ -10,10 +20,16 @@ export const ProgressiView = ({
   onSettingsChange, 
   onLogout,
   onNavigateToSpotter,
+  schedaAttiva,
+  setSchede,
+  setSchedaAttiva,
+  onShowToast,
   pendingSuggestionsCount = 0
 }) => {
   const [subView, setSubView] = useState('main'); // 'main' | 'settings'
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedLog, setSelectedLog] = useState(null);
+  const [updatingRoutine, setUpdatingRoutine] = useState(false);
 
   if (subView === 'settings') {
     return (
@@ -73,6 +89,52 @@ export const ProgressiView = ({
   const topRecords = Object.entries(personalRecordsMap)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 4);
+
+  // Funzione per applicare gli esercizi svolti in questo log come nuova routine del giorno per la scheda attiva
+  const handleApplyLogToActiveScheda = async (log) => {
+    if (!schedaAttiva || !schedaAttiva.id) {
+      if (onShowToast) onShowToast('Nessuna scheda attiva trovata', 'error');
+      return;
+    }
+
+    const dayToUpdate = log.dayName || 'G1';
+    const exercisesToUpdate = log.exercisesData || [];
+
+    if (exercisesToUpdate.length === 0) {
+      if (onShowToast) onShowToast('Nessun esercizio presente in questa sessione', 'error');
+      return;
+    }
+
+    try {
+      setUpdatingRoutine(true);
+      
+      const newRoutine = {
+        ...(schedaAttiva.routine || {}),
+        [dayToUpdate]: exercisesToUpdate
+      };
+
+      const success = await updateSchedaRoutine(schedaAttiva.id, newRoutine);
+
+      if (success) {
+        const updatedSchedaAttiva = { ...schedaAttiva, routine: newRoutine };
+        if (setSchedaAttiva) setSchedaAttiva(updatedSchedaAttiva);
+        if (setSchede) {
+          setSchede(prevSchede => 
+            prevSchede.map(s => s.id === schedaAttiva.id ? updatedSchedaAttiva : s)
+          );
+        }
+        if (onShowToast) onShowToast(`Scheda Attiva (${dayToUpdate}) aggiornata con successo! 💪`, 'success');
+        setSelectedLog(null);
+      } else {
+        if (onShowToast) onShowToast('Errore durante l\'aggiornamento della scheda', 'error');
+      }
+    } catch (err) {
+      console.error('Errore durante l\'aggiornamento della routine:', err);
+      if (onShowToast) onShowToast('Errore durante l\'aggiornamento della scheda', 'error');
+    } finally {
+      setUpdatingRoutine(false);
+    }
+  };
 
   return (
     <div className="max-w-[420px] mx-auto min-h-screen bg-surface p-4 pb-32 select-none">
@@ -173,13 +235,25 @@ export const ProgressiView = ({
           {Array.from({ length: firstDayIndex }).map((_, idx) => <div key={idx} />)}
           {Array.from({ length: totalDaysInMonth }).map((_, idx) => {
             const dayNum = idx + 1;
-            const dailyLog = logsInViewMonth.find(l => new Date(l.date).getDate() === dayNum);
+            const targetDateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+            
+            // Trova il log corrispondente confrontando la stringa YYYY-MM-DD locale
+            const dailyLog = logsInViewMonth.find(l => getLocalDateString(l.date) === targetDateStr);
             
             return (
-              <div key={dayNum} className={`h-11 flex flex-col items-center justify-center rounded-xl transition-all ${dailyLog ? 'bg-primary text-black shadow-md' : 'bg-surface-secondary text-text-primary'}`}>
+              <button 
+                key={dayNum} 
+                onClick={() => dailyLog && setSelectedLog(dailyLog)}
+                disabled={!dailyLog}
+                className={`h-11 flex flex-col items-center justify-center rounded-xl transition-all ${
+                  dailyLog 
+                    ? 'bg-primary text-black shadow-md active:scale-95 cursor-pointer hover:opacity-90' 
+                    : 'bg-surface-secondary text-text-primary cursor-default'
+                }`}
+              >
                 <span className="text-xs font-mono font-black">{dayNum}</span>
                 {dailyLog && <span className="text-[7px] font-black uppercase">{dailyLog.dayName}</span>}
-              </div>
+              </button>
             );
           })}
         </div>
@@ -228,7 +302,77 @@ export const ProgressiView = ({
         </Card>
       )}
 
+      {/* MODAL DETTAGLIO ALLENAMENTO SVOLTO DAL CALENDARIO */}
+      {selectedLog && (
+        <Modal 
+          isOpen={true} 
+          onClose={() => setSelectedLog(null)}
+          title={`Allenamento ${selectedLog.dayName}`}
+        >
+          <div className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
+            <div className="flex items-center justify-between bg-surface p-3 rounded-2xl border border-surface-tertiary">
+              <div>
+                <span className="text-[10px] font-bold uppercase text-primary block">{selectedLog.schedaName}</span>
+                <span className="text-xs font-medium text-text-secondary">
+                  {new Date(selectedLog.date).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <span className="text-xs font-mono font-black text-white block">{selectedLog.durationMinutes || 0} min</span>
+                  <span className="text-[9px] text-text-tertiary uppercase">Durata</span>
+                </div>
+                <div className="text-right border-l border-surface-tertiary pl-3">
+                  <span className="text-xs font-mono font-black text-primary block">{selectedLog.tonnage || 0} kg</span>
+                  <span className="text-[9px] text-text-tertiary uppercase">Volume</span>
+                </div>
+              </div>
+            </div>
+
+            {/* LISTA ESERCIZI REGISTRATI NEL LOG */}
+            <div className="space-y-2">
+              <span className="text-[10px] font-black uppercase text-text-secondary tracking-widest block">
+                Esercizi Sollevati ({selectedLog.exercisesData?.length || 0})
+              </span>
+              {(selectedLog.exercisesData || []).map((ex, idx) => (
+                <div key={idx} className="p-3 bg-surface p-3 rounded-2xl border border-surface-tertiary flex items-center justify-between">
+                  <div>
+                    <h5 className="font-bold text-white text-xs leading-tight">{ex.name}</h5>
+                    <p className="text-[10px] font-mono text-primary mt-0.5">
+                      {ex.sets} set × {ex.reps} rip @ {ex.weight} kg
+                    </p>
+                  </div>
+                  <Badge variant="default" className="font-mono">
+                    {ex.rest || 90}s
+                  </Badge>
+                </div>
+              ))}
+            </div>
+
+            {/* PULSANTE PER APPLICARE LA SESSIONE ALLA SCHEDA ATTIVA */}
+            {schedaAttiva && (
+              <div className="pt-2">
+                <Button
+                  variant="primary"
+                  fullWidth
+                  loading={updatingRoutine}
+                  onClick={() => handleApplyLogToActiveScheda(selectedLog)}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <RefreshCw size={16} />
+                  AGGIORNA SCHEDA ATTIVA ({selectedLog.dayName})
+                </Button>
+                <p className="text-[9px] text-text-tertiary text-center mt-2">
+                  Imposta gli esercizi e i pesi di questa sessione come base per la giornata {selectedLog.dayName} della tua scheda attiva.
+                </p>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
+
     </div>
   );
 };
+
 

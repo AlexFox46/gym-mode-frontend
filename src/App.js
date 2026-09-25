@@ -199,6 +199,10 @@ function App() {
             onSettingsChange={handleSettingsChange}
             onLogout={handleLogout}
             onNavigateToSpotter={() => setActiveTab('spotter')}
+            schedaAttiva={schedaAttiva}
+            setSchede={setLeMieSchede}
+            setSchedaAttiva={setSchedaAttiva}
+            onShowToast={(msg, type) => setToast({ message: msg, type })}
           />
         )}
       </main>
