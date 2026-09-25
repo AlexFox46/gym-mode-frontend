@@ -816,23 +816,6 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
         </button>
       </div>
 
-      {/* Badge Stato Corrente: Set vs Recupero */}
-      <div className="mb-4 text-center">
-        {isRestActive && pendingNextExercise ? (
-          <div className="px-4 py-1.5 rounded-full text-xs font-black bg-blue-500/20 text-blue-400 inline-flex items-center gap-2 border border-blue-500/30 animate-pulse">
-            <span>🔄</span> RECUPERO — PROSSIMO ESERCIZIO
-          </div>
-        ) : isRestActive ? (
-          <div className="px-4 py-1.5 rounded-full text-xs font-black bg-amber-500/20 text-amber-400 inline-flex items-center gap-2 border border-amber-500/30 animate-pulse">
-            <span>⏳</span> IN RECUPERO TRA I SET
-          </div>
-        ) : (
-          <div className="px-4 py-1.5 rounded-full text-xs font-black bg-primary/20 text-primary inline-flex items-center gap-2 border border-primary/30">
-            <span>💪</span> ESECUZIONE SET #{currentSet} / {targetSets}
-          </div>
-        )}
-      </div>
-
       <div className="space-y-6">
         {/* CARD ESERCIZIO DINAMICA (Si trasforma in 'Prossimo Esercizio' durante il recupero tra esercizi) */}
         {pendingNextExercise && nextExercise ? (
