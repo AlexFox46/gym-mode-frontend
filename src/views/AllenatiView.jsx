@@ -912,14 +912,14 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           className={`w-full p-6 rounded-3xl border-2 transition-all text-center cursor-pointer select-none active:scale-[0.98] ${
             isRestActive 
               ? pendingNextExercise
-                ? 'border-spotter bg-spotter/10 shadow-spotter-glow animate-pulse'
+                ? 'border-primary border-dashed bg-primary/10 shadow-primary-glow animate-pulse'
                 : 'border-amber-400 bg-amber-400/10 shadow-[0_0_25px_rgba(251,191,36,0.25)] animate-pulse' 
               : 'border-primary bg-primary/10 shadow-primary-glow hover:bg-primary/15'
           }`}
         >
           {isRestActive ? (
             <>
-              <div className={`text-6xl font-mono font-black ${pendingNextExercise ? 'text-spotter' : 'text-amber-400'}`}>
+              <div className={`text-6xl font-mono font-black ${pendingNextExercise ? 'text-primary' : 'text-amber-400'}`}>
                 {formatTime(restTime)}
               </div>
               <p className="text-[11px] font-black uppercase mt-3 tracking-widest text-white flex items-center justify-center gap-1.5">
