@@ -1013,6 +1013,19 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       {showFeedbackModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn">
           <div className="bg-surface-secondary border border-spotter/40 rounded-3xl p-6 w-full max-w-[380px] space-y-5 shadow-spotter-glow relative overflow-hidden text-left">
+            {/* Pulsante chiusura (X) per uscire senza salvare */}
+            <button
+              onClick={() => {
+                setShowFeedbackModal(false);
+                setIsWorkoutStarted(false);
+                clearWorkoutState();
+              }}
+              className="absolute top-4 right-4 p-2 text-text-tertiary hover:text-white rounded-xl hover:bg-surface-tertiary transition-colors z-10"
+              title="Esci senza salvare"
+            >
+              <X size={20} />
+            </button>
+
             {/* Bagliore decorativo Spotter */}
             <div className="absolute -top-12 -right-12 w-32 h-32 bg-spotter/20 rounded-full blur-2xl pointer-events-none" />
 
@@ -1172,7 +1185,16 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
             Hai già registrato una sessione di allenamento per oggi. Vuoi sovrascriverla con questo nuovo allenamento?
           </p>
           <div className="flex gap-2 pt-2">
-            <Button variant="tertiary" fullWidth onClick={() => setShowOverwriteModal(false)}>
+            <Button 
+              variant="tertiary" 
+              fullWidth 
+              onClick={() => {
+                setShowOverwriteModal(false);
+                setShowFeedbackModal(false);
+                setIsWorkoutStarted(false);
+                clearWorkoutState();
+              }}
+            >
               ANNULLA
             </Button>
             <Button variant="primary" fullWidth onClick={executeFinalizeWorkout}>
