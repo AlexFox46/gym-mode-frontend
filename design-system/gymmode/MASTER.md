@@ -1,214 +1,63 @@
-# Design System Master File
+# GymMode Design System — Master Specification
 
-> **LOGIC:** When building a specific page, first check `design-system/pages/[page-name].md`.
-> If that file exists, its rules **override** this Master file.
-> If not, strictly follow the rules below.
-
----
-
-**Project:** GymMode
-**Generated:** 2026-09-25 19:05:37
-**Category:** Fitness/Gym App
+**Versione:** 1.0.0  
+**Target:** Web / Mobile Web (Viewport Max 420px)  
+**Stile:** Dark Mode Premium / High-Contrast Performance Gym App  
 
 ---
 
-## Global Rules
+## 🎨 Token di Sistema (Colori & Superfici)
 
-### Color Palette
+### Base & Superfici
+- `bg-surface` (`#0A0A0A`): Sfondo primario dell'applicazione.
+- `bg-surface-secondary` (`#121212`): Container di schede, form card, modali.
+- `bg-surface-tertiary` (`#262626`): Righe di tabella/input inattivi/bordi.
+- `bg-surface-hover` (`#1E1E1E`): Stato hover di elementi cliccabili secondari.
 
-| Role | Hex | CSS Variable |
-|------|-----|--------------|
-| Primary | `#F97316` | `--color-primary` |
-| On Primary | `#0F172A` | `--color-on-primary` |
-| Secondary | `#FB923C` | `--color-secondary` |
-| On Secondary | `#0F172A` | `--color-on-secondary` |
-| Accent/CTA | `#22C55E` | `--color-accent` |
-| On Accent/CTA | `#0F172A` | `--color-on-accent` |
-| Background | `#1F2937` | `--color-background` |
-| Foreground | `#F8FAFC` | `--color-foreground` |
-| Card | `#313742` | `--color-card` |
-| Card Foreground | `#F8FAFC` | `--color-card-foreground` |
-| Muted | `#37414F` | `--color-muted` |
-| Muted Foreground | `#CBD5E1` | `--color-muted-foreground` |
-| Border | `#374151` | `--color-border` |
-| Destructive | `#EF4444` | `--color-destructive` |
-| On Destructive | `#000000` | `--color-on-destructive` |
-| Ring | `#F97316` | `--color-ring` |
+### Tipografia & Testo
+- `text-text-primary` (`#FFFFFF`): Titoli H1/H2, dati numerici principali, etichette attive.
+- `text-text-secondary` (`#A3A3A3`): Sottotitoli, etichette secondarie, testi descrittivi.
+- `text-text-tertiary` (`#737373`): Placeholder, unità di misura, metadati secondari.
+- `text-text-muted` (`#525252`): Elementi disabilitati o d'archivio.
 
-**Color Notes:** Energy orange + success green
+### Brand & Accenti
+- `primary` (`#FF5722`): Arancio Energetico GymMode — CTA primarie, focus ring, stati attivi.
+- `primary.dark` (`#E64A19`): Stato hover/active bottoni primari.
+- `spotter` (`#00D2FF`): Ciano Elettrico Spotter AI — Riservato esclusivamente a funzionalità o suggerimenti dell'assistente AI.
 
-### Typography
-
-- **Heading Font:** Barlow Condensed
-- **Body Font:** Barlow
-- **Mood:** sports, fitness, athletic, energetic, condensed, action
-- **Google Fonts:** [Barlow Condensed + Barlow](https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap)
-
-**CSS Import:**
-```css
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap');
-```
-
-### Spacing Variables
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
-| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
-| `--space-md` | `16px` / `1rem` | Standard padding |
-| `--space-lg` | `24px` / `1.5rem` | Section padding |
-| `--space-xl` | `32px` / `2rem` | Large gaps |
-| `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
-
-### Shadow Depths
-
-| Level | Value | Usage |
-|-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
-| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
+### Feedback Semantico
+- `feedback.success` (`#22C55E`): Serie completate, salvataggio riuscito, PR sbloccato.
+- `feedback.error` (`#EF4444`): Errori di rete, eliminazioni, serie fallite.
+- `feedback.warning` (`#F59E0B`): Avvisi di serie saltate o dati mancanti.
 
 ---
 
-## Component Specs
+## 📐 Regole di Layout, Spaziature e Forme
 
-### Buttons
-
-```css
-/* Primary Button */
-.btn-primary {
-  background: #22C55E;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-
-.btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-/* Secondary Button */
-.btn-secondary {
-  background: transparent;
-  color: #F97316;
-  border: 2px solid #F97316;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-```
-
-### Cards
-
-```css
-.card {
-  background: #1F2937;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-```
-
-### Inputs
-
-```css
-.input {
-  padding: 12px 16px;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
-}
-
-.input:focus {
-  border-color: #F97316;
-  outline: none;
-  box-shadow: 0 0 0 3px #F9731620;
-}
-```
-
-### Modals
-
-```css
-.modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--shadow-xl);
-  max-width: 500px;
-  width: 90%;
-}
-```
+- **Raggio Angoli:**
+  - Componenti piccoli (bottoni, input): `rounded-xl` (12px)
+  - Elementi di riga (stepper, riga esercizio): `rounded-2xl` (16px)
+  - Card & Modali: `rounded-3xl` (24px)
+- **Tatto & Accessibilità (Mobile-First):**
+  - **Area minima di tocco:** `48x48px` (`min-h-[48px] min-w-[48px]`)
+  - Feedback tattile su ogni tap: `active:scale-[0.97]` o `active:opacity-80`
+- **Tipografia Standard:**
+  - Titoli di sezione: `font-black uppercase tracking-wider`
+  - Etichette piccolissime: `text-[10px] uppercase font-black tracking-widest`
+  - Dati numerici (Kg, Reps, Timer): `font-mono font-black`
 
 ---
 
-## Style Guidelines
+## 🧩 Componenti Primitivi Uniformati (`src/components/UI.jsx`)
 
-**Style:** Vibrant & Block-based
+Tutto il codice dell'app deve utilizzare **esclusivamente** i componenti forniti da `src/components/UI.jsx`:
 
-**Keywords:** Bold, energetic, playful, block layout, geometric shapes, high color contrast, duotone, modern, energetic
-
-**Best For:** Startups, creative agencies, gaming, social media, youth-focused, entertainment, consumer
-
-**Key Effects:** Large sections (48px+ gaps), animated patterns, bold hover (color shift), scroll-snap, large type (32px+), 200-300ms
-
-### Page Pattern
-
-**Pattern Name:** Feature-Rich Showcase
-
-- **Conversion Strategy:** Clear feature hierarchy. One key message per card. Strong CTA repetition.
-- **CTA Placement:** Hero (sticky) + After features + Bottom
-- **Section Order:** Hero (value prop) > Feature grid/cards (4-6) > Use cases or benefits > Social proof or logos > CTA
-
----
-
-## Anti-Patterns (Do NOT Use)
-
-- ❌ Static design
-- ❌ No gamification
-
-### Additional Forbidden Patterns
-
-- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
-- ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
-- ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
-- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio
-- ❌ **Instant state changes** — Always use transitions (150-300ms)
-- ❌ **Invisible focus states** — Focus states must be visible for a11y
-
----
-
-## Pre-Delivery Checklist
-
-Before delivering any UI code, verify:
-
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] `cursor-pointer` on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard navigation
-- [ ] `prefers-reduced-motion` respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
-- [ ] No content hidden behind fixed navbars
-- [ ] No horizontal scroll on mobile
+1. `<Button>` — Bottoni con varianti (`primary`, `secondary`, `tertiary`, `ghost`, `destructive`, `spotter`).
+2. `<Card>` — Container card elevato con bordo tokenizzato.
+3. `<Input>` / `<Select>` — Input form con focus ring arancione/ciano.
+4. `<Stepper>` — Contatore a grandi pulsanti + / – per kg e reps.
+5. `<Toggle>` — Switch visivo ON/OFF.
+6. `<Badge>` — Etichetta di stato/categoria.
+7. `<Toast>` — Feedback temporaneo (Successo/Errore).
+8. `<Modal>` / `<Drawer>` — Finestra modale con sfocatura di sfondo.
+9. `<EmptyState>` — Schermata di cortesia per liste senza elementi.
