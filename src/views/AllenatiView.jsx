@@ -819,11 +819,11 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       <div className="space-y-6">
         {/* CARD ESERCIZIO DINAMICA (Si trasforma in 'Prossimo Esercizio' durante il recupero tra esercizi) */}
         {pendingNextExercise && nextExercise ? (
-          /* STATUS B: CARD PROSSIMO ESERCIZIO (Attiva durante il recupero tra esercizi differenti) */
-          <Card className="relative overflow-hidden border-2 border-spotter/50 bg-surface-secondary shadow-spotter-glow transition-all">
+          /* STATUS B: CARD PROSSIMO ESERCIZIO (Tratteggiato Arancione - In Attesa) */
+          <Card className="relative overflow-hidden border-2 border-dashed border-primary/60 bg-surface-secondary/90 shadow-primary-glow/10 transition-all">
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="flex-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-spotter bg-spotter/10 px-2.5 py-1 rounded-full border border-spotter/30 inline-flex items-center gap-1.5 animate-pulse mb-1.5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/30 inline-flex items-center gap-1.5 animate-pulse mb-1.5">
                   <span>🔄</span> PROSSIMO ESERCIZIO (in arrivo)
                 </span>
                 <h2 className="text-xl font-black text-white leading-tight mt-1">{nextExercise.name}</h2>
@@ -835,7 +835,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
               {/* BOTTONE INFO PROSSIMO ESERCIZIO */}
               <button 
                 onClick={() => setDetailModalExercise(nextExercise)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface border border-surface-tertiary text-text-secondary hover:text-spotter text-xs font-bold transition-colors shrink-0"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface border border-surface-tertiary text-text-secondary hover:text-primary text-xs font-bold transition-colors shrink-0"
                 title="Dettagli ed Esercizi Simili"
               >
                 <Info size={14} />
@@ -843,13 +843,13 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
               </button>
             </div>
             
-            {/* Indicatore Set con Pallini Azzurri Spotter */}
+            {/* Indicatore Set con Pallini Arancioni Primary (Tratteggiati/In Arrivo) */}
             <div className="flex gap-2 mt-5">
               {Array.from({ length: Number(nextExercise.sets) || 1 }).map((_, i) => (
                 <div 
                   key={i} 
                   className={`h-2.5 flex-1 rounded-full transition-all ${
-                    i === 0 ? 'bg-spotter shadow-spotter-subtle animate-pulse' : 'bg-surface-tertiary'
+                    i === 0 ? 'bg-primary shadow-primary-glow animate-pulse' : 'bg-surface-tertiary'
                   }`} 
                 />
               ))}
