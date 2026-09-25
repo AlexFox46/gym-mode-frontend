@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Stepper, Card, Modal, Toast } from '../components/UI';
-import { BookOpen, Repeat2, Play, CheckCircle2, XCircle, Clock, Dumbbell, ArrowLeft, Plus, Info, Pencil, Sparkles } from 'lucide-react';
+import { BookOpen, Repeat2, Play, CheckCircle2, XCircle, Clock, Dumbbell, ArrowLeft, Plus, Info, Pencil, Sparkles, X } from 'lucide-react';
 import { fetchExerciseAlternatives } from '../services/supabaseServices';
 import { ExerciseDetailModal } from '../components/ExerciseDetailModal';
 
