@@ -875,59 +875,44 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           </div>
         )}
 
-        {/* TIMER RECUPERO CARD */}
-        <div className={`w-full p-6 rounded-3xl border transition-all text-center ${
-          isRestActive 
-            ? pendingNextExercise
-              ? 'border-blue-400 bg-blue-400/10 shadow-[0_0_20px_rgba(96,165,250,0.15)]'
-              : 'border-amber-400 bg-amber-400/10 shadow-[0_0_20px_rgba(251,191,36,0.15)]' 
-            : 'border-surface-tertiary bg-surface-secondary/50 opacity-80'
-        }`}>
-          <span className={`text-5xl font-mono font-black ${
-            isRestActive 
-              ? pendingNextExercise ? 'text-blue-400' : 'text-amber-400' 
-              : 'text-text-tertiary'
-          }`}>
-            {isRestActive ? formatTime(restTime) : formatTime(exerciseRest)}
-          </span>
-          <p className="text-[10px] font-black uppercase mt-2 tracking-widest text-text-secondary">
-            {isRestActive 
-              ? pendingNextExercise 
-                ? '🔄 Recupero prima del prossimo esercizio' 
-                : '⏱️ Recupero Attivo'
-              : 'Tempo Recupero Previsto'
-            }
-          </p>
-        </div>
-
         {/* INPUT PESO E RIPETIZIONI */}
         <Card className={`space-y-4 transition-all ${isRestActive ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
           <Stepper label="Carico (kg)" value={currentWeight} onChange={setCurrentWeight} step={2.5} unit="kg" />
           <Stepper label="Ripetizioni" value={currentReps} onChange={setCurrentReps} step={1} unit="rip" />
         </Card>
 
-        {/* PULSANTE AZIONE PRINCIPALE */}
-        <div className="space-y-2">
+        {/* PULSANTE AZIONE PRINCIPALE INTEGRATO CON TIMER DI RECUPERO */}
+        <div className="space-y-2 pt-2">
           {isRestActive ? (
             <Button 
               size="large" 
               fullWidth 
               onClick={handleRegisterSet} 
-              className={`!text-slate-950 font-black py-4 border-none ${pendingNextExercise ? 'bg-spotter hover:bg-spotter/90 shadow-spotter-glow' : 'bg-amber-400 hover:bg-amber-300 shadow-lg'}`}
+              className={`!text-slate-950 font-black py-6 border-none flex flex-col items-center justify-center gap-0.5 shadow-2xl transition-all ${
+                pendingNextExercise 
+                  ? 'bg-spotter hover:bg-spotter/90 shadow-spotter-glow animate-pulse' 
+                  : 'bg-amber-400 hover:bg-amber-300 shadow-lg animate-pulse'
+              }`}
             >
-              {pendingNextExercise 
-                ? `⚡ SALTA RECUPERO & VAI A ${nextExercise?.name?.substring(0, 20) || 'PROSSIMO'}`
-                : `⚡ SALTA RECUPERO & VAI AL SET #${currentSet}`
-              }
+              <div className="flex items-center gap-2 text-2xl font-mono font-black">
+                <span>⏱️</span>
+                <span>{formatTime(restTime)}</span>
+              </div>
+              <span className="text-[10px] uppercase tracking-widest font-black opacity-90">
+                {pendingNextExercise 
+                  ? `SALTA RECUPERO ➔ VAI A ${nextExercise?.name?.substring(0, 18) || 'PROSSIMO'}...`
+                  : `SALTA RECUPERO ➔ INIZIA SET #${currentSet}`
+                }
+              </span>
             </Button>
           ) : (
             <Button 
               size="large" 
               fullWidth 
               onClick={handleRegisterSet} 
-              className="!text-slate-950 bg-primary font-black py-4 shadow-lg hover:opacity-90 border-none"
+              className="!text-slate-950 bg-primary font-black py-5 text-sm uppercase tracking-wider shadow-primary-glow hover:opacity-90 border-none flex items-center justify-center gap-2"
             >
-              COMPLETA SET #{currentSet}
+              <span>✓</span> COMPLETA SET #{currentSet} DEGLI {targetSets}
             </Button>
           )}
         </div>
