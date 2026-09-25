@@ -41,7 +41,7 @@ const clearWorkoutState = () => {
 // ============================================================================
 // COMPONENTE PRINCIPALE
 // ============================================================================
-export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavigateToSchede, userId }) => {
+export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavigateToSchede, userId, storico = [] }) => {
   const [activeDay, setActiveDay] = useState('G1');
   const schemaDays = schedaAttiva ? Array.from({ length: schedaAttiva.daysCount }, (_, i) => `G${i + 1}`) : [];
   const [localRoutine, setLocalRoutine] = useState([]);
@@ -52,6 +52,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
 
   // Stato per Modal Feedback Spotter a fine allenamento
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showOverwriteModal, setShowOverwriteModal] = useState(false);
   const [completedWorkoutPayload, setCompletedWorkoutPayload] = useState(null);
   const [feedbackFatigue, setFeedbackFatigue] = useState(2); // 1: Leggero, 2: Giusto, 3: Molto Duro, 4: Estremo
   const [selectedJoints, setSelectedJoints] = useState([]); // [] = Nessun fastidio
@@ -459,7 +460,24 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
 
   const handleFinalizeWorkout = () => {
     if (!completedWorkoutPayload) return;
-    
+
+    // Controllo se esiste già un log registrato per la data odierna
+    const todayStr = new Date().toISOString().split('T')[0];
+    const existingTodayLog = (storico || []).find(log => {
+      if (!log.date) return false;
+      const logDateStr = new Date(log.date).toISOString().split('T')[0];
+      return logDateStr === todayStr;
+    });
+
+    if (existingTodayLog) {
+      setShowOverwriteModal(true);
+      return;
+    }
+
+    executeFinalizeWorkout();
+  };
+
+  const executeFinalizeWorkout = () => {
     const finalPayload = {
       ...completedWorkoutPayload,
       fatigueLevel: feedbackFatigue,
@@ -470,6 +488,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     setIsWorkoutStarted(false);
     clearWorkoutState();
     setShowFeedbackModal(false);
+    setShowOverwriteModal(false);
     onWorkoutComplete(finalPayload);
   };
 
@@ -1158,6 +1177,27 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
           </div>
         </div>
       )}
+
+      {/* Modal di Conferma Sovrascrittura Allenamento */}
+      <Modal 
+        isOpen={showOverwriteModal} 
+        onClose={() => setShowOverwriteModal(false)}
+        title="Sessione già registrata oggi"
+      >
+        <div className="space-y-4 text-center">
+          <p className="text-xs text-text-secondary leading-relaxed">
+            Hai già registrato una sessione di allenamento per oggi. Vuoi sovrascriverla con questo nuovo allenamento?
+          </p>
+          <div className="flex gap-2 pt-2">
+            <Button variant="tertiary" fullWidth onClick={() => setShowOverwriteModal(false)}>
+              ANNULLA
+            </Button>
+            <Button variant="primary" fullWidth onClick={executeFinalizeWorkout}>
+              SOVRASCRIVI
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Modal di Conferma Annullamento Allenamento */}
       <Modal 

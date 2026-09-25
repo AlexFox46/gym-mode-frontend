@@ -172,6 +172,7 @@ function App() {
             onWorkoutComplete={handleWorkoutComplete}
             onNavigateToSchede={handleNavigateToSchede}
             userId={user?.id}
+            storico={storicoAllenamenti}
           />
         )}
         {activeTab === 'schede' && (
