@@ -815,107 +815,139 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       </div>
 
       <div className="space-y-6">
-        {/* CARD ESERCIZIO CON BOTTONE SOSTITUISCI NELL'HEADER */}
-        <Card className="relative overflow-hidden border-2 border-surface-tertiary">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div className="flex-1">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Esercizio {exerciseIndex + 1} di {localRoutine.length}</span>
-              <h2 className="text-xl font-black text-white leading-tight mt-0.5">{currentExercise.name}</h2>
-              <p className="text-text-secondary text-xs font-bold uppercase tracking-widest mt-1">
-                {currentExercise.sets} set • {currentExercise.reps} rip
-              </p>
-            </div>
+        {/* CARD ESERCIZIO DINAMICA (Si trasforma in 'Prossimo Esercizio' durante il recupero tra esercizi) */}
+        {pendingNextExercise && nextExercise ? (
+          /* STATUS B: CARD PROSSIMO ESERCIZIO (Attiva durante il recupero tra esercizi differenti) */
+          <Card className="relative overflow-hidden border-2 border-spotter/50 bg-surface-secondary shadow-spotter-glow transition-all">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="flex-1">
+                <span className="text-[10px] font-black uppercase tracking-widest text-spotter bg-spotter/10 px-2.5 py-1 rounded-full border border-spotter/30 inline-flex items-center gap-1.5 animate-pulse mb-1.5">
+                  <span>🔄</span> PROSSIMO ESERCIZIO (in arrivo)
+                </span>
+                <h2 className="text-xl font-black text-white leading-tight mt-1">{nextExercise.name}</h2>
+                <p className="text-text-secondary text-xs font-bold uppercase tracking-widest mt-1">
+                  {nextExercise.sets} set • {nextExercise.reps} rip @ {nextExercise.weight}kg
+                </p>
+              </div>
 
-            {/* BOTTONI INFO E SOSTITUISCI NELL'HEADER */}
-            <div className="flex items-center gap-1.5 shrink-0">
+              {/* BOTTONE INFO PROSSIMO ESERCIZIO */}
               <button 
-                onClick={() => setDetailModalExercise(currentExercise)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-secondary border border-surface-tertiary text-text-secondary hover:text-primary text-xs font-bold transition-colors"
+                onClick={() => setDetailModalExercise(nextExercise)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface border border-surface-tertiary text-text-secondary hover:text-spotter text-xs font-bold transition-colors shrink-0"
                 title="Dettagli ed Esercizi Simili"
               >
                 <Info size={14} />
                 <span>Info</span>
               </button>
-              <button 
-                onClick={handleOpenAlternatives}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-secondary border border-surface-tertiary text-primary text-xs font-bold hover:bg-primary/10 transition-colors"
-                title="Sostituisci esercizio"
-              >
-                <Repeat2 size={14} />
-                <span>Sostituisci</span>
-              </button>
             </div>
-          </div>
-          
-          {/* Visualizzatore Avanzamento Set */}
-          <div className="flex gap-2 mt-6">
-            {Array.from({ length: targetSets }).map((_, i) => (
-              <div 
-                key={i} 
-                className={`h-2 flex-1 rounded-full transition-all ${
-                  i < currentSet - 1 
-                    ? 'bg-primary' 
-                    : i === currentSet - 1 
-                      ? isRestActive ? 'bg-amber-400 animate-pulse' : 'bg-primary animate-pulse' 
-                      : 'bg-surface-tertiary'
-                }`} 
-              />
-            ))}
-          </div>
-        </Card>
+            
+            {/* Indicatore Set con Pallini Azzurri Spotter */}
+            <div className="flex gap-2 mt-5">
+              {Array.from({ length: Number(nextExercise.sets) || 1 }).map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`h-2.5 flex-1 rounded-full transition-all ${
+                    i === 0 ? 'bg-spotter shadow-spotter-subtle animate-pulse' : 'bg-surface-tertiary'
+                  }`} 
+                />
+              ))}
+            </div>
+          </Card>
+        ) : (
+          /* STATUS A: CARD ESERCIZIO CLASSICA (Esecuzione Set o Recupero tra Set dello stesso esercizio) */
+          <Card className="relative overflow-hidden border-2 border-surface-tertiary transition-all">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="flex-1">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Esercizio {exerciseIndex + 1} di {localRoutine.length}</span>
+                <h2 className="text-xl font-black text-white leading-tight mt-0.5">{currentExercise.name}</h2>
+                <p className="text-text-secondary text-xs font-bold uppercase tracking-widest mt-1">
+                  {currentExercise.sets} set • {currentExercise.reps} rip
+                </p>
+              </div>
 
-        {/* ANTEPRIMA PROSSIMO ESERCIZIO (durante recupero tra esercizi) */}
-        {pendingNextExercise && nextExercise && (
-          <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20">
-            <p className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">Prossimo esercizio</p>
-            <h3 className="font-black text-white text-base">{nextExercise.name}</h3>
-            <p className="text-xs text-text-secondary mt-0.5">
-              {nextExercise.sets} set × {nextExercise.reps} rip @ {nextExercise.weight}kg
-            </p>
-          </div>
+              {/* BOTTONI INFO E SOSTITUISCI NELL'HEADER */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button 
+                  onClick={() => setDetailModalExercise(currentExercise)}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-secondary border border-surface-tertiary text-text-secondary hover:text-primary text-xs font-bold transition-colors"
+                  title="Dettagli ed Esercizi Simili"
+                >
+                  <Info size={14} />
+                  <span>Info</span>
+                </button>
+                <button 
+                  onClick={handleOpenAlternatives}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-surface-secondary border border-surface-tertiary text-primary text-xs font-bold hover:bg-primary/10 transition-colors"
+                  title="Sostituisci esercizio"
+                >
+                  <Repeat2 size={14} />
+                  <span>Sostituisci</span>
+                </button>
+              </div>
+            </div>
+            
+            {/* Indicatore Set con Pallini Arancioni Primary */}
+            <div className="flex gap-2 mt-5">
+              {Array.from({ length: targetSets }).map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`h-2.5 flex-1 rounded-full transition-all ${
+                    i < currentSet - 1 
+                      ? 'bg-primary' 
+                      : i === currentSet - 1 
+                        ? isRestActive ? 'bg-amber-400 animate-pulse' : 'bg-primary shadow-primary-glow animate-pulse' 
+                        : 'bg-surface-tertiary'
+                  }`} 
+                />
+              ))}
+            </div>
+          </Card>
         )}
 
-        {/* INPUT PESO E RIPETIZIONI */}
+        {/* CONTENITORE TIMER GIGANTE — MAIN ACTION & ELEMENTO SOVRANO */}
+        <div 
+          onClick={handleRegisterSet}
+          className={`w-full p-6 rounded-3xl border-2 transition-all text-center cursor-pointer select-none active:scale-[0.98] ${
+            isRestActive 
+              ? pendingNextExercise
+                ? 'border-spotter bg-spotter/10 shadow-spotter-glow animate-pulse'
+                : 'border-amber-400 bg-amber-400/10 shadow-[0_0_25px_rgba(251,191,36,0.25)] animate-pulse' 
+              : 'border-primary bg-primary/10 shadow-primary-glow hover:bg-primary/15'
+          }`}
+        >
+          {isRestActive ? (
+            <>
+              <div className={`text-6xl font-mono font-black ${pendingNextExercise ? 'text-spotter' : 'text-amber-400'}`}>
+                {formatTime(restTime)}
+              </div>
+              <p className="text-[11px] font-black uppercase mt-3 tracking-widest text-white flex items-center justify-center gap-1.5">
+                <span>⚡</span>
+                <span>
+                  {pendingNextExercise 
+                    ? `SALTA RECUPERO ➔ INIZIA ${nextExercise?.name?.substring(0, 18) || 'PROSSIMO'}`
+                    : `SALTA RECUPERO ➔ INIZIA SET #${currentSet}`
+                  }
+                </span>
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="text-3xl font-mono font-black text-primary uppercase tracking-wider flex items-center justify-center gap-2 py-1">
+                <span>✓</span>
+                <span>COMPLETA SET #{currentSet}</span>
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary mt-1">
+                Tocca qui per registrare la serie ed avviare il timer
+              </p>
+            </>
+          )}
+        </div>
+
+        {/* INPUT PESO E RIPETIZIONI (Accessibile prima del set) */}
         <Card className={`space-y-4 transition-all ${isRestActive ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
           <Stepper label="Carico (kg)" value={currentWeight} onChange={setCurrentWeight} step={2.5} unit="kg" />
           <Stepper label="Ripetizioni" value={currentReps} onChange={setCurrentReps} step={1} unit="rip" />
         </Card>
-
-        {/* PULSANTE AZIONE PRINCIPALE INTEGRATO CON TIMER DI RECUPERO */}
-        <div className="space-y-2 pt-2">
-          {isRestActive ? (
-            <Button 
-              size="large" 
-              fullWidth 
-              onClick={handleRegisterSet} 
-              className={`!text-slate-950 font-black py-6 border-none flex flex-col items-center justify-center gap-0.5 shadow-2xl transition-all ${
-                pendingNextExercise 
-                  ? 'bg-spotter hover:bg-spotter/90 shadow-spotter-glow animate-pulse' 
-                  : 'bg-amber-400 hover:bg-amber-300 shadow-lg animate-pulse'
-              }`}
-            >
-              <div className="flex items-center gap-2 text-2xl font-mono font-black">
-                <span>⏱️</span>
-                <span>{formatTime(restTime)}</span>
-              </div>
-              <span className="text-[10px] uppercase tracking-widest font-black opacity-90">
-                {pendingNextExercise 
-                  ? `SALTA RECUPERO ➔ VAI A ${nextExercise?.name?.substring(0, 18) || 'PROSSIMO'}...`
-                  : `SALTA RECUPERO ➔ INIZIA SET #${currentSet}`
-                }
-              </span>
-            </Button>
-          ) : (
-            <Button 
-              size="large" 
-              fullWidth 
-              onClick={handleRegisterSet} 
-              className="!text-slate-950 bg-primary font-black py-5 text-sm uppercase tracking-wider shadow-primary-glow hover:opacity-90 border-none flex items-center justify-center gap-2"
-            >
-              <span>✓</span> COMPLETA SET #{currentSet} DEGLI {targetSets}
-            </Button>
-          )}
-        </div>
       </div>
 
       {/* BOTTOM SHEET ALTERNATIVE */}
