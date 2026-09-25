@@ -819,8 +819,8 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       <div className="space-y-6">
         {/* CARD ESERCIZIO DINAMICA (Si trasforma in 'Prossimo Esercizio' durante il recupero tra esercizi) */}
         {pendingNextExercise && nextExercise ? (
-          /* STATUS B: CARD PROSSIMO ESERCIZIO (Tratteggiato Arancione - In Attesa) */
-          <Card className="relative overflow-hidden border-2 border-dashed border-primary/60 bg-surface-secondary/90 shadow-primary-glow/10 transition-all">
+          /* STATUS B: CARD PROSSIMO ESERCIZIO (Attiva durante il recupero tra esercizi differenti) */
+          <Card className="relative overflow-hidden border-2 border-dashed border-primary/70 bg-surface-secondary shadow-primary-glow/20 transition-all">
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="flex-1">
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/30 inline-flex items-center gap-1.5 animate-pulse mb-1.5">
@@ -843,7 +843,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
               </button>
             </div>
             
-            {/* Indicatore Set con Pallini Arancioni Primary (Tratteggiati/In Arrivo) */}
+            {/* Indicatore Set con Pallini Arancioni Primary Lampeggianti */}
             <div className="flex gap-2 mt-5">
               {Array.from({ length: Number(nextExercise.sets) || 1 }).map((_, i) => (
                 <div 
