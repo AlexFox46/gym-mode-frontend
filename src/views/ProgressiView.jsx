@@ -237,17 +237,25 @@ export const ProgressiView = ({
             const dayNum = idx + 1;
             const targetDateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
             
-            // Trova il log corrispondente confrontando la stringa YYYY-MM-DD locale
-            const dailyLog = logsInViewMonth.find(l => getLocalDateString(l.date) === targetDateStr);
+            // Trova il log corrispondente confrontando la data YYYY-MM-DD locale
+            const dailyLog = logsInViewMonth.find(l => {
+              if (!l.date) return false;
+              const logDateStr = getLocalDateString(l.date);
+              return logDateStr === targetDateStr;
+            });
             
             return (
               <button 
                 key={dayNum} 
-                onClick={() => dailyLog && setSelectedLog(dailyLog)}
+                onClick={() => {
+                  if (dailyLog) {
+                    setSelectedLog(dailyLog);
+                  }
+                }}
                 disabled={!dailyLog}
                 className={`h-11 flex flex-col items-center justify-center rounded-xl transition-all ${
                   dailyLog 
-                    ? 'bg-primary text-black shadow-md active:scale-95 cursor-pointer hover:opacity-90' 
+                    ? 'bg-primary text-black shadow-md active:scale-95 cursor-pointer hover:opacity-90 ring-2 ring-primary/40' 
                     : 'bg-surface-secondary text-text-primary cursor-default'
                 }`}
               >
