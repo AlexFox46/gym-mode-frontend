@@ -209,7 +209,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   };
 
   useEffect(() => {
-    if (currentExercise && !isRestoringRef.current) {
+    if (currentExercise && !isWorkoutStartedRef.current) {
       setCurrentWeight(Number(currentExercise.weight) || 0);
       setCurrentReps(Number(currentExercise.reps) || 0);
       setCurrentSet(1);
@@ -247,7 +247,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
       timer = setInterval(() => {
         setElapsedWorkoutSeconds(prev => prev + 1);
       }, 1000);
-    } else if (!isRestoringRef.current) {
+    } else {
       setElapsedWorkoutSeconds(0);
     }
     return () => clearInterval(timer);
@@ -257,7 +257,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   // SALVATAGGIO PERIODICO STATO ALLENAMENTO SU LOCALSTORAGE
   // =========================================================================
   useEffect(() => {
-    if (!isWorkoutStarted || isRestoringRef.current) return;
+    if (!isWorkoutStarted) return;
     
     const saveState = () => {
       saveWorkoutState({
