@@ -42,10 +42,67 @@ const clearWorkoutState = () => {
 // COMPONENTE PRINCIPALE
 // ============================================================================
 export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavigateToSchede, userId, storico = [] }) => {
-  const [activeDay, setActiveDay] = useState('G1');
+  // Caricamento sincrono immediato dallo stato salvato su localStorage
+  const savedStateRef = useRef(null);
+  if (savedStateRef.current === null && typeof window !== 'undefined') {
+    savedStateRef.current = loadWorkoutState();
+  }
+  const saved = savedStateRef.current;
+  const isSavedActive = saved && saved.isWorkoutStarted && schedaAttiva && saved.schedaId === schedaAttiva.id;
+
+  const [activeDay, setActiveDay] = useState(() => isSavedActive ? saved.activeDay : 'G1');
   const schemaDays = schedaAttiva ? Array.from({ length: schedaAttiva.daysCount }, (_, i) => `G${i + 1}`) : [];
-  const [localRoutine, setLocalRoutine] = useState([]);
-  const [exerciseIndex, setExerciseIndex] = useState(0);
+
+  // Stato per la modalità di allenamento attiva (Pre-allenamento vs In corso)
+  const [isWorkoutStarted, setIsWorkoutStarted] = useState(() => isSavedActive ? true : false);
+  const isWorkoutStartedRef = useRef(isWorkoutStarted);
+  useEffect(() => {
+    isWorkoutStartedRef.current = isWorkoutStarted;
+  }, [isWorkoutStarted]);
+
+  const [workoutStartTime, setWorkoutStartTime] = useState(() => isSavedActive ? saved.workoutStartTime : null);
+  const [elapsedWorkoutSeconds, setElapsedWorkoutSeconds] = useState(() => {
+    if (isSavedActive && saved.savedAt) {
+      const timeSinceSave = Math.floor((Date.now() - saved.savedAt) / 1000);
+      return (saved.elapsedWorkoutSeconds || 0) + Math.max(0, timeSinceSave);
+    }
+    return 0;
+  });
+
+  const [exerciseIndex, setExerciseIndex] = useState(() => isSavedActive ? (saved.exerciseIndex || 0) : 0);
+  const [currentSet, setCurrentSet] = useState(() => isSavedActive ? (saved.currentSet || 1) : 1);
+  const [pendingNextExercise, setPendingNextExercise] = useState(() => isSavedActive ? (saved.pendingNextExercise || false) : false);
+  const [totalTonnage, setTotalTonnage] = useState(() => isSavedActive ? (saved.totalTonnage || 0) : 0);
+
+  const [localRoutine, setLocalRoutine] = useState(() => {
+    if (isSavedActive && saved.localRoutine && saved.localRoutine.length > 0) {
+      return saved.localRoutine;
+    }
+    return schedaAttiva?.routine?.[activeDay] ? JSON.parse(JSON.stringify(schedaAttiva.routine[activeDay])) : [];
+  });
+
+  const currentExercise = localRoutine[exerciseIndex];
+  const [currentWeight, setCurrentWeight] = useState(() => {
+    if (isSavedActive && saved.currentWeight !== undefined) return saved.currentWeight;
+    return currentExercise?.weight ? Number(currentExercise.weight) : 0;
+  });
+  const [currentReps, setCurrentReps] = useState(() => {
+    if (isSavedActive && saved.currentReps !== undefined) return saved.currentReps;
+    return currentExercise?.reps ? Number(currentExercise.reps) : 0;
+  });
+
+  // Calcolo rest time residuo se l'app è stata messa in background durante il recupero
+  const initialRestCalc = (() => {
+    if (isSavedActive && saved.isRestActive && saved.restTime > 0 && saved.savedAt) {
+      const restElapsed = Math.floor((Date.now() - saved.savedAt) / 1000);
+      const remainingRest = Math.max(0, saved.restTime - restElapsed);
+      return { isRestActive: remainingRest > 0, restTime: remainingRest };
+    }
+    return { isRestActive: false, restTime: 90 };
+  })();
+
+  const [restTime, setRestTime] = useState(initialRestCalc.restTime);
+  const [isRestActive, setIsRestActive] = useState(initialRestCalc.isRestActive);
 
   // Stato per Modale Dettaglio Esercizio Tooltip (i)
   const [detailModalExercise, setDetailModalExercise] = useState(null);
@@ -54,8 +111,8 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showOverwriteModal, setShowOverwriteModal] = useState(false);
   const [completedWorkoutPayload, setCompletedWorkoutPayload] = useState(null);
-  const [feedbackFatigue, setFeedbackFatigue] = useState(2); // 1: Leggero, 2: Giusto, 3: Molto Duro, 4: Estremo
-  const [selectedJoints, setSelectedJoints] = useState([]); // [] = Nessun fastidio
+  const [feedbackFatigue, setFeedbackFatigue] = useState(2);
+  const [selectedJoints, setSelectedJoints] = useState([]);
   const [feedbackHardestExerciseId, setFeedbackHardestExerciseId] = useState('');
   const [showExercisePicker, setShowExercisePicker] = useState(false);
 
@@ -70,34 +127,12 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
   // Riferimento al contenitore per lo slide
   const scrollContainerRef = useRef(null);
 
-  // Stato per la modalità di allenamento attiva (Pre-allenamento vs In corso)
-  const [isWorkoutStarted, setIsWorkoutStarted] = useState(false);
-  const [workoutStartTime, setWorkoutStartTime] = useState(null);
-  const [elapsedWorkoutSeconds, setElapsedWorkoutSeconds] = useState(0);
-
   // Stato per la schermata dettaglio full-screen
   const [detailDay, setDetailDay] = useState(null);
 
-  // Stato per il recupero tra esercizi
-  const [pendingNextExercise, setPendingNextExercise] = useState(false);
-
-  // Tonnage accumulato durante l'allenamento
-  const [totalTonnage, setTotalTonnage] = useState(0);
-
-  // Flag per evitare il reset della routine durante il ripristino
-  const isRestoringRef = useRef(false);
-
-  // Reset activeDay quando cambia schedaAttiva
+  // PROTEZIONE ANTI-RESET 1: Quando cambia schedaAttiva o activeDay, resetta SOLO SE L'ALLENAMENTO NON È IN CORSO!
   useEffect(() => {
-    if (schedaAttiva && !isRestoringRef.current) {
-      setActiveDay('G1');
-      setIsWorkoutStarted(false);
-    }
-  }, [schedaAttiva?.id]);
-
-  // Inizializzazione routine quando cambia schedaAttiva o activeDay
-  useEffect(() => {
-    if (isRestoringRef.current) return; // Non resettare durante il ripristino
+    if (isWorkoutStartedRef.current) return;
     if (schedaAttiva?.routine?.[activeDay]) {
       setLocalRoutine(JSON.parse(JSON.stringify(schedaAttiva.routine[activeDay])));
       setExerciseIndex(0);
@@ -107,68 +142,7 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
     }
   }, [schedaAttiva, activeDay]);
 
-  // =========================================================================
-  // RIPRISTINO ALLENAMENTO DA LOCALSTORAGE (al mount)
-  // =========================================================================
-  useEffect(() => {
-    const saved = loadWorkoutState();
-    if (saved && saved.isWorkoutStarted && schedaAttiva) {
-      // Verifica che la scheda sia ancora la stessa
-      if (saved.schedaId === schedaAttiva.id) {
-        isRestoringRef.current = true;
-        setActiveDay(saved.activeDay);
-        setLocalRoutine(saved.localRoutine);
-        setExerciseIndex(saved.exerciseIndex);
-        setCurrentSet(saved.currentSet);
-        setCurrentWeight(saved.currentWeight);
-        setCurrentReps(saved.currentReps);
-        setTotalTonnage(saved.totalTonnage || 0);
-        setPendingNextExercise(saved.pendingNextExercise || false);
-        
-        // Ricalcola il tempo trascorso
-        const timeSinceSave = Math.floor((Date.now() - saved.savedAt) / 1000);
-        setElapsedWorkoutSeconds(saved.elapsedWorkoutSeconds + timeSinceSave);
-        setWorkoutStartTime(saved.workoutStartTime);
-        
-        // Ripristina il timer di recupero
-        if (saved.isRestActive && saved.restTime > 0) {
-          const restElapsed = Math.floor((Date.now() - saved.savedAt) / 1000);
-          const remainingRest = Math.max(0, saved.restTime - restElapsed);
-          if (remainingRest > 0) {
-            setRestTime(remainingRest);
-            setIsRestActive(true);
-          } else {
-            // Il recupero è finito mentre l'app era chiusa
-            setIsRestActive(false);
-            if (saved.pendingNextExercise) {
-              // Avanza all'esercizio successivo
-              setExerciseIndex(saved.exerciseIndex + 1);
-              setPendingNextExercise(false);
-              setCurrentSet(1);
-            }
-          }
-        }
-        
-        setIsWorkoutStarted(true);
-        
-        // Rimuovi il flag di ripristino dopo un po' per sicurezza
-        setTimeout(() => { isRestoringRef.current = false; }, 300);
-        console.log('✅ Allenamento ripristinato da localStorage');
-      } else {
-        clearWorkoutState();
-      }
-    }
-  }, [schedaAttiva?.id]);
-
-  const currentExercise = localRoutine[exerciseIndex];
-  const [currentWeight, setCurrentWeight] = useState(0);
-  const [currentReps, setCurrentReps] = useState(0);
-  const [currentSet, setCurrentSet] = useState(1);
   const exerciseRest = currentExercise?.rest ? Number(currentExercise.rest) : 90;
-
-  // Stato timer di recupero
-  const [restTime, setRestTime] = useState(90);
-  const [isRestActive, setIsRestActive] = useState(false);
 
   // Stato per il bottom sheet delle alternative
   const [showAlternatives, setShowAlternatives] = useState(false);
@@ -404,6 +378,17 @@ export const AllenatiView = ({ settings, schedaAttiva, onWorkoutComplete, onNavi
         setPendingNextExercise(false);
       }
       return;
+    }
+
+    // Aggiorna la routine locale con il peso ed il carico effettivo utilizzato per questo set
+    const updatedRoutine = [...localRoutine];
+    if (updatedRoutine[exerciseIndex]) {
+      updatedRoutine[exerciseIndex] = {
+        ...updatedRoutine[exerciseIndex],
+        weight: currentWeight,
+        reps: currentReps
+      };
+      setLocalRoutine(updatedRoutine);
     }
 
     // Accumula tonnage per questo set

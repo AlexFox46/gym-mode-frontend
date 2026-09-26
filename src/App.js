@@ -165,7 +165,7 @@ function App() {
         />
       )}
       <main className="flex-1 overflow-y-auto pb-24">
-        {activeTab === 'allenati' && (
+        <div className={activeTab === 'allenati' ? 'block' : 'hidden'}>
           <AllenatiView 
             settings={settings} 
             schedaAttiva={schedaAttiva}
@@ -174,8 +174,8 @@ function App() {
             userId={user?.id}
             storico={storicoAllenamenti}
           />
-        )}
-        {activeTab === 'schede' && (
+        </div>
+        <div className={activeTab === 'schede' ? 'block' : 'hidden'}>
           <SchedeView 
             schede={leMieSchede}
             setSchede={setLeMieSchede}
@@ -186,13 +186,13 @@ function App() {
             editDay={editDay}
             setEditDay={setEditDay}
           />
-        )}
-        {activeTab === 'spotter' && (
+        </div>
+        <div className={activeTab === 'spotter' ? 'block' : 'hidden'}>
           <SpotterView 
             schedaAttiva={schedaAttiva}
           />
-        )}
-        {activeTab === 'progressi' && (
+        </div>
+        <div className={activeTab === 'progressi' ? 'block' : 'hidden'}>
           <ProgressiView 
             storico={storicoAllenamenti} 
             user={user}
@@ -205,7 +205,7 @@ function App() {
             setSchedaAttiva={setSchedaAttiva}
             onShowToast={(msg, type) => setToast({ message: msg, type })}
           />
-        )}
+        </div>
       </main>
 
       {/* Nav Bar Inferiore con 4 voci: Allenati, Schede, Spotter, Progressi */}

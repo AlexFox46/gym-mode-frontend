@@ -13,6 +13,104 @@ const getLocalDateString = (dateObj) => {
   return `${year}-${month}-${day}`;
 };
 
+// Helper per calcolare i progressi aggregati dallo storico
+const calculateProgressionAnalytics = (storico = []) => {
+  const sortedLogs = [...storico].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const exerciseHistoryMap = {};
+
+  sortedLogs.forEach(log => {
+    if (Array.isArray(log.exercisesData)) {
+      log.exercisesData.forEach(ex => {
+        const name = ex.name || ex.exerciseName;
+        if (!name) return;
+        const weight = Number(ex.weight) || 0;
+        if (weight <= 0) return;
+        const muscle = ex.muscle || ex.primary_muscle_group || 'Altro';
+        
+        if (!exerciseHistoryMap[name]) {
+          exerciseHistoryMap[name] = {
+            name,
+            muscle,
+            history: []
+          };
+        }
+        exerciseHistoryMap[name].history.push({
+          date: log.date,
+          weight,
+          sets: ex.sets || 1,
+          reps: ex.reps || 10
+        });
+      });
+    }
+  });
+
+  const exerciseStatsList = [];
+  let totalDeltaKgSum = 0;
+  let totalDeltaPctSum = 0;
+  let evaluatedCount = 0;
+
+  Object.values(exerciseHistoryMap).forEach(item => {
+    const h = item.history;
+    if (h.length === 0) return;
+
+    const latest = h[h.length - 1];
+    const previous = h.length > 1 ? h[h.length - 2] : null;
+
+    const deltaKg = previous ? latest.weight - previous.weight : 0;
+    const deltaPct = previous && previous.weight > 0 ? ((latest.weight - previous.weight) / previous.weight) * 100 : 0;
+
+    if (previous) {
+      totalDeltaKgSum += deltaKg;
+      totalDeltaPctSum += deltaPct;
+      evaluatedCount++;
+    }
+
+    exerciseStatsList.push({
+      name: item.name,
+      muscle: item.muscle,
+      latestWeight: latest.weight,
+      previousWeight: previous ? previous.weight : null,
+      deltaKg,
+      deltaPct,
+      historyCount: h.length
+    });
+  });
+
+  const avgProgressionPct = evaluatedCount > 0 ? (totalDeltaPctSum / evaluatedCount) : 0;
+
+  const muscleGroupsMap = {};
+  exerciseStatsList.forEach(ex => {
+    const group = ex.muscle || 'Altro';
+    if (!muscleGroupsMap[group]) {
+      muscleGroupsMap[group] = {
+        muscle: group,
+        exercises: [],
+        totalDeltaKg: 0,
+        sumDeltaPct: 0,
+        count: 0
+      };
+    }
+    muscleGroupsMap[group].exercises.push(ex);
+    muscleGroupsMap[group].totalDeltaKg += ex.deltaKg;
+    if (ex.previousWeight !== null) {
+      muscleGroupsMap[group].sumDeltaPct += ex.deltaPct;
+      muscleGroupsMap[group].count++;
+    }
+  });
+
+  const muscleGroupsList = Object.values(muscleGroupsMap).map(g => ({
+    ...g,
+    avgPct: g.count > 0 ? (g.sumDeltaPct / g.count) : 0
+  }));
+
+  return {
+    avgProgressionPct,
+    totalDeltaKgSum,
+    exerciseStatsList,
+    muscleGroupsList
+  };
+};
+
 export const ProgressiView = ({ 
   storico = [], 
   user, 
@@ -30,6 +128,10 @@ export const ProgressiView = ({
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedLog, setSelectedLog] = useState(null);
   const [updatingRoutine, setUpdatingRoutine] = useState(false);
+  const [showProgressionModal, setShowProgressionModal] = useState(false);
+  const [selectedMuscleFilter, setSelectedMuscleFilter] = useState('TUTTI');
+
+  const analytics = calculateProgressionAnalytics(storico);
 
   if (subView === 'settings') {
     return (
@@ -179,6 +281,34 @@ export const ProgressiView = ({
           <CalendarIcon size={22} className="text-primary" />
         </div>
       </div>
+
+      {/* CARD KPI PROGRESSIONE GENERALE (CLICCABILE PER ZOOM PER GRUPPO MUSCOLARE) */}
+      <Card 
+        onClick={() => setShowProgressionModal(true)}
+        className="mb-6 bg-gradient-to-r from-primary/20 via-surface-secondary to-surface-secondary border-2 border-primary/50 p-4 shadow-primary-glow cursor-pointer hover:border-primary transition-all active:scale-[0.99] relative overflow-hidden"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-1.5">
+              <TrendingUp size={14} /> PROGRESSIONE GENERALE (KPI)
+            </span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <h3 className="text-3xl font-black text-white">
+                {analytics.avgProgressionPct >= 0 ? `+${analytics.avgProgressionPct.toFixed(1)}%` : `${analytics.avgProgressionPct.toFixed(1)}%`}
+              </h3>
+              <span className="text-xs font-bold text-emerald-400 font-mono">
+                ({analytics.totalDeltaKgSum >= 0 ? `+${analytics.totalDeltaKgSum} kg` : `${analytics.totalDeltaKgSum} kg`} totali)
+              </span>
+            </div>
+            <p className="text-[11px] text-text-secondary mt-1 font-medium">
+              Tocca qui per lo <strong className="text-white">Zoom dei gruppi muscolari</strong> e singoli esercizi 🔍
+            </p>
+          </div>
+          <div className="w-10 h-10 rounded-2xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary shrink-0">
+            <ChevronRight size={22} />
+          </div>
+        </div>
+      </Card>
 
       {/* CARD SPOTTER AI (LINK INTELLIGENTE A SPOTTER VIEW) */}
       <Card className="mb-6 bg-gradient-to-r from-spotter/15 via-surface-secondary to-surface-secondary border border-spotter/40 p-4 space-y-3 shadow-spotter-glow relative overflow-hidden">
@@ -375,6 +505,102 @@ export const ProgressiView = ({
                 </p>
               </div>
             )}
+          </div>
+        </Modal>
+      )}
+
+      {/* MODALE ZOOM PROGRESSIONE MUSCOLARE (SCENARIO 3) */}
+      {showProgressionModal && (
+        <Modal
+          isOpen={showProgressionModal}
+          onClose={() => setShowProgressionModal(false)}
+          title="Zoom Progressione Muscolare"
+        >
+          <div className="space-y-4 text-left max-h-[75vh] overflow-y-auto pr-1">
+            {/* SUMMARIES STATS */}
+            <div className="grid grid-cols-2 gap-2 bg-surface p-3 rounded-2xl border border-surface-tertiary">
+              <div className="text-center p-2 bg-surface-secondary rounded-xl">
+                <span className="text-xs font-mono font-black text-primary block">
+                  {analytics.avgProgressionPct >= 0 ? `+${analytics.avgProgressionPct.toFixed(1)}%` : `${analytics.avgProgressionPct.toFixed(1)}%`}
+                </span>
+                <span className="text-[9px] text-text-tertiary uppercase font-bold">Media Progressione</span>
+              </div>
+              <div className="text-center p-2 bg-surface-secondary rounded-xl">
+                <span className="text-xs font-mono font-black text-emerald-400 block">
+                  {analytics.totalDeltaKgSum >= 0 ? `+${analytics.totalDeltaKgSum} kg` : `${analytics.totalDeltaKgSum} kg`}
+                </span>
+                <span className="text-[9px] text-text-tertiary uppercase font-bold">Incremento Carichi</span>
+              </div>
+            </div>
+
+            {/* FILTRI GRUPPO MUSCOLARE */}
+            <div className="flex gap-1.5 overflow-x-auto pb-1 hide-scrollbar">
+              {['TUTTI', 'Petto', 'Dorso', 'Gambe', 'Spalle', 'Tricipiti', 'Bicipiti', 'Core'].map(group => (
+                <button
+                  key={group}
+                  onClick={() => setSelectedMuscleFilter(group)}
+                  className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider whitespace-nowrap transition-all ${
+                    selectedMuscleFilter === group
+                      ? 'bg-primary text-black shadow-md'
+                      : 'bg-surface border border-surface-tertiary text-text-secondary hover:text-white'
+                  }`}
+                >
+                  {group}
+                </button>
+              ))}
+            </div>
+
+            {/* LISTA SPACCATO ESERCIZI CON DELTA KG E % */}
+            <div className="space-y-2.5 pt-1">
+              {analytics.exerciseStatsList
+                .filter(ex => selectedMuscleFilter === 'TUTTI' || ex.muscle.toLowerCase() === selectedMuscleFilter.toLowerCase())
+                .length === 0 ? (
+                  <div className="text-center py-8 text-text-secondary">
+                    <p className="text-xs font-medium">Nessun dato registrato per questo gruppo muscolare.</p>
+                  </div>
+                ) : (
+                  analytics.exerciseStatsList
+                    .filter(ex => selectedMuscleFilter === 'TUTTI' || ex.muscle.toLowerCase() === selectedMuscleFilter.toLowerCase())
+                    .map((ex, idx) => (
+                      <div key={idx} className="p-3.5 bg-surface-secondary rounded-2xl border border-surface-tertiary space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">
+                              {ex.muscle}
+                            </span>
+                            <h4 className="text-sm font-black text-white leading-tight mt-1">{ex.name}</h4>
+                          </div>
+                          <Badge variant="default" className="font-mono text-[10px]">
+                            {ex.historyCount} sessioni
+                          </Badge>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-surface-tertiary/50">
+                          <div>
+                            <span className="text-[10px] text-text-tertiary uppercase font-bold block">Carico Attuale</span>
+                            <span className="text-sm font-mono font-black text-white">{ex.latestWeight} kg</span>
+                          </div>
+
+                          <div className="text-right">
+                            <span className="text-[10px] text-text-tertiary uppercase font-bold block">Variazione</span>
+                            {ex.previousWeight !== null ? (
+                              <div className="flex items-center justify-end gap-1 font-mono text-xs font-black">
+                                <span className={ex.deltaKg >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+                                  {ex.deltaKg >= 0 ? `+${ex.deltaKg} kg` : `${ex.deltaKg} kg`}
+                                </span>
+                                <span className={ex.deltaPct >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+                                  ({ex.deltaPct >= 0 ? `+${ex.deltaPct.toFixed(1)}%` : `${ex.deltaPct.toFixed(1)}%`})
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-[10px] font-mono text-text-tertiary">Prima sessione</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                )}
+            </div>
           </div>
         </Modal>
       )}
