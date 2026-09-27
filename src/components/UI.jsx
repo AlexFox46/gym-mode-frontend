@@ -173,7 +173,7 @@ export const Toast = ({ message, type = 'success', onClose }) => {
   };
 
   return (
-    <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[380px] bg-surface-secondary border border-surface-tertiary p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-5 duration-200">
+    <div className="fixed top-[calc(1.25rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[380px] bg-surface-secondary border border-surface-tertiary p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-5 duration-200">
       <div className="flex items-center gap-3">
         {icons[type]}
         <span className="text-xs font-bold text-text-primary">{message}</span>

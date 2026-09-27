@@ -164,7 +164,7 @@ function App() {
           onClose={() => setToast(null)} 
         />
       )}
-      <main className="flex-1 overflow-y-auto pb-24">
+      <main className="flex-1 overflow-y-auto pb-[calc(5rem+env(safe-area-inset-bottom,0px))]">
         <div className={activeTab === 'allenati' ? 'block' : 'hidden'}>
           <AllenatiView 
             settings={settings} 
@@ -208,8 +208,8 @@ function App() {
         </div>
       </main>
 
-      {/* Nav Bar Inferiore con 4 voci: Allenati, Schede, Spotter, Progressi */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-[420px] mx-auto bg-surface-secondary border-t border-surface-tertiary h-16 flex justify-around items-center z-40 px-2 shadow-2xl">
+      {/* Nav Bar Inferiore con 4 voci (Supporto PWA Safe Area per iOS Home Indicator) */}
+      <nav className="fixed bottom-0 left-0 right-0 max-w-[420px] mx-auto bg-surface-secondary border-t border-surface-tertiary flex justify-around items-center z-40 px-2 shadow-2xl pb-[env(safe-area-inset-bottom,0px)] h-[calc(4rem+env(safe-area-inset-bottom,0px))]">
         <button 
           onClick={() => setActiveTab('allenati')} 
           className={`flex flex-col items-center justify-center w-16 h-full transition-all ${

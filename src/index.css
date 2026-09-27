@@ -21,7 +21,25 @@ html, body {
   }
 }
 
-/* Forziamo un contenitore rigido per simulare lo smartphone sul desktop */
+/* Forziamo un contenitore rigido per simulare lo smartphone sul desktop o PWA standalone su iOS/Android */
 .app-container {
   @apply min-h-screen max-w-[420px] mx-auto bg-surface flex flex-col relative border-x border-surface-tertiary shadow-xl;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Utilità Safe Area per Standalone PWA (iOS Dynamic Island / Notch e Home Indicator) */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 16px);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+.top-safe {
+  top: env(safe-area-inset-top, 16px);
+}
+
+.bottom-safe {
+  bottom: env(safe-area-inset-bottom, 0px);
 }
