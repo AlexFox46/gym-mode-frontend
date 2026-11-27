@@ -1,4 +1,23 @@
 import React, { useState, useEffect } from 'react';
+
+// Logger che si silenzia in produzione — nessuna info nei DevTools in prod
+const devLog = process.env.NODE_ENV === 'development' ? console.log : () => {};
+
+/**
+ * Legge e parsa in sicurezza un valore dal localStorage.
+ * Se il valore è corrotto o mancante restituisce il fallback
+ * e ripulisce la chiave dal localStorage per evitare loop di errori.
+ */
+const safeParseLocalStorage = (key, fallback = []) => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw === null) return fallback;
+    return JSON.parse(raw);
+  } catch {
+    localStorage.removeItem(key); // rimuove il dato corrotto
+    return fallback;
+  }
+};
 import { supabase } from './supabaseClient';
 import { LoginView } from './views/LoginView';
 import { AllenatiView } from './views/AllenatiView';
@@ -38,7 +57,7 @@ function App() {
   useEffect(() => {
     fetchEsercizi().then(data => {
       setEsercizi(data);
-      console.log(`✅ Caricati ${data.length} esercizi da Supabase`);
+      devLog(`✅ Caricati ${data.length} esercizi da Supabase`);
     });
   }, []);
 
@@ -53,7 +72,7 @@ function App() {
       // Carica storico allenamenti da Supabase
       const logs = await fetchWorkoutLogs(session.user.id);
       // Merge con eventuali log in localStorage non sincronizzati
-      const localLogs = JSON.parse(localStorage.getItem('gym_workout_history') || '[]');
+      const localLogs = safeParseLocalStorage('gym_workout_history');
       const mergedLogs = [...logs];
       localLogs.forEach(ll => {
         if (!mergedLogs.find(ml => ml.date === ll.date && ml.dayName === ll.dayName)) {
@@ -121,7 +140,7 @@ function App() {
   const handleWorkoutComplete = async (logEntry) => {
     setStoricoAllenamenti(prev => [...prev, logEntry]);
     // Salva su localStorage come fallback immediato
-    const currentLogs = JSON.parse(localStorage.getItem('gym_workout_history') || '[]');
+    const currentLogs = safeParseLocalStorage('gym_workout_history');
     localStorage.setItem('gym_workout_history', JSON.stringify([...currentLogs, logEntry]));
     
     setToast({ message: 'Allenamento completato! Sincronizzazione in corso...', type: 'info' });
