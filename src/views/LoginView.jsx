@@ -20,6 +20,13 @@ export const LoginView = ({ onLoginSuccess }) => {
       return;
     }
 
+    // Validazione password minima solo in fase di registrazione
+    if (isRegistering && password.length < 8) {
+      setErrorMsg('La password deve essere di almeno 8 caratteri.');
+      setLoading(false);
+      return;
+    }
+
     try {
       if (isRegistering) {
         // REGISTRAZIONE NUOVO UTENTE
@@ -70,6 +77,7 @@ export const LoginView = ({ onLoginSuccess }) => {
               <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Email</label>
               <input
                 type="email"
+                autoComplete="email"
                 placeholder="nome@esempio.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -82,6 +90,7 @@ export const LoginView = ({ onLoginSuccess }) => {
               <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Password</label>
               <input
                 type="password"
+                autoComplete={isRegistering ? 'new-password' : 'current-password'}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

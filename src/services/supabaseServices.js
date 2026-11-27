@@ -1,6 +1,9 @@
 import { supabase } from '../supabaseClient';
 import { EXERCISE_LIBRARY, getEnrichedExercise } from '../data/exerciseLibrary';
 
+// Logger che si silenzia in produzione
+const devLog = process.env.NODE_ENV === 'development' ? console.log : () => {};
+
 /**
  * Fetch tutti gli esercizi dal database Supabase ed arricchimento con metadati e attrezzature verificate
  * Risolve ed unifica i nomi in inglese verso i nomi canonici in italiano per evitare duplicati.
@@ -79,7 +82,7 @@ export const createProfileIfNotExists = async (userId) => {
         console.error('Errore nella creazione del profilo:', insertError);
         return false;
       }
-      console.log('✅ Profilo creato automaticamente');
+      devLog('✅ Profilo creato automaticamente');
     }
     return true;
   } catch (err) {
@@ -95,7 +98,7 @@ export const fetchSchede = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('workout_schemes')
-      .select('*')
+      .select('id, name, days_count, routine, is_active, goal')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
@@ -269,7 +272,7 @@ export const saveWorkoutLog = async (userId, logEntry) => {
       console.error('Errore nel salvataggio del log allenamento:', error);
       return false;
     }
-    console.log('✅ Log allenamento salvato su Supabase');
+    devLog('✅ Log allenamento salvato su Supabase');
     return true;
   } catch (err) {
     console.error('Errore inatteso nel salvataggio log:', err);
@@ -316,12 +319,21 @@ export const fetchWorkoutLogs = async (userId) => {
 /**
  * Salva o aggiorna la scheda utente con l'obiettivo scelto
  */
-export const updateSchedaGoal = async (schedaId, goal) => {
+/**
+ * Salva o aggiorna l'obiettivo della scheda utente.
+ * userId viene usato come doppia chiave (defense-in-depth oltre le RLS).
+ */
+export const updateSchedaGoal = async (schedaId, goal, userId) => {
   try {
-    const { error } = await supabase
+    let query = supabase
       .from('workout_schemes')
       .update({ goal })
       .eq('id', schedaId);
+
+    // Aggiunge il filtro user_id se disponibile (difesa in profondità rispetto alle RLS)
+    if (userId) query = query.eq('user_id', userId);
+
+    const { error } = await query;
 
     if (error) {
       console.error('Errore aggiornamento obiettivo scheda:', error);
@@ -335,14 +347,20 @@ export const updateSchedaGoal = async (schedaId, goal) => {
 };
 
 /**
- * Aggiorna la routine per una determinata giornata di una scheda utente
+ * Aggiorna la routine per una determinata giornata di una scheda utente.
+ * userId viene usato come doppia chiave (defense-in-depth oltre le RLS).
  */
-export const updateSchedaRoutine = async (schedaId, routine) => {
+export const updateSchedaRoutine = async (schedaId, routine, userId) => {
   try {
-    const { error } = await supabase
+    let query = supabase
       .from('workout_schemes')
       .update({ routine })
       .eq('id', schedaId);
+
+    // Aggiunge il filtro user_id se disponibile (difesa in profondità rispetto alle RLS)
+    if (userId) query = query.eq('user_id', userId);
+
+    const { error } = await query;
 
     if (error) {
       console.error('Errore aggiornamento routine scheda:', error);
@@ -353,6 +371,16 @@ export const updateSchedaRoutine = async (schedaId, routine) => {
     console.error('Errore inatteso aggiornamento routine:', err);
     return false;
   }
+};
+
+/**
+ * Elimina definitivamente l'account dell'utente corrente.
+ * Funzione centralizzata — usata da SettingsView e ProfiloView.
+ */
+export const deleteUserAccount = async () => {
+  const { error } = await supabase.rpc('delete_user');
+  if (error) throw error;
+  await supabase.auth.signOut();
 };
 
 /**
@@ -384,15 +412,20 @@ export const fetchPendingSpotterSuggestions = async (userId, schemeId, dayName) 
 /**
  * Aggiorna lo stato di un suggerimento Spotter (accettato / ignorato)
  */
-export const updateSpotterSuggestionStatus = async (suggestionId, { isApplied, isDismissed }) => {
+export const updateSpotterSuggestionStatus = async (suggestionId, { isApplied, isDismissed }, userId) => {
   try {
-    const { error } = await supabase
+    let query = supabase
       .from('spotter_suggestions')
-      .update({ 
+      .update({
         is_applied: isApplied ?? false,
-        is_dismissed: isDismissed ?? false 
+        is_dismissed: isDismissed ?? false
       })
       .eq('id', suggestionId);
+
+    // defense-in-depth oltre le RLS
+    if (userId) query = query.eq('user_id', userId);
+
+    const { error } = await query;
 
     if (error) {
       console.error('Errore aggiornamento stato suggerimento:', error);

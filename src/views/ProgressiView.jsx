@@ -215,7 +215,7 @@ export const ProgressiView = ({
         [dayToUpdate]: exercisesToUpdate
       };
 
-      const success = await updateSchedaRoutine(schedaAttiva.id, newRoutine);
+      const success = await updateSchedaRoutine(schedaAttiva.id, newRoutine, user?.id);
 
       if (success) {
         const updatedSchedaAttiva = { ...schedaAttiva, routine: newRoutine };

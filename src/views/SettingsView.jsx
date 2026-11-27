@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Toggle } from '../components/UI';
-import { supabase } from '../supabaseClient'; 
+import { deleteUserAccount } from '../services/supabaseServices';
 import { Settings, Moon, Smartphone, Bell, Download, Trash2, LogOut, AlertTriangle, ArrowLeft } from 'lucide-react';
 
 export const SettingsView = ({ settings, onSettingsChange, onLogout, onBack }) => {
@@ -9,16 +9,15 @@ export const SettingsView = ({ settings, onSettingsChange, onLogout, onBack }) =
   };
 
   const handleEliminaAccount = async () => {
-    const conferma = window.confirm("ATTENZIONE: Sei sicuro di voler eliminare definitivamente il tuo account?");
-    if (conferma) {
-      try {
-        const { error } = await supabase.rpc('delete_user');
-        if (error) throw error;
-        await supabase.auth.signOut();
-        window.location.reload(); 
-      } catch (err) {
-        alert("Errore: " + err.message);
-      }
+    const primaConferma = window.confirm('ATTENZIONE: Sei sicuro di voler eliminare definitivamente il tuo account?');
+    if (!primaConferma) return;
+    const secondaConferma = window.confirm('Questa azione è irreversibile. Tutti i tuoi dati verranno cancellati. Continuare?');
+    if (!secondaConferma) return;
+    try {
+      await deleteUserAccount();
+      window.location.reload();
+    } catch (err) {
+      alert('Errore durante l\'eliminazione dell\'account: ' + err.message);
     }
   };
 
@@ -91,11 +90,11 @@ export const SettingsView = ({ settings, onSettingsChange, onLogout, onBack }) =
         <div>
           <span className="text-[10px] font-black tracking-widest text-text-secondary uppercase mb-3 ml-1 block">Zona Sicurezza</span>
           <div className="space-y-3">
-            <Button variant="secondary" fullWidth onClick={() => alert("Esportazione CSV avviata.")}>
-              <Download size={16} className="mr-2" /> Esporta Storico
+            <Button variant="secondary" fullWidth disabled title="Funzionalità in arrivo">
+              <Download size={16} className="mr-2" /> Esporta Storico (in arrivo)
             </Button>
-            <Button variant="secondary" fullWidth onClick={() => alert("Storico eliminato.")}>
-              <Trash2 size={16} className="mr-2" /> Pulisci Logs
+            <Button variant="secondary" fullWidth disabled title="Funzionalità in arrivo">
+              <Trash2 size={16} className="mr-2" /> Pulisci Logs (in arrivo)
             </Button>
             <Button variant="secondary" fullWidth onClick={onLogout} className="mt-6 bg-surface-tertiary">
               <LogOut size={16} className="mr-2" /> Esci

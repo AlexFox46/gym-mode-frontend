@@ -334,7 +334,7 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
 
       const { data: allSchede, error: fetchError } = await supabase
         .from('workout_schemes')
-        .select('*')
+        .select('id, name, days_count, routine, is_active, goal')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
       
@@ -375,14 +375,15 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
       const { error } = await supabase
         .from('workout_schemes')
         .delete()
-        .eq('id', schedaId);
+        .eq('id', schedaId)
+        .eq('user_id', userId);
       
       if (error) throw error;
-      console.log('✅ Scheda eliminata');
+      devLog('✅ Scheda eliminata');
 
       const { data: allSchede, error: fetchError } = await supabase
         .from('workout_schemes')
-        .select('*')
+        .select('id, name, days_count, routine, is_active, goal')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
       
@@ -412,14 +413,15 @@ export const SchedeView = ({ schede, setSchede, schedaAttiva, setSchedaAttiva, e
       const { error } = await supabase
         .from('workout_schemes')
         .update({ is_active: true })
-        .eq('id', scheda.id);
+        .eq('id', scheda.id)
+        .eq('user_id', userId);
       
       if (error) throw error;
-      console.log('✅ Scheda attivata');
+      devLog('✅ Scheda attivata');
 
       const { data: allSchede, error: fetchError } = await supabase
         .from('workout_schemes')
-        .select('*')
+        .select('id, name, days_count, routine, is_active, goal')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
       
