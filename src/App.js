@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import { LoginView } from './views/LoginView';
+import { ResetPasswordView } from './views/ResetPasswordView';
 import { AllenatiView } from './views/AllenatiView';
 import { SchedeView } from './views/SchedeView';
 import { ProgressiView } from './views/ProgressiView';
@@ -38,6 +39,7 @@ const safeParseLocalStorage = (key, fallback = []) => {
 function App() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [recoveryMode, setRecoveryMode] = useState(false);
   const [activeTab, setActiveTab] = useState('allenati');
   
   const [settings, setSettings] = useState({
@@ -105,7 +107,8 @@ function App() {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') setRecoveryMode(true);
       handleUserSession(session);
     });
 
@@ -171,6 +174,8 @@ function App() {
       </div>
     );
   }
+
+  if (recoveryMode) return <ResetPasswordView onDone={() => { window.history.replaceState({}, '', window.location.pathname); setRecoveryMode(false); }} />;
 
   if (!user) return <LoginView onLoginSuccess={(loggedInUser) => setUser(loggedInUser)} />;
 
