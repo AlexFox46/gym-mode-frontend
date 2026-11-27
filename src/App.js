@@ -1,4 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
+import { LoginView } from './views/LoginView';
+import { ResetPasswordView } from './views/ResetPasswordView';
+import { AllenatiView } from './views/AllenatiView';
+import { SchedeView } from './views/SchedeView';
+import { ProgressiView } from './views/ProgressiView';
+import { SpotterView } from './views/SpotterView';
+import { Dumbbell, BookOpen, TrendingUp, Sparkles } from 'lucide-react';
+import { 
+  fetchEsercizi, 
+  createProfileIfNotExists, 
+  fetchSchede, 
+  setupSchedeListener,
+  saveWorkoutLog,
+  fetchWorkoutLogs
+} from './services/supabaseServices';
+import { Toast } from './components/UI';
 
 // Logger che si silenzia in produzione — nessuna info nei DevTools in prod
 const devLog = process.env.NODE_ENV === 'development' ? console.log : () => {};
@@ -18,26 +35,11 @@ const safeParseLocalStorage = (key, fallback = []) => {
     return fallback;
   }
 };
-import { supabase } from './supabaseClient';
-import { LoginView } from './views/LoginView';
-import { AllenatiView } from './views/AllenatiView';
-import { SchedeView } from './views/SchedeView';
-import { ProgressiView } from './views/ProgressiView';
-import { SpotterView } from './views/SpotterView';
-import { Dumbbell, BookOpen, TrendingUp, Sparkles } from 'lucide-react';
-import { 
-  fetchEsercizi, 
-  createProfileIfNotExists, 
-  fetchSchede, 
-  setupSchedeListener,
-  saveWorkoutLog,
-  fetchWorkoutLogs
-} from './services/supabaseServices';
-import { Toast } from './components/UI';
 
 function App() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [recoveryMode, setRecoveryMode] = useState(false);
   const [activeTab, setActiveTab] = useState('allenati');
   
   const [settings, setSettings] = useState({
@@ -105,7 +107,8 @@ function App() {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') setRecoveryMode(true);
       handleUserSession(session);
     });
 
@@ -171,6 +174,8 @@ function App() {
       </div>
     );
   }
+
+  if (recoveryMode) return <ResetPasswordView onDone={() => { window.history.replaceState({}, '', window.location.pathname); setRecoveryMode(false); }} />;
 
   if (!user) return <LoginView onLoginSuccess={(loggedInUser) => setUser(loggedInUser)} />;
 

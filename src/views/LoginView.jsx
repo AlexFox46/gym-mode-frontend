@@ -6,8 +6,33 @@ export const LoginView = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isForgot, setIsForgot] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [infoMsg, setInfoMsg] = useState('');
+
+  const handleForgot = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+    setInfoMsg('');
+    if (!email.trim()) {
+      setErrorMsg('Inserisci la tua email.');
+      setLoading(false);
+      return;
+    }
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: window.location.origin,
+      });
+      if (error) throw error;
+      setInfoMsg('Se l\'email è registrata, riceverai un link per reimpostare la password. Controlla anche lo spam.');
+    } catch (err) {
+      setErrorMsg(err.message || 'Impossibile inviare l\'email di recupero.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -68,10 +93,10 @@ export const LoginView = ({ onLoginSuccess }) => {
         {/* Auth Card */}
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 shadow-light-default dark:shadow-dark-default">
           <h2 className="text-lg font-bold text-neutral-950 dark:text-white mb-4">
-            {isRegistering ? 'Crea un account' : 'Accedi al tuo profilo'}
+            {isForgot ? 'Recupera password' : isRegistering ? 'Crea un account' : 'Accedi al tuo profilo'}
           </h2>
 
-          <form onSubmit={handleAuth} className="space-y-4">
+          <form onSubmit={isForgot ? handleForgot : handleAuth} className="space-y-4">
             {/* Input Email */}
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Email</label>
@@ -86,6 +111,7 @@ export const LoginView = ({ onLoginSuccess }) => {
             </div>
 
             {/* Input Password */}
+            {!isForgot && (<>
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Password</label>
               <input
@@ -97,6 +123,24 @@ export const LoginView = ({ onLoginSuccess }) => {
                 className="h-11 px-3 border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-950 rounded-md focus:outline-none focus:ring-2 focus:ring-focus text-sm dark:text-white font-medium"
               />
             </div>
+            {!isRegistering && (
+              <div className="text-right -mt-2">
+                <button
+                  type="button"
+                  onClick={() => { setIsForgot(true); setErrorMsg(''); setInfoMsg(''); }}
+                  className="text-xs text-neutral-500 font-semibold hover:underline"
+                >
+                  Password dimenticata?
+                </button>
+              </div>
+            )}
+            </>)}
+
+            {infoMsg && (
+              <div className="p-3 bg-green-50 border border-green-200 text-green-700 rounded-md text-xs font-semibold leading-tight">
+                {infoMsg}
+              </div>
+            )}
 
             {/* Error Banner */}
             {errorMsg && (
@@ -107,7 +151,7 @@ export const LoginView = ({ onLoginSuccess }) => {
 
             {/* Submit CTA */}
             <Button size="medium" variant="primary" fullWidth type="submit" disabled={loading}>
-              {loading ? 'Elaborazione...' : isRegistering ? 'REGISTRATI' : 'ACCEDI'}
+              {loading ? 'Elaborazione...' : isForgot ? 'INVIA LINK DI RECUPERO' : isRegistering ? 'REGISTRATI' : 'ACCEDI'}
             </Button>
           </form>
 
@@ -116,12 +160,14 @@ export const LoginView = ({ onLoginSuccess }) => {
             <button
               type="button"
               onClick={() => {
-                setIsRegistering(!isRegistering);
+                if (isForgot) setIsForgot(false);
+                else setIsRegistering(!isRegistering);
                 setErrorMsg('');
+                setInfoMsg('');
               }}
               className="text-xs text-success font-bold hover:underline active:scale-95 transition-transform"
             >
-              {isRegistering ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati ora'}
+              {isForgot ? 'Torna al login' : isRegistering ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati ora'}
             </button>
           </div>
         </div>

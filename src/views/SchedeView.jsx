@@ -5,6 +5,9 @@ import { Plus, X, Edit2, Trash2, Dumbbell, GripVertical, ChevronUp, ChevronDown,
 import { ExerciseDetailModal } from '../components/ExerciseDetailModal';
 import { EQUIPMENT_TYPES } from '../data/exerciseLibrary';
 
+// Logger che si silenzia in produzione
+const devLog = process.env.NODE_ENV === 'development' ? console.log : () => {};
+
 const GOAL_OPTIONS = [
   { id: 'hypertrophy', label: 'Ipertrofia', desc: 'Massa muscolare (8-12 rep)' },
   { id: 'strength', label: 'Forza', desc: 'Carichi elevati (1-5 rep)' },
